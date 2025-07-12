@@ -1,0 +1,456 @@
+# KhoAugment POS System - Production Ready Cursor Rules
+
+## 🎯 PROJECT CONTEXT
+You are working on KhoAugment POS - a PRODUCTION-READY Point of Sale system for Vietnamese market:
+- Frontend: React 18 + Vite + Ant Design + TypeScript (Cloudflare Pages)
+- Backend: Cloudflare Workers + Hono.js + D1 + R2
+- Database: Cloudflare D1 (SQLite) - PRODUCTION DATABASE ONLY
+- Storage: Cloudflare R2 - PRODUCTION STORAGE ONLY
+- Deployment: 100% Cloudflare Stack for real business use
+
+## 🚫 ABSOLUTE PROHIBITIONS - PRODUCTION RULES
+
+### ❌ NEVER CREATE FAKE/DEMO/MOCK DATA
+- NEVER use placeholder data, sample data, or lorem ipsum
+- NEVER create mock API responses or fake services
+- NEVER use demo users, test products, or dummy customers
+- NEVER implement "development only" features
+- NEVER use hardcoded temporary values
+- NEVER create non-functional UI placeholders
+- NEVER use "TODO" or "FIXME" comments in production code
+- NEVER implement features that won't work in real business
+
+### ❌ NEVER USE OFFLINE/PWA FEATURES
+- NEVER implement service workers or offline caching
+- NEVER create offline-first functionality
+- NEVER implement background sync or offline storage
+- NEVER use IndexedDB or local storage for critical data
+- NEVER create "works offline" messaging or UI
+- ALL data must come from live API calls to Cloudflare Workers
+- ALL functionality must require internet connection
+
+### ❌ NEVER EXCEED CLOUDFLARE FREE TIER
+- NEVER use features requiring paid Cloudflare plans
+- NEVER implement CPU-intensive operations (>30s limit)
+- NEVER create memory-heavy processes
+- NEVER use more than 100k requests/day
+- NEVER store more than 10GB in R2
+- NEVER create long-running background jobs
+
+### ❌ NEVER USE NON-PRODUCTION PATTERNS
+- NEVER use console.log in production code (use proper logging)
+- NEVER use setTimeout/setInterval for critical business logic
+- NEVER use Math.random() for business IDs (use proper UUIDs)
+- NEVER hardcode API URLs or secrets in code
+- NEVER bypass authentication for "convenience"
+- NEVER create admin backdoors or debug modes
+
+## ✅ PRODUCTION REQUIREMENTS
+
+### 🏭 REAL BUSINESS LOGIC ONLY
+```typescript
+// ✅ CORRECT - Real business logic
+const calculateVietnameseTax = (amount: number): number => {
+  return amount * 0.1; // 10% VAT as per Vietnamese law
+};
+
+const generateOrderNumber = (): string => {
+  return `ORD-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+};
+
+// ❌ WRONG - Demo/placeholder logic
+const calculateTax = (amount: number): number => {
+  return 0; // TODO: implement real tax calculation
+};
+```
+
+### 🔐 PRODUCTION SECURITY STANDARDS
+```typescript
+// ✅ CORRECT - Production authentication
+interface AuthMiddleware {
+  validateJWT: (token: string) => Promise<User | null>;
+  checkPermissions: (user: User, action: string) => boolean;
+  logSecurityEvent: (event: SecurityEvent) => Promise<void>;
+}
+
+// ❌ WRONG - Development shortcuts
+const skipAuth = true; // For development only
+if (process.env.NODE_ENV === 'development') {
+  // Skip security checks
+}
+```
+
+### 💰 REAL VIETNAMESE PAYMENT INTEGRATION
+```typescript
+// ✅ CORRECT - Real payment gateways
+interface VNPayService {
+  createPayment: (order: Order) => Promise<PaymentURL>;
+  verifyPayment: (ipnData: VNPayIPN) => Promise<PaymentResult>;
+  refundPayment: (transactionId: string) => Promise<RefundResult>;
+}
+
+// ❌ WRONG - Fake payment processing
+const fakePayment = () => {
+  return { success: true, message: "Payment successful" };
+};
+```
+
+### 📊 PRODUCTION DATABASE OPERATIONS
+```typescript
+// ✅ CORRECT - Real D1 database operations
+const getProducts = async (env: Env): Promise<Product[]> => {
+  const { results } = await env.DB.prepare(
+    'SELECT * FROM products WHERE active = 1 ORDER BY name'
+  ).all();
+  
+  return results as Product[];
+};
+
+// ❌ WRONG - Mock database
+const mockProducts = [
+  { id: 1, name: "Sample Product", price: 100000 }
+];
+```
+
+### 🏪 REAL POS OPERATIONS
+```typescript
+// ✅ CORRECT - Real inventory management
+const updateStock = async (productId: number, quantity: number, env: Env): Promise<void> => {
+  const result = await env.DB.prepare(
+    'UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?'
+  ).bind(quantity, productId, quantity).run();
+  
+  if (result.changes === 0) {
+    throw new Error('Insufficient stock or product not found');
+  }
+};
+
+// ❌ WRONG - Fake stock management
+const updateStock = (productId: number, quantity: number) => {
+  console.log(`Would update stock for ${productId}`);
+};
+```
+
+## 🔧 CLOUDFLARE WORKERS STANDARDS
+
+### Worker Environment Types
+```typescript
+interface Env {
+  DB: D1Database;           // Production D1 database
+  BUCKET: R2Bucket;         // Production R2 storage
+  CACHE: KVNamespace;       // Production KV store
+  JWT_SECRET: string;       // Production JWT secret
+  VNPAY_SECRET: string;     // Real VNPay credentials
+  MOMO_SECRET: string;      // Real MoMo credentials
+  ZALOPAY_SECRET: string;   // Real ZaloPay credentials
+}
+```
+
+### API Response Standards
+```typescript
+interface APIResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  timestamp: string;
+  requestId: string;
+}
+
+// ✅ CORRECT - Production error handling
+app.onError((err, c) => {
+  console.error('Production Error:', {
+    error: err.message,
+    stack: err.stack,
+    url: c.req.url,
+    method: c.req.method,
+    timestamp: new Date().toISOString()
+  });
+  
+  return c.json({
+    success: false,
+    error: 'Internal server error',
+    timestamp: new Date().toISOString(),
+    requestId: crypto.randomUUID()
+  }, 500);
+});
+```
+
+### Rate Limiting (Production)
+```typescript
+const rateLimitMiddleware = async (c: Context, next: Next) => {
+  const ip = c.req.header('CF-Connecting-IP') || 'unknown';
+  const key = `rate_limit:${ip}:${Math.floor(Date.now() / 60000)}`;
+  
+  const current = await c.env.CACHE.get(key);
+  const requests = current ? parseInt(current) : 0;
+  
+  if (requests >= 100) { // 100 requests per minute
+    return c.json({
+      success: false,
+      error: 'Rate limit exceeded',
+      timestamp: new Date().toISOString()
+    }, 429);
+  }
+  
+  await c.env.CACHE.put(key, (requests + 1).toString(), { expirationTtl: 60 });
+  await next();
+};
+```
+
+## 🗄️ DATABASE STANDARDS
+
+### D1 Schema Requirements
+```sql
+-- ✅ CORRECT - Production schema with proper constraints
+CREATE TABLE products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL CHECK(length(name) >= 1),
+  price REAL NOT NULL CHECK(price > 0),
+  stock INTEGER NOT NULL CHECK(stock >= 0),
+  barcode TEXT UNIQUE,
+  active BOOLEAN DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ❌ WRONG - Development schema
+CREATE TABLE test_products (
+  id INTEGER,
+  name TEXT,
+  price REAL
+);
+```
+
+### Transaction Standards
+```typescript
+// ✅ CORRECT - Production transactions
+const createOrder = async (orderData: CreateOrderRequest, env: Env): Promise<Order> => {
+  const statements = [
+    env.DB.prepare(
+      'INSERT INTO orders (order_number, total_amount, user_id) VALUES (?, ?, ?)'
+    ).bind(orderData.orderNumber, orderData.totalAmount, orderData.userId),
+    
+    ...orderData.items.map(item => 
+      env.DB.prepare(
+        'INSERT INTO order_items (order_id, product_id, quantity) VALUES (last_insert_rowid(), ?, ?)'
+      ).bind(item.productId, item.quantity)
+    ),
+    
+    ...orderData.items.map(item =>
+      env.DB.prepare(
+        'UPDATE products SET stock = stock - ? WHERE id = ?'
+      ).bind(item.quantity, item.productId)
+    )
+  ];
+  
+  const results = await env.DB.batch(statements);
+  
+  if (!results.every(result => result.success)) {
+    throw new Error('Transaction failed');
+  }
+  
+  return getOrderById(results[0].meta!.last_row_id!, env);
+};
+```
+
+## 📱 FRONTEND STANDARDS
+
+### API Integration
+```typescript
+// ✅ CORRECT - Production API calls
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL, // Real production URL
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+// ❌ WRONG - Mock API
+const mockApiCall = () => Promise.resolve({ data: mockData });
+```
+
+### Error Handling
+```typescript
+// ✅ CORRECT - Production error handling
+const handleApiError = (error: AxiosError) => {
+  if (error.response?.status === 401) {
+    // Redirect to login
+    window.location.href = '/login';
+  } else if (error.response?.status === 429) {
+    message.error('Quá nhiều yêu cầu. Vui lòng thử lại sau.');
+  } else {
+    message.error('Đã có lỗi xảy ra. Vui lòng thử lại.');
+  }
+};
+
+// ❌ WRONG - Development error handling
+const handleError = () => {
+  console.log('Error occurred');
+};
+```
+
+### Vietnamese Business Rules
+```typescript
+// ✅ CORRECT - Real Vietnamese formatting
+const formatVND = (amount: number): string => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(amount);
+};
+
+const validateVietnamesePhone = (phone: string): boolean => {
+  const vietnamesePhoneRegex = /^(\+84|84|0)[1-9][0-9]{8}$/;
+  return vietnamesePhoneRegex.test(phone);
+};
+```
+
+## 🎯 QUALITY STANDARDS
+
+### TypeScript Strict Mode
+```typescript
+// tsconfig.json must include:
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}
+```
+
+### Zod Validation
+```typescript
+// ✅ CORRECT - Production validation
+const CreateProductSchema = z.object({
+  name: z.string().min(1).max(255),
+  price: z.number().positive(),
+  stock: z.number().int().min(0),
+  barcode: z.string().optional()
+});
+
+// ❌ WRONG - No validation
+const createProduct = (data: any) => {
+  // Process without validation
+};
+```
+
+## 🚀 DEPLOYMENT STANDARDS
+
+### Environment Configuration
+```bash
+# ✅ CORRECT - Production secrets
+wrangler secret put JWT_SECRET
+wrangler secret put VNPAY_SECRET_KEY
+wrangler secret put MOMO_SECRET_KEY
+
+# ❌ WRONG - Hardcoded secrets
+const JWT_SECRET = "development-secret";
+```
+
+### Performance Requirements
+- API response time: < 200ms average
+- Database query time: < 100ms average
+- Frontend bundle size: < 1MB gzipped
+- First contentful paint: < 2 seconds
+
+## 🔍 CODE REVIEW CHECKLIST
+Before any code commit, verify:
+- ✅ No mock data or placeholder content
+- ✅ All API calls go to real Cloudflare Workers
+- ✅ All database operations use real D1 database
+- ✅ No offline functionality implemented
+- ✅ Proper error handling for production
+- ✅ Vietnamese business rules correctly implemented
+- ✅ Security measures in place
+- ✅ Performance optimized
+- ✅ TypeScript strict mode compliance
+- ✅ Proper logging (no console.log)
+
+## ⚠️ PRODUCTION MONITORING
+
+### Required Logging
+```typescript
+// ✅ CORRECT - Production logging
+const logger = {
+  info: (message: string, data?: any) => {
+    console.log(JSON.stringify({
+      level: 'info',
+      message,
+      data,
+      timestamp: new Date().toISOString()
+    }));
+  },
+  error: (message: string, error?: Error, data?: any) => {
+    console.error(JSON.stringify({
+      level: 'error',
+      message,
+      error: error?.message,
+      stack: error?.stack,
+      data,
+      timestamp: new Date().toISOString()
+    }));
+  }
+};
+```
+
+### Performance Standards
+```typescript
+// ✅ CORRECT - Optimized queries
+const getOrdersWithPagination = async (page: number, limit: number, env: Env) => {
+  const offset = (page - 1) * limit;
+  const { results } = await env.DB.prepare(
+    'SELECT * FROM orders ORDER BY created_at DESC LIMIT ? OFFSET ?'
+  ).bind(limit, offset).all();
+
+  return results;
+};
+
+// ❌ WRONG - Unoptimized queries
+const getAllOrders = async (env: Env) => {
+  const { results } = await env.DB.prepare('SELECT * FROM orders').all();
+  return results; // Could return millions of records
+};
+```
+
+## 📋 MANDATORY REQUIREMENTS
+
+### ✅ MUST HAVE:
+- Real Vietnamese business logic
+- Production-ready error handling
+- Proper authentication & authorization
+- Real payment gateway integration
+- Cloudflare D1/R2/KV integration
+- TypeScript strict mode
+- Zod validation for all inputs
+- Proper logging (not console.log)
+- Rate limiting
+- Vietnamese localization
+
+### ❌ MUST NOT HAVE:
+- Any offline/PWA functionality
+- Mock/demo/fake data
+- Development shortcuts
+- Hardcoded values
+- Console.log statements
+- TODO/FIXME comments
+- Non-production patterns
+- Features exceeding free tier limits
+
+## 🎯 SUCCESS CRITERIA
+Code is considered production-ready when:
+1. ✅ Works with real Vietnamese businesses
+2. ✅ Handles real money transactions
+3. ✅ Scales within Cloudflare free tier
+4. ✅ Has proper error handling
+5. ✅ Follows Vietnamese business rules
+6. ✅ Is fully typed with TypeScript
+7. ✅ Has comprehensive validation
+8. ✅ Requires internet connection for all operations
+
+---
+
+**Remember: This is a PRODUCTION system for real Vietnamese businesses. Every line of code must be production-ready, secure, and reliable. No shortcuts, no placeholders, no demo features.**

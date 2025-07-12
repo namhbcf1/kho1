@@ -1,0 +1,191 @@
+# Cloudflare Pages configuration for KhoAugment POS Frontend
+[build]
+command = "npm run build"
+publish = "dist"
+
+[build.environment]
+NODE_VERSION = "18"
+NPM_VERSION = "9"
+
+# Environment variables for different environments
+[env.production.vars]
+VITE_API_URL = "https://api.khoaugment.com"
+VITE_APP_ENV = "production"
+VITE_CLOUDFLARE_ACCOUNT_ID = "your-account-id"
+VITE_VNPAY_MERCHANT_ID = "your-vnpay-merchant-id"
+VITE_MOMO_PARTNER_CODE = "your-momo-partner-code"
+VITE_ZALOPAY_APP_ID = "your-zalopay-app-id"
+VITE_SENTRY_DSN = "your-sentry-dsn"
+VITE_GOOGLE_ANALYTICS_ID = "your-ga-id"
+VITE_VAPID_PUBLIC_KEY = "your-vapid-public-key"
+
+[env.staging.vars]
+VITE_API_URL = "https://api-staging.khoaugment.com"
+VITE_APP_ENV = "staging"
+VITE_CLOUDFLARE_ACCOUNT_ID = "your-staging-account-id"
+VITE_VNPAY_MERCHANT_ID = "your-staging-vnpay-merchant-id"
+VITE_MOMO_PARTNER_CODE = "your-staging-momo-partner-code"
+VITE_ZALOPAY_APP_ID = "your-staging-zalopay-app-id"
+VITE_SENTRY_DSN = "your-staging-sentry-dsn"
+VITE_VAPID_PUBLIC_KEY = "your-staging-vapid-public-key"
+
+[env.development.vars]
+VITE_API_URL = "http://localhost:8787"
+VITE_APP_ENV = "development"
+VITE_CLOUDFLARE_ACCOUNT_ID = "your-dev-account-id"
+VITE_VNPAY_MERCHANT_ID = "your-dev-vnpay-merchant-id"
+VITE_MOMO_PARTNER_CODE = "your-dev-momo-partner-code"
+VITE_ZALOPAY_APP_ID = "your-dev-zalopay-app-id"
+VITE_VAPID_PUBLIC_KEY = "your-dev-vapid-public-key"
+
+# Custom headers for security and performance
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=(self), payment=(self)"
+Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.khoaugment.com https://www.google-analytics.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+
+# Cache static assets
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/icons/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "*.js"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "*.css"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# PWA files
+[[headers]]
+for = "/manifest.json"
+[headers.values]
+Cache-Control = "public, max-age=86400"
+Content-Type = "application/manifest+json"
+
+[[headers]]
+for = "/sw.js"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+Content-Type = "application/javascript"
+
+# API proxy headers
+[[headers]]
+for = "/api/*"
+[headers.values]
+Access-Control-Allow-Origin = "*"
+Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
+Access-Control-Max-Age = "86400"
+
+# Redirects for SPA routing
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+conditions = {Country = ["VN"]}
+
+# API redirects to Workers
+[[redirects]]
+from = "/api/*"
+to = "https://api.khoaugment.com/:splat"
+status = 200
+force = true
+
+# Legacy redirects
+[[redirects]]
+from = "/admin/*"
+to = "/:splat"
+status = 301
+
+[[redirects]]
+from = "/dashboard/*"
+to = "/:splat"
+status = 301
+
+# Error pages
+[[redirects]]
+from = "/404"
+to = "/index.html"
+status = 200
+
+[[redirects]]
+from = "/500"
+to = "/index.html"
+status = 200
+
+# Functions for edge computing
+[functions]
+directory = "functions"
+
+# Build settings
+[build.processing]
+css = true
+js = true
+html = true
+images = true
+
+[build.processing.css]
+minify = true
+
+[build.processing.js]
+minify = true
+
+[build.processing.html]
+minify = true
+
+[build.processing.images]
+format = "webp"
+quality = 85
+
+# Preview settings
+[preview]
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Analytics
+[analytics]
+enabled = true
+
+# Speed settings
+[speed]
+enabled = true
+
+# Security settings
+[security]
+level = "high"
+
+# Custom domains
+[custom_domains]
+production = ["khoaugment.com", "www.khoaugment.com"]
+staging = ["staging.khoaugment.com"]
+
+# Branch deployments
+[branch_deployments]
+enabled = true
+preview_branch = "develop"
+
+# Build notifications
+[notifications]
+email = ["admin@khoaugment.com"]
+slack = "your-slack-webhook-url"
+
+# Performance settings
+[performance]
+bundle_analyzer = true
+lighthouse = true
+web_vitals = true

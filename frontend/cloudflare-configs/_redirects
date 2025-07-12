@@ -1,0 +1,113 @@
+# Cloudflare Pages redirects for KhoAugment POS
+
+# API redirects to Cloudflare Workers
+/api/*  https://api.khoaugment.com/:splat  200
+
+# Legacy admin redirects
+/admin/*  /:splat  301
+/dashboard/*  /:splat  301
+
+# Authentication redirects
+/login  /auth/login  301
+/register  /auth/register  301
+
+# POS shortcuts
+/pos  /pos/terminal  200
+/sell  /pos/terminal  301
+/checkout  /pos/terminal  301
+
+# Product management shortcuts
+/inventory  /products/inventory  301
+/stock  /products/inventory  301
+
+# Report shortcuts
+/reports  /analytics  301
+/stats  /analytics  301
+
+# Settings shortcuts
+/config  /settings  301
+/preferences  /settings  301
+
+# Mobile app deep links
+/app/pos  /pos/terminal  200
+/app/products  /products  200
+/app/customers  /customers  200
+/app/orders  /orders  200
+
+# QR code redirects for receipts
+/receipt/:id  /orders/:id  200
+/r/:id  /orders/:id  200
+
+# Payment callback URLs
+/payment/vnpay/callback  /api/payments/vnpay/callback  200
+/payment/momo/callback  /api/payments/momo/callback  200
+/payment/zalopay/callback  /api/payments/zalopay/callback  200
+
+# Webhook endpoints
+/webhooks/*  /api/webhooks/:splat  200
+
+# Health check
+/health  /api/health  200
+/status  /api/health  200
+
+# Sitemap and robots
+/sitemap.xml  /api/sitemap  200
+/robots.txt  /api/robots  200
+
+# Error pages
+/404  /  200
+/500  /  200
+/offline  /  200
+
+# Language redirects
+/vi/*  /:splat  200
+/en/*  /:splat  200
+
+# Country-specific redirects
+/vn/*  /:splat  301  Country=VN
+/us/*  /:splat  301  Country=US
+
+# Device-specific redirects
+/mobile/*  /:splat  301  Mobile=true
+/desktop/*  /:splat  301  Mobile=false
+
+# Time-based redirects (maintenance mode)
+# /maintenance  /  200  Date=2024-01-01T00:00:00Z-2024-01-01T06:00:00Z
+
+# A/B testing redirects
+# /beta/*  /:splat  200  Cookie=beta_user=true
+
+# Security redirects
+/admin  /auth/login  301
+/.env  /  404
+/.git/*  /  404
+/wp-admin/*  /  404
+/wp-content/*  /  404
+
+# SEO redirects
+/san-pham  /products  301
+/khach-hang  /customers  301
+/don-hang  /orders  301
+/bao-cao  /analytics  301
+/cai-dat  /settings  301
+
+# Social media redirects
+/facebook  https://facebook.com/khoaugment  301
+/twitter  https://twitter.com/khoaugment  301
+/linkedin  https://linkedin.com/company/khoaugment  301
+
+# Documentation redirects
+/docs  https://docs.khoaugment.com  301
+/help  https://help.khoaugment.com  301
+/support  https://support.khoaugment.com  301
+
+# Download redirects
+/download/android  https://play.google.com/store/apps/details?id=com.khoaugment.pos  301
+/download/ios  https://apps.apple.com/app/khoaugment-pos/id123456789  301
+
+# Backup redirects for old URLs
+/old-admin/*  /auth/login  301
+/legacy/*  /  301
+
+# SPA fallback - must be last
+/*  /index.html  200

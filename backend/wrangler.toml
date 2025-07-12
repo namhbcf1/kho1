@@ -1,0 +1,57 @@
+name = "khoaugment-pos-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Environment variables
+[env.production.vars]
+ENVIRONMENT = "production"
+JWT_SECRET = "your-jwt-secret-here"
+CORS_ORIGIN = "https://your-domain.pages.dev"
+
+[env.development.vars]
+ENVIRONMENT = "development"
+JWT_SECRET = "dev-jwt-secret"
+CORS_ORIGIN = "http://localhost:3000"
+
+# D1 Database bindings
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "khoaugment-pos-prod"
+database_id = "your-d1-database-id"
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "khoaugment-pos-dev"
+database_id = "your-d1-dev-database-id"
+
+# R2 Storage bindings
+[[env.production.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "khoaugment-pos-storage"
+
+[[env.development.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "khoaugment-pos-storage-dev"
+
+# KV Storage bindings
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id"
+
+[[env.development.kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-dev-namespace-id"
+
+# Analytics Engine bindings
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "khoaugment_pos_analytics"
+
+# Rate limiting
+[env.production.vars]
+RATE_LIMIT_REQUESTS = "100"
+RATE_LIMIT_WINDOW = "60"
+
+[env.development.vars]
+RATE_LIMIT_REQUESTS = "1000"
+RATE_LIMIT_WINDOW = "60"
