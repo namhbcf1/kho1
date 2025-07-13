@@ -179,14 +179,102 @@ authRoutes.put('/profile', async (c) => {
   }
 });
 
+// Refresh token
+authRoutes.post('/refresh', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { refreshToken } = refreshTokenSchema.parse(body);
+
+    // Initialize auth service
+    const jwtSecret = c.env?.JWT_SECRET || 'your-jwt-secret';
+    const refreshSecret = c.env?.REFRESH_SECRET;
+    const saltRounds = parseInt(c.env?.BCRYPT_ROUNDS || '12');
+    authService.init(jwtSecret, refreshSecret, saltRounds);
+
+    const result = await authService.refreshTokens(c.env.DB, refreshToken);
+    
+    if (!result.success) {
+      return c.json(result, 401);
+    }
+
+    return c.json({
+      success: true,
+      message: 'Token làm mới thành công',
+      user: result.user,
+      tokens: result.tokens,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json({
+        success: false,
+        message: 'Dữ liệu không hợp lệ',
+        errors: error.errors,
+      }, 400);
+    }
+
+    console.error('Refresh token error:', error);
+    return c.json({
+      success: false,
+      message: 'Có lỗi xảy ra khi làm mới token',
+    }, 500);
+  }
+});
+
 // Logout
 authRoutes.post('/logout', async (c) => {
-  // In a stateless JWT system, logout is handled client-side
-  // But we can add token blacklisting here if needed
-  return c.json({
-    success: true,
-    message: 'Đăng xuất thành công',
-  });
+  try {
+    const body = await c.req.json();
+    const { refreshToken } = refreshTokenSchema.parse(body);
+
+    // Initialize auth service
+    const jwtSecret = c.env?.JWT_SECRET || 'your-jwt-secret';
+    const refreshSecret = c.env?.REFRESH_SECRET;
+    const saltRounds = parseInt(c.env?.BCRYPT_ROUNDS || '12');
+    authService.init(jwtSecret, refreshSecret, saltRounds);
+
+    const result = await authService.logout(c.env.DB, refreshToken);
+    
+    return c.json(result);
+  } catch (error) {
+    console.error('Logout error:', error);
+    return c.json({
+      success: false,
+      message: 'Có lỗi xảy ra khi đăng xuất',
+    }, 500);
+  }
+});
+
+// Change password
+authRoutes.post('/change-password', authenticate(), async (c: AuthContext) => {
+  try {
+    const body = await c.req.json();
+    const { currentPassword, newPassword } = changePasswordSchema.parse(body);
+
+    const result = await authService.changePassword(c.env.DB, c.user!.id, currentPassword, newPassword);
+    
+    if (!result.success) {
+      return c.json(result, 400);
+    }
+
+    return c.json({
+      success: true,
+      message: 'Đổi mật khẩu thành công',
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json({
+        success: false,
+        message: 'Dữ liệu không hợp lệ',
+        errors: error.errors,
+      }, 400);
+    }
+
+    console.error('Change password error:', error);
+    return c.json({
+      success: false,
+      message: 'Có lỗi xảy ra khi đổi mật khẩu',
+    }, 500);
+  }
 });
 
 export { authRoutes };

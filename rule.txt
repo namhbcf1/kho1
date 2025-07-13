@@ -1,0 +1,269 @@
+================================================================================
+                    KHOAUGMENT POS - PRODUCTION RULE SET v1.0
+                         Vietnamese POS System for Cloudflare
+================================================================================
+
+🎯 PROJECT OVERVIEW:
+Real Vietnamese Point of Sale system for retail businesses
+Tech Stack: React 18 + TypeScript + Cloudflare Workers + D1 + Ant Design
+Deployment: 100% Cloudflare free tier (Pages + Workers + D1 + KV + R2)
+Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
+
+================================================================================
+                                MANDATORY RULES
+================================================================================
+
+✅ PRODUCTION CODE ONLY:
+   - NO mock data, demo content, or placeholder functions
+   - NO TODO comments or "implement later" sections  
+   - NO console.log for fake responses or simulated data
+   - NO setTimeout to simulate API calls or loading
+   - NO hardcoded test data in production components
+   - NO commented out sections with "coming soon"
+   - Every function must be complete and working
+
+✅ REAL API INTEGRATION:
+   - Real Cloudflare Workers endpoints with Hono.js
+   - Real D1 database queries with actual SQL
+   - Real authentication with JWT and security measures
+   - Real error handling for network failures
+   - Real retry logic and timeout handling
+   - Real API validation with Zod schemas
+   - Real CORS and security headers
+
+✅ REAL DATABASE:
+   - Real D1 SQLite schema with proper relationships
+   - Real migrations with up/down scripts
+   - Real indexes and constraints for performance
+   - Real data validation at database level
+   - Real backup and recovery procedures
+   - Real connection pooling and error handling
+
+✅ REAL VIETNAMESE BUSINESS LOGIC:
+   - Real VAT calculation (10% standard rate + special rates)
+   - Real Vietnamese address validation (63 provinces/cities)
+   - Real VND currency formatting (đ, thousands separators)
+   - Real Vietnamese phone number validation (10-11 digits)
+   - Real business license compliance requirements
+   - Real Vietnamese receipt format and invoice rules
+   - Real Vietnamese date/time formatting (dd/mm/yyyy)
+
+✅ REAL PAYMENT GATEWAYS:
+   - Real VNPay integration with actual API endpoints
+   - Real MoMo e-wallet with QR code generation
+   - Real ZaloPay integration with webhook handling
+   - Real bank card processing through Vietnamese banks
+   - Real cash payment recording and tracking
+   - Real payment reconciliation and reporting
+   - Real refund processing through gateways
+
+✅ REAL OFFLINE FUNCTIONALITY:
+   - Real IndexedDB for offline transaction storage
+   - Real Service Worker with background sync
+   - Real PWA installation and native app feel
+   - Real offline inventory checking and alerts
+   - Real queue management for pending transactions
+   - Real conflict resolution for data synchronization
+   - Real network status detection and handling
+
+✅ REAL HARDWARE INTEGRATION:
+   - Real barcode scanner integration (camera + USB)
+   - Real thermal receipt printer communication
+   - Real cash drawer control (electronic lock)
+   - Real customer display integration
+   - Real scale integration for weighted products
+   - Real POS terminal optimization (touch screen)
+
+================================================================================
+                              VIETNAMESE BUSINESS REQUIREMENTS
+================================================================================
+
+🇻🇳 LEGAL COMPLIANCE:
+   - Vietnamese VAT law compliance (Decree 123/2020/NĐ-CP)
+   - Electronic invoice requirements (Decree 119/2018/NĐ-CP)
+   - Customer personal data protection (Decree 13/2023/NĐ-CP)
+   - Business registration number validation
+   - Tax reporting format compliance
+   - Anti-money laundering requirements for large transactions
+
+🇻🇳 CUSTOMER FEATURES:
+   - 5-tier loyalty program: Đồng, Bạc, Vàng, Bạch kim, Kim cương
+   - Vietnamese customer segmentation (age, location, spending)
+   - Tet holiday promotions and seasonal campaigns  
+   - Vietnamese gift card and voucher system
+   - Customer birthday promotions (Vietnamese calendar)
+   - SMS/email in Vietnamese language
+
+🇻🇳 PRODUCT MANAGEMENT:
+   - Vietnamese product categories (food, fashion, electronics, etc.)
+   - Unit of measure in Vietnamese (kg, g, lít, cái, hộp, etc.)
+   - Vietnamese brand and supplier management
+   - Import/export tracking for international products
+   - Expiry date tracking for food products
+   - Vietnamese quality standards compliance
+
+🇻🇳 REPORTING & ANALYTICS:
+   - Vietnamese business hour analysis (6 AM - 10 PM typical)
+   - Lunar calendar integration for traditional holidays
+   - Vietnamese demographic analysis
+   - Regional sales comparison (North/Central/South Vietnam)
+   - Vietnamese supplier performance tracking
+   - Government reporting format compliance
+
+================================================================================
+                               TECHNICAL STANDARDS
+================================================================================
+
+🔧 FRONTEND ARCHITECTURE:
+   - React 18 with Concurrent Features and Suspense
+   - TypeScript 5+ with strict mode and proper typing
+   - Ant Design 5+ with Vietnamese localization
+   - Zustand for state management with persistence
+   - React Query for server state and caching
+   - Vite for build optimization and hot reload
+   - PWA with Workbox for offline functionality
+
+🔧 BACKEND ARCHITECTURE:
+   - Cloudflare Workers with Hono.js framework
+   - D1 SQLite database with proper schema design
+   - KV storage for caching and session management  
+   - R2 storage for file uploads and assets
+   - Zod for runtime validation and type safety
+   - JWT authentication with refresh token rotation
+
+🔧 SECURITY STANDARDS:
+   - HTTPS only with proper SSL certificates
+   - CORS configuration for production domains
+   - Rate limiting to prevent API abuse
+   - Input sanitization and XSS prevention
+   - SQL injection prevention with prepared statements
+   - Secure password hashing with bcrypt
+   - Session management with secure cookies
+
+🔧 PERFORMANCE STANDARDS:
+   - Page load time < 3 seconds on 3G network
+   - API response time < 500ms for CRUD operations
+   - Offline functionality working within 2 seconds
+   - Bundle size < 500KB for main application
+   - Database query optimization with proper indexes
+   - CDN utilization for static assets
+
+================================================================================
+                                  QUALITY GATES
+================================================================================
+
+📊 CODE QUALITY:
+   - Zero TypeScript errors in production build
+   - 90%+ test coverage for business logic
+   - ESLint with zero warnings or errors
+   - Prettier for consistent code formatting
+   - Proper error boundaries for React components
+   - Comprehensive error logging and monitoring
+
+📊 BUSINESS FUNCTIONALITY:
+   - Complete POS transaction flow (add to cart → payment → receipt)
+   - Offline transaction capability for 8+ hours
+   - Real-time inventory updates across multiple terminals
+   - Customer loyalty point calculation and redemption
+   - Vietnamese payment gateway integration (all 3)
+   - Receipt printing with Vietnamese business format
+
+📊 PRODUCTION READINESS:
+   - Cloudflare deployment working with custom domain
+   - Database migrations working in production
+   - Monitoring and alerting for critical errors
+   - Backup and recovery procedures tested
+   - Load testing for peak business hours
+   - Security audit and penetration testing
+
+================================================================================
+                                FORBIDDEN PRACTICES
+================================================================================
+
+❌ NEVER CREATE:
+   - Mock API responses or fake data generators
+   - setTimeout() to simulate loading or API calls
+   - Hardcoded arrays for dropdown options (use database)
+   - Console.log statements in production code
+   - Alert() or confirm() for user interactions
+   - Inline styles instead of proper CSS/styled components
+   - Direct DOM manipulation instead of React patterns
+
+❌ NEVER USE PLACEHOLDERS:
+   - "Coming soon" or "Under development" messages
+   - Empty functions with TODO comments
+   - Fake user data or sample products
+   - Mock payment responses or test transactions
+   - Placeholder images or lorem ipsum text
+   - Disabled buttons with "Not implemented" tooltips
+
+❌ NEVER COMPROMISE SECURITY:
+   - API keys in frontend code or public repositories
+   - Passwords stored in plain text
+   - Unvalidated user inputs
+   - Missing authentication checks
+   - Insecure HTTP connections
+   - Unencrypted sensitive data storage
+
+================================================================================
+                              DEVELOPMENT WORKFLOW
+================================================================================
+
+📋 SESSION STARTUP CHECKLIST:
+1. Copy this entire rule set into Claude CLI
+2. Wait for "RULES CONFIRMED" response
+3. Verify current working directory: C:\Users\ADMIN\Desktop\kho1
+4. Check Cloudflare authentication: wrangler whoami
+5. Begin development with specific, detailed commands
+
+📋 COMMAND STRUCTURE:
+"Following KHOAUGMENT PRODUCTION RULES, create [specific feature] with:
+- Real [technology] integration 
+- Actual Vietnamese business logic
+- Production-ready error handling
+- Complete functionality (no TODOs)
+- [Specific requirements]"
+
+📋 VERIFICATION BEFORE PROCEEDING:
+- Does this create real, working code?
+- Is Vietnamese business logic properly implemented?
+- Are all API integrations using real endpoints?
+- Is error handling comprehensive?
+- Would this work in actual retail environment?
+
+================================================================================
+                                  SUCCESS CRITERIA
+================================================================================
+
+🎯 FINAL DELIVERABLE:
+A complete, production-ready Vietnamese POS system that:
+- Processes real transactions in Vietnamese retail stores
+- Works offline for extended periods without internet
+- Integrates with actual Vietnamese payment gateways
+- Complies with Vietnamese business and tax regulations
+- Provides real-time inventory and sales analytics
+- Supports multiple POS terminals and staff accounts
+- Generates legally compliant Vietnamese receipts
+- Manages customer loyalty program with real rewards
+
+🎯 DEPLOYMENT TARGET:
+- Live website: https://kho1.pages.dev
+- Source code: https://github.com/namhbcf1/kho1
+- 100% Cloudflare free tier utilization
+- Zero ongoing hosting costs
+- Scalable to hundreds of concurrent users
+- Available 99.9% uptime with global CDN
+
+================================================================================
+                                    VERSION LOG
+================================================================================
+
+v1.0 - Initial production rule set for KhoAugment POS
+     - Comprehensive Vietnamese business requirements
+     - Real payment gateway integration standards
+     - Production-ready code quality gates
+     - Complete technical architecture guidelines
+
+================================================================================
+END OF RULES - APPLY TO ALL CODE GENERATION IN THIS SESSION
+================================================================================

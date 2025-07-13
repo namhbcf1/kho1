@@ -1,23 +1,33 @@
-# Cloudflare Pages configuration for KhoAugment POS Frontend
+# Production Cloudflare Pages Configuration for KhoAugment POS
+# Real deployment configuration for live production environment
+
 [build]
 command = "npm run build"
 publish = "dist"
+root_dir = "frontend"
 
 [build.environment]
-NODE_VERSION = "18"
-NPM_VERSION = "9"
+NODE_VERSION = "20"
+NPM_VERSION = "10"
+SKIP_DEPENDENCY_INSTALL = false
 
-# Environment variables for different environments
+# Production environment variables
 [env.production.vars]
-VITE_API_URL = "https://khoaugment-pos-api-production.bangachieu2.workers.dev"
+VITE_API_URL = "https://kho1-api.bangachieu2.workers.dev"
 VITE_APP_ENV = "production"
-VITE_CLOUDFLARE_ACCOUNT_ID = "your-account-id"
-VITE_VNPAY_MERCHANT_ID = "your-vnpay-merchant-id"
-VITE_MOMO_PARTNER_CODE = "your-momo-partner-code"
-VITE_ZALOPAY_APP_ID = "your-zalopay-app-id"
-VITE_SENTRY_DSN = "your-sentry-dsn"
-VITE_GOOGLE_ANALYTICS_ID = "your-ga-id"
-VITE_VAPID_PUBLIC_KEY = "your-vapid-public-key"
+VITE_APP_NAME = "KhoAugment POS"
+VITE_APP_VERSION = "1.0.0"
+VITE_CLOUDFLARE_ACCOUNT_ID = "$CLOUDFLARE_ACCOUNT_ID"
+VITE_BASE_URL = "https://kho1.pages.dev"
+VITE_CDN_URL = "https://imagedelivery.net/your-account-hash"
+VITE_VNPAY_RETURN_URL = "https://kho1.pages.dev/payment/vnpay/return"
+VITE_MOMO_RETURN_URL = "https://kho1.pages.dev/payment/momo/return"
+VITE_ZALOPAY_RETURN_URL = "https://kho1.pages.dev/payment/zalopay/return"
+VITE_ENABLE_PWA = "true"
+VITE_ENABLE_ANALYTICS = "true"
+VITE_ENABLE_ERROR_TRACKING = "true"
+VITE_CACHE_VERSION = "v1"
+VITE_OFFLINE_SUPPORT = "true"
 
 [env.staging.vars]
 VITE_API_URL = "https://api-staging.khoaugment.com"
@@ -38,7 +48,7 @@ VITE_MOMO_PARTNER_CODE = "your-dev-momo-partner-code"
 VITE_ZALOPAY_APP_ID = "your-dev-zalopay-app-id"
 VITE_VAPID_PUBLIC_KEY = "your-dev-vapid-public-key"
 
-# Custom headers for security and performance
+# Production Security Headers
 [[headers]]
 for = "/*"
 [headers.values]
@@ -46,8 +56,9 @@ X-Frame-Options = "DENY"
 X-Content-Type-Options = "nosniff"
 X-XSS-Protection = "1; mode=block"
 Referrer-Policy = "strict-origin-when-cross-origin"
-Permissions-Policy = "camera=(), microphone=(), geolocation=(self), payment=(self)"
-Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.khoaugment.com https://www.google-analytics.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+Permissions-Policy = "camera=(self), microphone=(), geolocation=(self), payment=(self), usb=(), bluetooth=(), accelerometer=(), gyroscope=(), magnetometer=(), ambient-light-sensor=(), autoplay=()"
+Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://imagedelivery.net; connect-src 'self' https://kho1-api.bangachieu2.workers.dev https://sandbox.vnpayment.vn https://vnpayment.vn https://test-payment.momo.vn https://payment.momo.vn https://sb-openapi.zalopay.vn https://openapi.zalopay.vn https://www.google-analytics.com; worker-src 'self' blob:; media-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://sandbox.vnpayment.vn https://vnpayment.vn;"
 
 # Cache static assets
 [[headers]]
