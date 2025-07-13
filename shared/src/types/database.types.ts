@@ -151,3 +151,26 @@ export interface DatabaseSettings {
   created_at: string;
   updated_at: string;
 }
+
+export interface DatabaseSession {
+  id: string;
+  user_id: string;
+  token: string;
+  refresh_token: string;
+  expires_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseAnalytics {
+  id: string;
+  type: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  date: string;
+  revenue: number;
+  orders: number;
+  customers: number;
+  top_products: string; // JSON string
+  top_categories: string; // JSON string
+  metrics: string; // JSON string
+  created_at: string;
+}

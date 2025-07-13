@@ -1,7 +1,7 @@
 // Production Barcode Scanner with Real Camera Integration
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Button, Modal, Alert, Input, Space, Typography, Progress } from 'antd';
-import { ScanOutlined, CameraOutlined, EditOutlined, FlashOnOutlined, FlashOffOutlined } from '@ant-design/icons';
+import { ScanOutlined, CameraOutlined, EditOutlined, BulbOutlined, BulbFilled } from '@ant-design/icons';
 import type { BarcodeScannerProps } from './BarcodeScanner.types';
 
 const { Text } = Typography;
@@ -241,7 +241,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       const newFlashState = !flashEnabled;
       
       await track.applyConstraints({
-        advanced: [{ torch: newFlashState }]
+        advanced: [{ torch: newFlashState } as any]
       });
       
       setFlashEnabled(newFlashState);
@@ -374,7 +374,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                 <Button
                   type="text"
                   size="large"
-                  icon={flashEnabled ? <FlashOffOutlined /> : <FlashOnOutlined />}
+                  icon={flashEnabled ? <BulbFilled /> : <BulbOutlined />}
                   onClick={toggleFlash}
                   style={{
                     position: 'absolute',

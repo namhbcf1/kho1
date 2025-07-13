@@ -99,3 +99,35 @@ export interface PaymentResponse {
   transactionId: string;
   qrCode?: string;
 }
+
+export interface PaginatedResponse<T = any> {
+  items: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface SearchFilters {
+  [key: string]: any;
+}
+
+export interface SortConfig {
+  field: string;
+  order: 'asc' | 'desc';
+}
+
+export interface ErrorResponse {
+  code: string;
+  message: string;
+  details?: any;
+  path?: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  code: string;
+}

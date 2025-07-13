@@ -10,9 +10,9 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: string;
-  context?: Record<string, any>;
-  error?: Error;
-  requestId?: string;
+  context?: Record<string, any> | undefined;
+  error?: Error | undefined;
+  requestId?: string | undefined;
 }
 
 export class Logger {
@@ -31,9 +31,16 @@ export class Logger {
   }
 
   private getLogLevel(): LogLevel {
-    const level = typeof window !== 'undefined' 
-      ? import.meta.env.VITE_LOG_LEVEL 
-      : process.env.LOG_LEVEL;
+    let level: string | undefined;
+    
+    // Browser environment
+    if (typeof window !== 'undefined') {
+      level = (import.meta as any).env?.VITE_LOG_LEVEL;
+    }
+    // Node.js environment
+    else if (typeof process !== 'undefined' && process.env) {
+      level = process.env.LOG_LEVEL;
+    }
     
     switch (level?.toLowerCase()) {
       case 'error': return LogLevel.ERROR;
@@ -81,9 +88,9 @@ export class Logger {
       level,
       message,
       timestamp: new Date().toISOString(),
-      context,
-      error,
-      requestId,
+      context: context || undefined,
+      error: error || undefined,
+      requestId: requestId || undefined,
     };
 
     const formattedMessage = this.formatLogEntry(entry);

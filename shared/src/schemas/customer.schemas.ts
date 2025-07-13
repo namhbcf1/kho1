@@ -66,8 +66,20 @@ export const CreateCustomerSchema = z.object({
   path: ['email'],
 });
 
-export const UpdateCustomerSchema = CreateCustomerSchema.partial().extend({
+export const UpdateCustomerSchema = z.object({
   id: z.string().min(1, 'ID khách hàng không được để trống'),
+  name: z.string().min(1, 'Tên khách hàng không được để trống').max(255, 'Tên khách hàng quá dài').optional(),
+  email: z.string().email('Email không hợp lệ').max(255, 'Email quá dài').optional(),
+  phone: z.string()
+    .regex(/^(\+84|0)[0-9]{9,10}$/, 'Số điện thoại không hợp lệ')
+    .max(15, 'Số điện thoại quá dài')
+    .optional(),
+  address: AddressSchema.optional(),
+  dateOfBirth: z.string().datetime().optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  tags: z.array(z.string()).optional(),
+  notes: z.string().max(1000, 'Ghi chú quá dài').optional(),
+  preferences: z.any().optional(),
   loyaltyPoints: z.number().int().min(0, 'Điểm thưởng phải lớn hơn hoặc bằng 0').optional(),
   active: z.boolean().optional(),
 });

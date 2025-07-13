@@ -113,9 +113,22 @@ export const UpdateUserProfileSchema = z.object({
   }).optional(),
 });
 
-export const CreateUserSchema = RegisterSchema.omit({
-  confirmPassword: true,
-}).extend({
+export const CreateUserSchema = z.object({
+  name: z.string()
+    .min(1, 'Tên không được để trống')
+    .max(255, 'Tên quá dài'),
+  email: z.string()
+    .min(1, 'Email không được để trống')
+    .email('Email không hợp lệ')
+    .max(255, 'Email quá dài'),
+  password: z.string()
+    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .max(255, 'Mật khẩu quá dài')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa và 1 số'),
+  role: z.enum(['admin', 'manager', 'cashier', 'staff']).default('staff'),
+  phone: z.string()
+    .regex(/^(\+84|0)[0-9]{9,10}$/, 'Số điện thoại không hợp lệ')
+    .optional(),
   active: z.boolean().default(true),
   permissions: z.array(z.string()).default([]),
 });

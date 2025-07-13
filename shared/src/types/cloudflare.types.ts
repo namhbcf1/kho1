@@ -147,3 +147,47 @@ export interface CloudflarePagesFunctionContext {
   waitUntil: (promise: Promise<any>) => void;
   passThroughOnException: () => void;
 }
+
+export interface CloudflareBindings {
+  DB: D1Database;
+  KV: KVNamespace;
+  R2: R2Bucket;
+  [key: string]: any;
+}
+
+export interface CloudflareResponse {
+  success: boolean;
+  errors: any[];
+  messages: any[];
+  result: any;
+}
+
+export interface D1Result<T = any> {
+  results: T[];
+  success: boolean;
+  meta: {
+    duration: number;
+    rows_read: number;
+    rows_written: number;
+    last_row_id?: number;
+    changes: number;
+  };
+}
+
+export interface KVOperation {
+  key: string;
+  value?: string;
+  metadata?: any;
+  expiration?: number;
+  expirationTtl?: number;
+}
+
+export interface R2Operation {
+  key: string;
+  body?: ReadableStream | ArrayBuffer | string;
+  httpMetadata?: {
+    contentType?: string;
+    cacheControl?: string;
+  };
+  customMetadata?: Record<string, string>;
+}

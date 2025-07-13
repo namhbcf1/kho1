@@ -113,3 +113,33 @@ export interface VietnameseHoliday {
   type: 'public' | 'traditional' | 'international';
   description?: string;
 }
+
+export interface VietnameseProvince {
+  code: string;
+  name: string;
+  nameEn: string;
+  region: 'north' | 'central' | 'south';
+  districts: VietnameseDistrict[];
+}
+
+export interface VietnameseDistrict {
+  code: string;
+  name: string;
+  nameEn: string;
+  provinceCode: string;
+  wards: VietnameseWard[];
+}
+
+export interface VietnameseWard {
+  code: string;
+  name: string;
+  nameEn: string;
+  districtCode: string;
+}
+
+export interface VietnamMobileCarrier {
+  name: string;
+  code: string;
+  prefixes: string[];
+  color: string;
+}
