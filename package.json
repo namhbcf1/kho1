@@ -55,7 +55,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/khoaugment-pos.git"
+    "url": "https://github.com/namhbcf1/kho1.git"
   },
   "keywords": [
     "pos",
@@ -70,9 +70,9 @@
   "author": "KhoAugment Team",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/your-org/khoaugment-pos/issues"
+    "url": "https://github.com/namhbcf1/kho1/issues"
   },
-  "homepage": "https://khoaugment.com",
+  "homepage": "https://b957f80c.khoaugment-frontend.pages.dev",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",

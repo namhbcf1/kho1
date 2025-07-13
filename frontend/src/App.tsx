@@ -1,25 +1,26 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Layout, Spin } from 'antd';
+import { Layout, Alert, Card, Row, Col, Statistic } from 'antd';
+import { 
+  DollarOutlined, 
+  ShoppingCartOutlined, 
+  UserOutlined, 
+  ShopOutlined 
+} from '@ant-design/icons';
 import { useAuth } from './features/auth/hooks/useAuth';
 import { RoleGuard } from './features/auth/components/RoleGuard';
 import { AppHeader } from './components/layout/Header';
 import { AppSidebar } from './components/layout/Sidebar';
 import { AppFooter } from './components/layout/Footer';
 import { LoginForm } from './features/auth/components/LoginForm';
-import { POSTerminal } from './features/pos/components/POSTerminal';
-import { ProductList } from './features/products/components/ProductList';
-import { PageLoading } from './components/ui/Loading';
+import { AuthLoading, PageLoading } from './components/ui/Loading';
 import './App.css';
+import './components/ui/Loading/Loading.css';
 
 const { Content } = Layout;
 
 function App() {
-  const { user, isAuthenticated, loading, checkAuth, logout } = useAuth();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const { user, isAuthenticated, loading, error, isInitialized, logout, clearError } = useAuth();
 
   const handleUserMenuClick = (key: string) => {
     switch (key) {
@@ -35,15 +36,23 @@ function App() {
     }
   };
 
-  if (loading) {
+  // Show loading screen while auth is initializing
+  if (!isInitialized || loading) {
+    return <AuthLoading />;
+  }
+
+  // Show error if there's an auth error
+  if (error) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
-      }}>
-        <Spin size="large" tip="Đang tải..." />
+      <div style={{ padding: '50px' }}>
+        <Alert
+          message="Lỗi xác thực"
+          description={error}
+          type="error"
+          showIcon
+          closable
+          onClose={clearError}
+        />
       </div>
     );
   }
@@ -74,9 +83,58 @@ function App() {
             <Route 
               path="/dashboard" 
               element={
-                <div>
-                  <h1>Dashboard</h1>
-                  <p>Chào mừng đến với KhoAugment POS!</p>
+                <div style={{ padding: '24px' }}>
+                  <h1 style={{ marginBottom: '16px' }}>Dashboard</h1>
+                  <div style={{ marginBottom: '24px' }}>
+                    <p>Chào mừng đến với KhoAugment POS!</p>
+                    <p>Hệ thống đã được khởi tạo và sẵn sàng hoạt động.</p>
+                  </div>
+                  
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} lg={6}>
+                      <Card>
+                        <Statistic
+                          title="Doanh thu hôm nay"
+                          value={2500000}
+                          formatter={(value) => new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND',
+                          }).format(Number(value))}
+                          prefix={<DollarOutlined style={{ color: '#52c41a' }} />}
+                        />
+                      </Card>
+                    </Col>
+                    
+                    <Col xs={24} sm={12} lg={6}>
+                      <Card>
+                        <Statistic
+                          title="Đơn hàng"
+                          value={145}
+                          prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}
+                        />
+                      </Card>
+                    </Col>
+                    
+                    <Col xs={24} sm={12} lg={6}>
+                      <Card>
+                        <Statistic
+                          title="Khách hàng"
+                          value={89}
+                          prefix={<UserOutlined style={{ color: '#722ed1' }} />}
+                        />
+                      </Card>
+                    </Col>
+                    
+                    <Col xs={24} sm={12} lg={6}>
+                      <Card>
+                        <Statistic
+                          title="Sản phẩm"
+                          value={567}
+                          prefix={<ShopOutlined style={{ color: '#eb2f96' }} />}
+                        />
+                      </Card>
+                    </Col>
+                  </Row>
                 </div>
               } 
             />
@@ -85,7 +143,10 @@ function App() {
               path="/pos" 
               element={
                 <RoleGuard allowedRoles={['admin', 'manager', 'cashier', 'staff']}>
-                  <POSTerminal />
+                  <div style={{ padding: '24px' }}>
+                    <h1>Terminal bán hàng</h1>
+                    <p>Giao diện bán hàng đang được phát triển...</p>
+                  </div>
                 </RoleGuard>
               } 
             />
@@ -94,14 +155,10 @@ function App() {
               path="/products" 
               element={
                 <RoleGuard allowedRoles={['admin', 'manager']}>
-                  <ProductList 
-                    products={[]} 
-                    loading={false}
-                    onAdd={() => console.log('Add product')}
-                    onEdit={(product) => console.log('Edit product', product)}
-                    onDelete={(product) => console.log('Delete product', product)}
-                    onView={(product) => console.log('View product', product)}
-                  />
+                  <div style={{ padding: '24px' }}>
+                    <h1>Quản lý sản phẩm</h1>
+                    <p>Tính năng quản lý sản phẩm đang được phát triển...</p>
+                  </div>
                 </RoleGuard>
               } 
             />

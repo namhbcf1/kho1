@@ -1,9 +1,105 @@
-// JWT Authentication service
-import { apiClient } from '../api/client';
-import { API_ENDPOINTS } from '../api/endpoints';
-import { localStorage } from '../storage/localStorage';
-import { STORAGE_KEYS } from '../../constants/storage';
-import type { ApiResponse, LoginResponse, RefreshTokenResponse, User } from '../api/types';
+// JWT Authentication service with robust error handling
+import { storageAdapter } from '../../utils/storage/storageAdapter';
+
+// Fallback constants if imports fail
+const DEFAULT_STORAGE_KEYS = {
+  AUTH_TOKEN: 'khoaugment_auth_token',
+  REFRESH_TOKEN: 'khoaugment_refresh_token',
+  USER_DATA: 'khoaugment_user_data',
+} as const;
+
+// API endpoints fallback
+const DEFAULT_API_ENDPOINTS = {
+  AUTH: {
+    LOGIN: '/api/auth/login',
+    REGISTER: '/api/auth/register',
+    LOGOUT: '/api/auth/logout',
+    REFRESH: '/api/auth/refresh',
+    ME: '/api/auth/me',
+    PROFILE: '/api/auth/profile',
+    CHANGE_PASSWORD: '/api/auth/change-password',
+    FORGOT_PASSWORD: '/api/auth/forgot-password',
+    RESET_PASSWORD: '/api/auth/reset-password',
+  },
+} as const;
+
+// Types
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'manager' | 'cashier' | 'staff';
+  permissions: string[];
+  avatar?: string;
+  phone?: string;
+  position?: string;
+}
+
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+export interface RefreshTokenResponse {
+  token: string;
+  expiresIn: number;
+}
+
+// Simple API client with error handling
+const createApiClient = () => {
+  const request = async <T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
+    try {
+      const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+        throw new Error(errorData.message || `HTTP ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API request failed for ${url}:`, error);
+      throw error;
+    }
+  };
+
+  return {
+    get: <T>(url: string) => request<T>(url, { method: 'GET' }),
+    post: <T>(url: string, data?: any) => request<T>(url, { 
+      method: 'POST', 
+      body: data ? JSON.stringify(data) : undefined 
+    }),
+    put: <T>(url: string, data?: any) => request<T>(url, { 
+      method: 'PUT', 
+      body: data ? JSON.stringify(data) : undefined 
+    }),
+    delete: <T>(url: string) => request<T>(url, { method: 'DELETE' }),
+  };
+};
+
+const apiClient = createApiClient();
 
 export interface LoginCredentials {
   email: string;
@@ -37,7 +133,50 @@ export interface ResetPasswordData {
 
 class AuthService {
   private currentUser: User | null = null;
-  private refreshTimer: NodeJS.Timeout | null = null;
+  private refreshTimer: number | null = null;
+  private initialized = false;
+  private initPromise: Promise<void> | null = null;
+
+  /**
+   * Initialize auth service
+   */
+  async initialize(): Promise<User | null> {
+    if (this.initialized) {
+      return this.currentUser;
+    }
+
+    if (this.initPromise) {
+      await this.initPromise;
+      return this.currentUser;
+    }
+
+    this.initPromise = this._performInitialization();
+    await this.initPromise;
+    return this.currentUser;
+  }
+
+  private async _performInitialization(): Promise<void> {
+    try {
+      const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
+      if (!token) {
+        this.initialized = true;
+        return;
+      }
+
+      // Try to get current user
+      const user = await this.getCurrentUser();
+      if (user) {
+        this.setupTokenRefresh(3600); // Default 1 hour
+      } else {
+        this.clearAuthData();
+      }
+    } catch (error) {
+      console.error('Auth initialization error:', error);
+      this.clearAuthData();
+    } finally {
+      this.initialized = true;
+    }
+  }
 
   /**
    * Login user
@@ -45,7 +184,7 @@ class AuthService {
   async login(credentials: LoginCredentials): Promise<User> {
     try {
       const response = await apiClient.post<LoginResponse>(
-        API_ENDPOINTS.AUTH.LOGIN,
+        DEFAULT_API_ENDPOINTS.AUTH.LOGIN,
         credentials
       );
 
@@ -56,13 +195,13 @@ class AuthService {
       const { user, token, refreshToken, expiresIn } = response.data;
 
       // Store tokens
-      localStorage.setAuthToken(token);
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, token);
       if (refreshToken) {
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken, { encrypt: true });
+        storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
       }
 
       // Store user data
-      localStorage.setItem(STORAGE_KEYS.USER_DATA, user);
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
 
       // Set current user
       this.currentUser = user;
@@ -131,13 +270,13 @@ class AuthService {
    */
   async refreshToken(): Promise<string | null> {
     try {
-      const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+      const refreshToken = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN);
       if (!refreshToken) {
         throw new Error('No refresh token available');
       }
 
       const response = await apiClient.post<RefreshTokenResponse>(
-        API_ENDPOINTS.AUTH.REFRESH,
+        DEFAULT_API_ENDPOINTS.AUTH.REFRESH,
         { refreshToken }
       );
 
@@ -148,7 +287,7 @@ class AuthService {
       const { token, expiresIn } = response.data;
 
       // Update stored token
-      localStorage.setAuthToken(token);
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, token);
 
       // Setup next refresh
       this.setupTokenRefresh(expiresIn);
@@ -171,21 +310,26 @@ class AuthService {
     }
 
     // Try to get from storage
-    const storedUser = localStorage.getItem<User>(STORAGE_KEYS.USER_DATA);
-    if (storedUser) {
-      this.currentUser = storedUser;
-      return storedUser;
+    try {
+      const storedUserJson = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.USER_DATA);
+      if (storedUserJson) {
+        const storedUser = JSON.parse(storedUserJson);
+        this.currentUser = storedUser;
+        return storedUser;
+      }
+    } catch (error) {
+      console.error('Error parsing stored user:', error);
     }
 
     // Try to fetch from API
     try {
-      const response = await apiClient.get<ApiResponse<User>>(
-        API_ENDPOINTS.AUTH.ME
+      const response = await apiClient.get<User>(
+        DEFAULT_API_ENDPOINTS.AUTH.ME
       );
 
       if (response.success && response.data) {
         this.currentUser = response.data;
-        localStorage.setItem(STORAGE_KEYS.USER_DATA, response.data);
+        storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
         return response.data;
       }
     } catch (error) {
@@ -281,7 +425,7 @@ class AuthService {
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {
-    const token = localStorage.getAuthToken();
+    const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
     return !!token;
   }
 
@@ -322,28 +466,6 @@ class AuthService {
     return this.currentUser?.role || null;
   }
 
-  /**
-   * Initialize auth service
-   */
-  async initialize(): Promise<User | null> {
-    const token = localStorage.getAuthToken();
-    if (!token) {
-      return null;
-    }
-
-    try {
-      const user = await this.getCurrentUser();
-      if (user) {
-        // Setup token refresh for existing session
-        this.setupTokenRefresh(3600); // Default 1 hour
-      }
-      return user;
-    } catch (error) {
-      console.error('Auth initialization error:', error);
-      this.clearAuthData();
-      return null;
-    }
-  }
 
   // Private methods
   private setupTokenRefresh(expiresIn: number): void {
@@ -362,9 +484,9 @@ class AuthService {
 
   private clearAuthData(): void {
     // Clear tokens
-    localStorage.removeAuthToken();
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+    storageAdapter.removeItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
+    storageAdapter.removeItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN);
+    storageAdapter.removeItem(DEFAULT_STORAGE_KEYS.USER_DATA);
 
     // Clear current user
     this.currentUser = null;
@@ -375,10 +497,7 @@ class AuthService {
       this.refreshTimer = null;
     }
 
-    // Redirect to login if not already there
-    if (window.location.pathname !== '/login') {
-      window.location.href = '/login';
-    }
+    // Don't automatically redirect - let the auth context handle it
   }
 }
 

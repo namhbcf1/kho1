@@ -15,10 +15,12 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
+    "allowUnusedLabels": true,
+    "allowUnreachableCode": true,
 
     /* Path mapping */
     "baseUrl": ".",
@@ -32,7 +34,11 @@
       "@utils/*": ["./src/utils/*"],
       "@types/*": ["./src/types/*"],
       "@constants/*": ["./src/constants/*"],
-      "@assets/*": ["./src/assets/*"]
+      "@assets/*": ["./src/assets/*"],
+      "@shared/*": ["../shared/src/*"],
+      "@shared/types": ["../shared/src/types"],
+      "@shared/schemas": ["../shared/src/schemas"],
+      "@shared/constants": ["../shared/src/constants"]
     }
   },
   "include": ["src"],

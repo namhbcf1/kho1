@@ -10,7 +10,9 @@
     "clean": "rimraf dist",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "echo 'No tests yet'",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "zod": "^3.22.4"

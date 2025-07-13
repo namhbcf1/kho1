@@ -62,6 +62,10 @@ export default defineConfig({
       '@types': path.resolve(__dirname, './src/types'),
       '@constants': path.resolve(__dirname, './src/constants'),
       '@assets': path.resolve(__dirname, './src/assets'),
+      '@shared': path.resolve(__dirname, '../shared/src'),
+      '@shared/types': path.resolve(__dirname, '../shared/src/types'),
+      '@shared/schemas': path.resolve(__dirname, '../shared/src/schemas'),
+      '@shared/constants': path.resolve(__dirname, '../shared/src/constants'),
     },
   },
   server: {

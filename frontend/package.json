@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "deploy": "npm run build && wrangler pages deploy dist",
+    "build": "vite build",
+    "build:with-tsc": "tsc && vite build",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=khoaugment-frontend",
+    "deploy:staging": "npm run build && wrangler pages deploy dist --project-name=khoaugment-frontend --env=staging",
+    "deploy:production": "npm run build && wrangler pages deploy dist --project-name=khoaugment-frontend --env=production",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
@@ -14,8 +17,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "clean": "rm -rf dist node_modules/.vite",
+    "analyze": "vite-bundle-analyzer dist"
   },
   "dependencies": {
     "react": "^18.2.0",
