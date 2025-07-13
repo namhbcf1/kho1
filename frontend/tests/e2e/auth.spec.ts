@@ -28,7 +28,7 @@ test.describe('Authentication', () => {
 
   test('should login with valid credentials', async ({ page }) => {
     await page.fill('input[type="email"]', 'admin@khoaugment.com');
-    await page.fill('input[type="password"]', '123456');
+    await page.fill('input[type="password"]', 'admin123');
     await page.click('button[type="submit"]');
     
     // Should redirect to dashboard
@@ -60,7 +60,7 @@ test.describe('Authentication', () => {
   test('should logout successfully', async ({ page }) => {
     // Login first
     await page.fill('input[type="email"]', 'admin@khoaugment.com');
-    await page.fill('input[type="password"]', '123456');
+    await page.fill('input[type="password"]', 'admin123');
     await page.click('button[type="submit"]');
     
     await expect(page).toHaveURL('/dashboard');
