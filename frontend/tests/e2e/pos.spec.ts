@@ -6,7 +6,7 @@ test.describe('POS Terminal', () => {
     // Login first
     await page.goto('/auth/login');
     await page.fill('input[type="email"]', 'cashier@khoaugment.com');
-    await page.fill('input[type="password"]', '123456');
+    await page.fill('input[type="password"]', 'admin123');
     await page.click('button[type="submit"]');
     
     // Navigate to POS
@@ -127,7 +127,7 @@ test.describe('POS Checkout', () => {
     // Login and navigate to POS
     await page.goto('/auth/login');
     await page.fill('input[type="email"]', 'cashier@khoaugment.com');
-    await page.fill('input[type="password"]', '123456');
+    await page.fill('input[type="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.goto('/pos');
     

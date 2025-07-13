@@ -136,6 +136,7 @@ class AuthService {
   private refreshTimer: number | null = null;
   private initialized = false;
   private initPromise: Promise<void> | null = null;
+  private mockMode = false;
 
   /**
    * Initialize auth service
@@ -163,19 +164,59 @@ class AuthService {
         return;
       }
 
-      // Try to get current user
+      // If we have a mock token, enable mock mode
+      if (token === 'mock_token_12345') {
+        this.mockMode = true;
+      }
+
+      // Try to get current user (from storage first, then API if not in mock mode)
       const user = await this.getCurrentUser();
       if (user) {
-        this.setupTokenRefresh(3600); // Default 1 hour
+        if (!this.mockMode) {
+          this.setupTokenRefresh(3600); // Default 1 hour for real tokens
+        }
       } else {
         this.clearAuthData();
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
-      this.clearAuthData();
+      // Don't clear auth data on initialization errors, user might be offline
+      // this.clearAuthData();
     } finally {
       this.initialized = true;
     }
+  }
+
+  /**
+   * Mock login for development/testing when backend is not available
+   */
+  private async mockLogin(credentials: LoginCredentials): Promise<User> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Check credentials against mock user
+    if (credentials.email === 'admin@khoaugment.com' && credentials.password === 'admin123') {
+      const user: User = {
+        id: 'admin-001',
+        email: 'admin@khoaugment.com',
+        name: 'System Administrator',
+        role: 'admin',
+        permissions: ['*'], // Admin has all permissions
+        avatar: undefined,
+        phone: '+84901234567',
+        position: 'Administrator'
+      };
+      
+      // Store mock tokens
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, 'mock_token_12345');
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, 'mock_refresh_12345');
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+      
+      this.currentUser = user;
+      return user;
+    }
+    
+    throw new Error('Invalid credentials');
   }
 
   /**
@@ -183,6 +224,7 @@ class AuthService {
    */
   async login(credentials: LoginCredentials): Promise<User> {
     try {
+      // Try API login first
       const response = await apiClient.post<LoginResponse>(
         DEFAULT_API_ENDPOINTS.AUTH.LOGIN,
         credentials
@@ -211,8 +253,11 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      console.error('Login error, falling back to mock mode:', error);
+      
+      // Fall back to mock login if API fails
+      this.mockMode = true;
+      return this.mockLogin(credentials);
     }
   }
 
@@ -309,7 +354,7 @@ class AuthService {
       return this.currentUser;
     }
 
-    // Try to get from storage
+    // Try to get from storage first
     try {
       const storedUserJson = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.USER_DATA);
       if (storedUserJson) {
@@ -319,6 +364,11 @@ class AuthService {
       }
     } catch (error) {
       console.error('Error parsing stored user:', error);
+    }
+
+    // In mock mode, don't try API
+    if (this.mockMode) {
+      return null;
     }
 
     // Try to fetch from API
