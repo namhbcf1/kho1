@@ -2,6 +2,30 @@
 
 KhoAugment POS là một hệ thống quản lý bán hàng (Point of Sale) hiện đại được thiết kế đặc biệt cho thị trường Việt Nam, sử dụng công nghệ Cloudflare để đảm bảo hiệu suất cao và độ tin cậy.
 
+## 🌐 Live Demo & Deployment
+
+**Frontend (Live):** https://b957f80c.khoaugment-frontend.pages.dev  
+**Backend API:** https://khoaugment-pos-api-production.bangachieu2.workers.dev  
+**GitHub Repository:** https://github.com/namhbcf1/kho1
+
+## 🔐 Account Information
+
+### Cloudflare Account
+- **Account ID:** 5b62d10947844251d23e0eac532531dd
+- **Worker Domain:** bangachieu2.workers.dev
+- **Pages Domain:** khoaugment-frontend.pages.dev
+
+### Database & Services
+- **D1 Database (Production):** khoaugment-pos-prod (6ed3521d-cf63-4e4a-bf8b-72669cdc176c)
+- **D1 Database (Development):** khoaugment-pos-dev (89552cb5-7970-4f9d-ae5e-3a4eece33949)
+- **KV Namespace:** CACHE (46b31b2c6ca449aaa3114d0ebb4fe645)
+- **Worker Name:** khoaugment-pos-api-production
+
+### Environment Configuration
+- **Production API URL:** https://khoaugment-pos-api-production.bangachieu2.workers.dev
+- **Frontend Deployment:** https://khoaugment-frontend.pages.dev
+- **CORS Origin:** https://khoaugment-frontend.pages.dev
+
 ## 🌟 Tính năng chính
 
 ### 💰 Bán hàng (POS)
@@ -71,8 +95,8 @@ KhoAugment POS là một hệ thống quản lý bán hàng (Point of Sale) hi�
 
 1. **Clone repository**
 ```bash
-git clone https://github.com/your-org/khoaugment-pos.git
-cd khoaugment-pos
+git clone https://github.com/namhbcf1/kho1.git
+cd kho1
 ```
 
 2. **Cài đặt dependencies**
@@ -176,7 +200,7 @@ npm run test:coverage
 
 API documentation được tạo tự động từ OpenAPI spec:
 - Development: http://localhost:8787/docs
-- Production: https://api.khoaugment.com/docs
+- Production: https://khoaugment-pos-api-production.bangachieu2.workers.dev/docs
 
 ## 🔐 Bảo mật
 

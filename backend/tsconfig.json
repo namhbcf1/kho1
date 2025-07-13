@@ -13,8 +13,23 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["@cloudflare/workers-types"]
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "types": ["@cloudflare/workers-types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@handlers/*": ["./src/handlers/*"],
+      "@middleware/*": ["./src/middleware/*"],
+      "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@types/*": ["./src/types/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "migrations/**/*"],
+  "exclude": ["node_modules", "dist", "coverage"]
 }

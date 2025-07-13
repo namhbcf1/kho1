@@ -9,7 +9,7 @@ NPM_VERSION = "9"
 
 # Environment variables for different environments
 [env.production.vars]
-VITE_API_URL = "https://api.khoaugment.com"
+VITE_API_URL = "https://khoaugment-pos-api-production.bangachieu2.workers.dev"
 VITE_APP_ENV = "production"
 VITE_CLOUDFLARE_ACCOUNT_ID = "your-account-id"
 VITE_VNPAY_MERCHANT_ID = "your-vnpay-merchant-id"
@@ -102,7 +102,7 @@ conditions = {Country = ["VN"]}
 # API redirects to Workers
 [[redirects]]
 from = "/api/*"
-to = "https://api.khoaugment.com/:splat"
+to = "https://khoaugment-pos-api-production.bangachieu2.workers.dev/:splat"
 status = 200
 force = true
 

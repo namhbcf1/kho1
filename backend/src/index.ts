@@ -64,7 +64,7 @@ app.route('/api/customers', customerRoutes);
 app.route('/api/orders', orderRoutes);
 app.route('/api/analytics', analyticsRoutes);
 app.route('/api/upload', uploadRoutes);
-app.route('/api/logs', logsHandler);
+// Logs will be handled in analytics or separate logging service
 
 // Protected routes (require authentication)
 app.use('/api/pos/*', authMiddleware);

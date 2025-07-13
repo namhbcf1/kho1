@@ -2,56 +2,73 @@ name = "khoaugment-pos-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-# Environment variables
+# Default environment variables
+[vars]
+ENVIRONMENT = "development"
+JWT_SECRET = "dev-jwt-secret"
+CORS_ORIGIN = "http://localhost:3000"
+API_VERSION = "v1"
+
+# Production environment
 [env.production.vars]
 ENVIRONMENT = "production"
 JWT_SECRET = "your-jwt-secret-here"
-CORS_ORIGIN = "https://your-domain.pages.dev"
+CORS_ORIGIN = "https://khoaugment-frontend.pages.dev"
+API_VERSION = "v1"
 
+# Development environment
 [env.development.vars]
 ENVIRONMENT = "development"
 JWT_SECRET = "dev-jwt-secret"
 CORS_ORIGIN = "http://localhost:3000"
+API_VERSION = "v1"
 
 # D1 Database bindings
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "khoaugment-pos-prod"
-database_id = "your-d1-database-id"
+database_id = "6ed3521d-cf63-4e4a-bf8b-72669cdc176c"
 
 [[env.development.d1_databases]]
 binding = "DB"
 database_name = "khoaugment-pos-dev"
-database_id = "your-d1-dev-database-id"
+database_id = "89552cb5-7970-4f9d-ae5e-3a4eece33949"
 
-# R2 Storage bindings
-[[env.production.r2_buckets]]
-binding = "STORAGE"
-bucket_name = "khoaugment-pos-storage"
+# R2 Storage bindings (commented out - R2 not enabled yet)
+# [[env.production.r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "khoaugment-pos-storage"
 
-[[env.development.r2_buckets]]
-binding = "STORAGE"
-bucket_name = "khoaugment-pos-storage-dev"
+# [[env.development.r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "khoaugment-pos-storage-dev"
 
 # KV Storage bindings
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "your-kv-namespace-id"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 
 [[env.development.kv_namespaces]]
 binding = "CACHE"
-id = "your-kv-dev-namespace-id"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 
-# Analytics Engine bindings
-[[env.production.analytics_engine_datasets]]
-binding = "ANALYTICS"
-dataset = "khoaugment_pos_analytics"
+# Analytics Engine bindings (disabled - need to enable in Cloudflare Dashboard first)
+# [[env.production.analytics_engine_datasets]]
+# binding = "ANALYTICS"
+# dataset = "khoaugment_pos_analytics"
 
-# Rate limiting
-[env.production.vars]
-RATE_LIMIT_REQUESTS = "100"
-RATE_LIMIT_WINDOW = "60"
+# Default D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "khoaugment-pos-dev"
+database_id = "89552cb5-7970-4f9d-ae5e-3a4eece33949"
 
-[env.development.vars]
-RATE_LIMIT_REQUESTS = "1000"
-RATE_LIMIT_WINDOW = "60"
+# Default R2 Storage (commented out - R2 not enabled yet)
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "khoaugment-pos-storage-dev"
+
+# Default KV Storage
+[[kv_namespaces]]
+binding = "CACHE"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
