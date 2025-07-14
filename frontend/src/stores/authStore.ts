@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { authService } from '../services/auth/authService';
 import { permissionService } from '../services/auth/permissionService';
-import type { User } from '../services/api/types';
+import type { User } from '../services/auth/authService';
 
 export interface AuthState {
   // State

@@ -3,7 +3,7 @@ import React from 'react';
 import { Form, Input, Button, Checkbox, Typography, Space, Alert } from 'antd';
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 import { ROUTES } from '../../constants/routes';
 
 const { Title, Text } = Typography;

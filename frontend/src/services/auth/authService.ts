@@ -267,7 +267,7 @@ class AuthService {
   async register(data: RegisterData): Promise<User> {
     try {
       const response = await apiClient.post<LoginResponse>(
-        API_ENDPOINTS.AUTH.REGISTER,
+        DEFAULT_API_ENDPOINTS.AUTH.REGISTER,
         data
       );
 
@@ -278,11 +278,11 @@ class AuthService {
       const { user, token, refreshToken, expiresIn } = response.data;
 
       // Store tokens and user data
-      localStorage.setAuthToken(token);
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, token);
       if (refreshToken) {
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken, { encrypt: true });
+        storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
       }
-      localStorage.setItem(STORAGE_KEYS.USER_DATA, user);
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
 
       this.currentUser = user;
       this.setupTokenRefresh(expiresIn);
@@ -300,7 +300,7 @@ class AuthService {
   async logout(): Promise<void> {
     try {
       // Call logout endpoint
-      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+      await apiClient.post(DEFAULT_API_ENDPOINTS.AUTH.LOGOUT);
     } catch (error) {
       console.error('Logout API error:', error);
       // Continue with local logout even if API fails
@@ -394,8 +394,8 @@ class AuthService {
    */
   async updateProfile(data: Partial<User>): Promise<User> {
     try {
-      const response = await apiClient.put<ApiResponse<User>>(
-        API_ENDPOINTS.AUTH.PROFILE,
+      const response = await apiClient.put<User>(
+        DEFAULT_API_ENDPOINTS.AUTH.PROFILE,
         data
       );
 
@@ -405,7 +405,7 @@ class AuthService {
 
       // Update stored user data
       this.currentUser = response.data;
-      localStorage.setItem(STORAGE_KEYS.USER_DATA, response.data);
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(response.data));
 
       return response.data;
     } catch (error) {
@@ -420,7 +420,7 @@ class AuthService {
   async changePassword(data: ChangePasswordData): Promise<void> {
     try {
       const response = await apiClient.post<ApiResponse>(
-        API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+        DEFAULT_API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
         data
       );
 
@@ -439,7 +439,7 @@ class AuthService {
   async forgotPassword(data: ForgotPasswordData): Promise<void> {
     try {
       const response = await apiClient.post<ApiResponse>(
-        API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+        DEFAULT_API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
         data
       );
 
@@ -458,7 +458,7 @@ class AuthService {
   async resetPassword(data: ResetPasswordData): Promise<void> {
     try {
       const response = await apiClient.post<ApiResponse>(
-        API_ENDPOINTS.AUTH.RESET_PASSWORD,
+        DEFAULT_API_ENDPOINTS.AUTH.RESET_PASSWORD,
         data
       );
 
