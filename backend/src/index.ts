@@ -3,10 +3,13 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
-import { secureHeaders } from 'hono/secure-headers';
 import { ProductService } from './services/database/productService';
 import { createErrorResponse, createSuccessResponse } from './services/database/d1Service';
 import { OptimizedDashboardQueries } from './services/database/optimizedQueries';
+import { securityHeaders, rateLimiter, csrfProtection } from './middleware/security';
+import { enhancedAuth, requirePermission, requireRole } from './middleware/enhancedAuth';
+import { enhancedAuthService } from './services/enhancedAuthService';
+import { authRoutes } from './handlers/auth';
 
 // Environment interface with all required bindings
 export interface Env {
@@ -17,21 +20,51 @@ export interface Env {
   
   // Environment variables
   JWT_SECRET: string;
+  REFRESH_SECRET?: string;
   CORS_ORIGIN: string;
   ENVIRONMENT: string;
   API_VERSION: string;
   BASE_URL: string;
   RATE_LIMIT_REQUESTS: string;
   RATE_LIMIT_WINDOW: string;
+  BCRYPT_ROUNDS?: string;
+  SESSION_TIMEOUT?: string;
+  ADMIN_EMAIL?: string;
 }
 
 // Create Hono app with proper typing
 const app = new Hono<{ Bindings: Env }>();
 
-// Global middleware
-app.use('*', secureHeaders());
+// Security middleware
+app.use('*', securityHeaders());
 app.use('*', prettyJSON());
 app.use('*', logger());
+
+// Rate limiting for authentication endpoints
+app.use('/api/*/auth/login', rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxRequests: 5, // 5 login attempts per 15 minutes
+}));
+
+app.use('/api/*/auth/register', rateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  maxRequests: 3, // 3 registration attempts per hour
+}));
+
+// General rate limiting
+app.use('/api/*', rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxRequests: parseInt(process.env.RATE_LIMIT_REQUESTS || '1000'),
+}));
+
+// CSRF protection for state-changing operations
+app.use('/api/*/auth/csrf-token', csrfProtection());
+app.use('/api/*', async (c, next) => {
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(c.req.method)) {
+    return csrfProtection()(c, next);
+  }
+  await next();
+});
 
 // CORS middleware with environment-specific origins
 app.use('*', async (c, next) => {
@@ -181,9 +214,16 @@ app.get('/api/v1/products', async (c) => {
 app.get('/api/v1/products/:id', async (c) => {
   try {
     const productService = new ProductService(c.env.DB);
-    const id = parseInt(c.req.param('id'));
+    const idParam = c.req.param('id');
     
-    if (isNaN(id)) {
+    // Validate and sanitize ID parameter
+    if (!/^\d+$/.test(idParam)) {
+      return c.json(createErrorResponse('Invalid product ID format', 'VALIDATION_ERROR'), 400);
+    }
+    
+    const id = parseInt(idParam);
+    
+    if (isNaN(id) || id <= 0) {
       return c.json(createErrorResponse('Invalid product ID', 'VALIDATION_ERROR'), 400);
     }
     
@@ -233,9 +273,16 @@ app.post('/api/v1/products', async (c) => {
 app.put('/api/v1/products/:id', async (c) => {
   try {
     const productService = new ProductService(c.env.DB);
-    const id = parseInt(c.req.param('id'));
+    const idParam = c.req.param('id');
     
-    if (isNaN(id)) {
+    // Validate and sanitize ID parameter
+    if (!/^\d+$/.test(idParam)) {
+      return c.json(createErrorResponse('Invalid product ID format', 'VALIDATION_ERROR'), 400);
+    }
+    
+    const id = parseInt(idParam);
+    
+    if (isNaN(id) || id <= 0) {
       return c.json(createErrorResponse('Invalid product ID', 'VALIDATION_ERROR'), 400);
     }
     
@@ -258,9 +305,16 @@ app.put('/api/v1/products/:id', async (c) => {
 app.delete('/api/v1/products/:id', async (c) => {
   try {
     const productService = new ProductService(c.env.DB);
-    const id = parseInt(c.req.param('id'));
+    const idParam = c.req.param('id');
     
-    if (isNaN(id)) {
+    // Validate and sanitize ID parameter
+    if (!/^\d+$/.test(idParam)) {
+      return c.json(createErrorResponse('Invalid product ID format', 'VALIDATION_ERROR'), 400);
+    }
+    
+    const id = parseInt(idParam);
+    
+    if (isNaN(id) || id <= 0) {
       return c.json(createErrorResponse('Invalid product ID', 'VALIDATION_ERROR'), 400);
     }
     
@@ -288,9 +342,16 @@ app.get('/api/v1/products/stock/low', async (c) => {
 app.put('/api/v1/products/:id/stock', async (c) => {
   try {
     const productService = new ProductService(c.env.DB);
-    const id = parseInt(c.req.param('id'));
+    const idParam = c.req.param('id');
     
-    if (isNaN(id)) {
+    // Validate and sanitize ID parameter
+    if (!/^\d+$/.test(idParam)) {
+      return c.json(createErrorResponse('Invalid product ID format', 'VALIDATION_ERROR'), 400);
+    }
+    
+    const id = parseInt(idParam);
+    
+    if (isNaN(id) || id <= 0) {
       return c.json(createErrorResponse('Invalid product ID', 'VALIDATION_ERROR'), 400);
     }
     
