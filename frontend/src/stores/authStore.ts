@@ -10,6 +10,7 @@ export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   
   // Actions
@@ -54,6 +55,7 @@ export const useAuthStore = create<AuthState>()(
         user: null,
         isAuthenticated: false,
         isLoading: false,
+        isInitialized: false,
         error: null,
 
         // Actions
@@ -221,6 +223,7 @@ export const useAuthStore = create<AuthState>()(
               user,
               isAuthenticated: !!user,
               isLoading: false,
+              isInitialized: true,
               error: null,
             });
           } catch (error) {
@@ -229,6 +232,7 @@ export const useAuthStore = create<AuthState>()(
               user: null,
               isAuthenticated: false,
               isLoading: false,
+              isInitialized: true,
               error: null,
             });
           }
@@ -283,6 +287,7 @@ export const useAuth = () => useAuthStore((state) => ({
   user: state.user,
   isAuthenticated: state.isAuthenticated,
   isLoading: state.isLoading,
+  isInitialized: state.isInitialized,
   error: state.error,
 }));
 

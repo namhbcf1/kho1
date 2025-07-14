@@ -1,0 +1,12 @@
+# Vietnamese POS Frontend Redirects
+
+# SPA routing - all non-asset requests should serve index.html
+/*    /index.html   200
+
+# Legacy routes redirects
+/dashboard  /  301
+/admin      /staff  301
+/reports    /analytics  301
+
+# API proxy to backend worker
+/api/*  https://kho1-api.your-username.workers.dev/api/:splat  200

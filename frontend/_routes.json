@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "description": "Vietnamese POS Frontend Routes Configuration",
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/api/*"
+  ]
+}

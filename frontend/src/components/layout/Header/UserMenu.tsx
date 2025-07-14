@@ -41,7 +41,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
       placement="bottomRight"
       trigger={['click']}
     >
-      <Space style={{ cursor: 'pointer' }}>
+      <Space style={{ cursor: 'pointer' }} data-testid="user-menu">
         <Avatar 
           src={user?.avatar} 
           icon={<UserOutlined />}

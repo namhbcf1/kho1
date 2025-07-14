@@ -5,12 +5,23 @@ test.describe('POS Terminal', () => {
   test.beforeEach(async ({ page }) => {
     // Login first
     await page.goto('/auth/login');
-    await page.fill('input[type="email"]', 'cashier@khoaugment.com');
-    await page.fill('input[type="password"]', 'admin123');
-    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+    
+    const emailInput = page.locator('input[type="email"]').first();
+    await emailInput.waitFor({ timeout: 10000 });
+    await emailInput.fill('cashier@khoaugment.com');
+    
+    const passwordInput = page.locator('input[type="password"]').first();
+    await passwordInput.waitFor({ timeout: 10000 });
+    await passwordInput.fill('admin123');
+    
+    const loginButton = page.locator('button[type="submit"]').first();
+    await loginButton.click();
+    await page.waitForTimeout(3000);
     
     // Navigate to POS
     await page.goto('/pos');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should display POS interface', async ({ page }) => {

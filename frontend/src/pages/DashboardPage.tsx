@@ -1,6 +1,6 @@
 // Main dashboard page with Vietnamese business KPIs
-import React, { useEffect } from 'react';
-import { Row, Col, Card, Statistic, Typography, Space, Button, Spin } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Card, Statistic, Typography, Space, Button, Spin, Alert } from 'antd';
 import {
   ShoppingCartOutlined,
   DollarOutlined,
@@ -9,64 +9,85 @@ import {
   ArrowUpOutlined,
   ArrowDownOutlined,
   EyeOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { RevenueChart } from '../components/charts/RevenueChart';
 import { SalesChart } from '../components/charts/SalesChart';
 import { KPICard } from '../components/charts/KPICards';
-import { formatVND } from '../services/utils';
+import { formatVND } from '../utils/formatters/vndCurrency';
 import { ROUTES } from '../constants/routes';
 import { usePage } from '../stores';
+import { analyticsService, DashboardKPIs, TopProduct, LowStockProduct } from '../services/api/analyticsService';
 
 const { Title, Text } = Typography;
 
-// Mock data - replace with real API calls
-const mockKPIData = {
-  todaySales: {
-    revenue: 15750000,
-    orders: 45,
-    customers: 38,
-    averageOrder: 350000,
-    growth: {
-      revenue: 12.5,
-      orders: 8.3,
-      customers: 15.2,
-      averageOrder: 3.7,
-    },
-  },
-  monthSales: {
-    revenue: 425000000,
-    orders: 1250,
-    customers: 890,
-    averageOrder: 340000,
-    growth: {
-      revenue: 18.2,
-      orders: 22.1,
-      customers: 25.8,
-      averageOrder: -2.1,
-    },
-  },
-  topProducts: [
-    { name: 'Cà phê đen', sold: 125, revenue: 2500000 },
-    { name: 'Bánh mì thịt', sold: 89, revenue: 1780000 },
-    { name: 'Nước cam', sold: 67, revenue: 1005000 },
-  ],
-  lowStockProducts: [
-    { name: 'Cà phê đen', stock: 5, minStock: 20 },
-    { name: 'Sữa tươi', stock: 8, minStock: 15 },
-    { name: 'Bánh quy', stock: 12, minStock: 25 },
-  ],
-};
-
 export const DashboardPage: React.FC = () => {
   const { setPageTitle, setBreadcrumbs } = usePage();
+  const [dashboardData, setDashboardData] = useState<DashboardKPIs | null>(null);
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
+  const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [kpis, products, lowStock] = await Promise.all([
+        analyticsService.getDashboardKPIs(),
+        analyticsService.getTopProducts(5),
+        analyticsService.getLowStockProducts(5),
+      ]);
+
+      setDashboardData(kpis);
+      setTopProducts(products);
+      setLowStockProducts(lowStock);
+    } catch (err) {
+      setError('Không thể tải dữ liệu dashboard. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setPageTitle('Tổng quan');
     setBreadcrumbs([
       { title: 'Tổng quan' },
     ]);
+    loadDashboardData();
   }, [setPageTitle, setBreadcrumbs]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Alert
+          message="Lỗi tải dữ liệu"
+          description={error}
+          type="error"
+          showIcon
+          action={
+            <Button size="small" danger onClick={loadDashboardData} icon={<ReloadOutlined />}>
+              Thử lại
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -81,12 +102,15 @@ export const DashboardPage: React.FC = () => {
           </Text>
         </div>
         <Space>
-          <Link to={ROUTES.POS.TERMINAL}>
+          <Button onClick={loadDashboardData} icon={<ReloadOutlined />}>
+            Làm mới
+          </Button>
+          <Link to="/pos">
             <Button type="primary" icon={<ShoppingCartOutlined />} size="large">
               Bán hàng
             </Button>
           </Link>
-          <Link to={ROUTES.ANALYTICS.DASHBOARD}>
+          <Link to="/analytics">
             <Button icon={<BarChartOutlined />} size="large">
               Báo cáo chi tiết
             </Button>
@@ -100,9 +124,9 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={12} lg={6}>
             <KPICard
               title="Doanh thu"
-              value={formatVND(mockKPIData.todaySales.revenue)}
-              change={mockKPIData.todaySales.growth.revenue}
-              changeType="increase"
+              value={formatVND(dashboardData.todayRevenue)}
+              change={dashboardData.growth.revenue}
+              changeType={dashboardData.growth.revenue >= 0 ? "increase" : "decrease"}
               icon={<DollarOutlined />}
               color="#52c41a"
             />
@@ -110,9 +134,9 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={12} lg={6}>
             <KPICard
               title="Đơn hàng"
-              value={mockKPIData.todaySales.orders}
-              change={mockKPIData.todaySales.growth.orders}
-              changeType="increase"
+              value={dashboardData.todayOrders}
+              change={dashboardData.growth.orders}
+              changeType={dashboardData.growth.orders >= 0 ? "increase" : "decrease"}
               icon={<ShoppingCartOutlined />}
               color="#1890ff"
             />
@@ -120,19 +144,19 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={12} lg={6}>
             <KPICard
               title="Khách hàng"
-              value={mockKPIData.todaySales.customers}
-              change={mockKPIData.todaySales.growth.customers}
-              changeType="increase"
+              value={dashboardData.todayCustomers}
+              change={dashboardData.growth.customers}
+              changeType={dashboardData.growth.customers >= 0 ? "increase" : "decrease"}
               icon={<UserOutlined />}
               color="#722ed1"
             />
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <KPICard
-              title="Đơn hàng TB"
-              value={formatVND(mockKPIData.todaySales.averageOrder)}
-              change={mockKPIData.todaySales.growth.averageOrder}
-              changeType="increase"
+              title="Giá trị TB"
+              value={formatVND(dashboardData.averageOrderValue)}
+              change={dashboardData.growth.averageOrder}
+              changeType={dashboardData.growth.averageOrder >= 0 ? "increase" : "decrease"}
               icon={<BarChartOutlined />}
               color="#fa8c16"
             />
@@ -161,7 +185,7 @@ export const DashboardPage: React.FC = () => {
             title="Sản phẩm bán chạy" 
             className="shadow-sm"
             extra={
-              <Link to={ROUTES.ANALYTICS.SALES}>
+              <Link to="/analytics">
                 <Button type="link" icon={<EyeOutlined />}>
                   Xem tất cả
                 </Button>
@@ -169,18 +193,21 @@ export const DashboardPage: React.FC = () => {
             }
           >
             <div className="space-y-4">
-              {mockKPIData.topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
+              {topProducts.map((product, index) => (
+                <div key={product.id} className="flex items-center justify-between">
                   <div>
                     <Text strong>{product.name}</Text>
                     <div className="text-sm text-gray-500">
-                      Đã bán: {product.sold} sản phẩm
+                      Đã bán: {product.sold} sản phẩm | {product.categoryName}
                     </div>
                   </div>
                   <div className="text-right">
                     <Text strong className="text-green-600">
                       {formatVND(product.revenue)}
                     </Text>
+                    <div className="text-sm text-gray-500">
+                      Lợi nhuận: {product.margin.toFixed(1)}%
+                    </div>
                   </div>
                 </div>
               ))}
@@ -193,7 +220,7 @@ export const DashboardPage: React.FC = () => {
             title="Sản phẩm sắp hết hàng" 
             className="shadow-sm"
             extra={
-              <Link to={ROUTES.PRODUCTS.INVENTORY}>
+              <Link to="/products">
                 <Button type="link" icon={<EyeOutlined />}>
                   Quản lý kho
                 </Button>
@@ -201,18 +228,21 @@ export const DashboardPage: React.FC = () => {
             }
           >
             <div className="space-y-4">
-              {mockKPIData.lowStockProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
+              {lowStockProducts.map((product, index) => (
+                <div key={product.id} className="flex items-center justify-between">
                   <div>
                     <Text strong>{product.name}</Text>
                     <div className="text-sm text-gray-500">
-                      Tồn kho tối thiểu: {product.minStock}
+                      SKU: {product.sku} | Tối thiểu: {product.minStock}
                     </div>
                   </div>
                   <div className="text-right">
                     <Text strong className="text-red-600">
-                      Còn {product.stock}
+                      Còn {product.currentStock}
                     </Text>
+                    <div className="text-sm text-gray-500">
+                      Cần bổ sung: {product.reorderLevel - product.currentStock}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -227,16 +257,16 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={6}>
             <Statistic
               title="Tổng doanh thu"
-              value={mockKPIData.monthSales.revenue}
+              value={dashboardData.monthRevenue}
               formatter={(value) => formatVND(Number(value))}
               prefix={
-                <ArrowUpOutlined 
-                  className={mockKPIData.monthSales.growth.revenue > 0 ? 'text-green-500' : 'text-red-500'} 
-                />
+                dashboardData.growth.revenue >= 0 ? 
+                  <ArrowUpOutlined className="text-green-500" /> : 
+                  <ArrowDownOutlined className="text-red-500" />
               }
               suffix={
-                <span className={mockKPIData.monthSales.growth.revenue > 0 ? 'text-green-500' : 'text-red-500'}>
-                  {Math.abs(mockKPIData.monthSales.growth.revenue)}%
+                <span className={dashboardData.growth.revenue >= 0 ? 'text-green-500' : 'text-red-500'}>
+                  {Math.abs(dashboardData.growth.revenue).toFixed(1)}%
                 </span>
               }
             />
@@ -244,15 +274,15 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={6}>
             <Statistic
               title="Tổng đơn hàng"
-              value={mockKPIData.monthSales.orders}
+              value={dashboardData.monthOrders}
               prefix={
-                <ArrowUpOutlined 
-                  className={mockKPIData.monthSales.growth.orders > 0 ? 'text-green-500' : 'text-red-500'} 
-                />
+                dashboardData.growth.orders >= 0 ? 
+                  <ArrowUpOutlined className="text-green-500" /> : 
+                  <ArrowDownOutlined className="text-red-500" />
               }
               suffix={
-                <span className={mockKPIData.monthSales.growth.orders > 0 ? 'text-green-500' : 'text-red-500'}>
-                  {Math.abs(mockKPIData.monthSales.growth.orders)}%
+                <span className={dashboardData.growth.orders >= 0 ? 'text-green-500' : 'text-red-500'}>
+                  {Math.abs(dashboardData.growth.orders).toFixed(1)}%
                 </span>
               }
             />
@@ -260,15 +290,15 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={6}>
             <Statistic
               title="Khách hàng mới"
-              value={mockKPIData.monthSales.customers}
+              value={dashboardData.monthCustomers}
               prefix={
-                <ArrowUpOutlined 
-                  className={mockKPIData.monthSales.growth.customers > 0 ? 'text-green-500' : 'text-red-500'} 
-                />
+                dashboardData.growth.customers >= 0 ? 
+                  <ArrowUpOutlined className="text-green-500" /> : 
+                  <ArrowDownOutlined className="text-red-500" />
               }
               suffix={
-                <span className={mockKPIData.monthSales.growth.customers > 0 ? 'text-green-500' : 'text-red-500'}>
-                  {Math.abs(mockKPIData.monthSales.growth.customers)}%
+                <span className={dashboardData.growth.customers >= 0 ? 'text-green-500' : 'text-red-500'}>
+                  {Math.abs(dashboardData.growth.customers).toFixed(1)}%
                 </span>
               }
             />
@@ -276,16 +306,16 @@ export const DashboardPage: React.FC = () => {
           <Col xs={24} sm={6}>
             <Statistic
               title="Giá trị đơn TB"
-              value={mockKPIData.monthSales.averageOrder}
+              value={dashboardData.averageOrderValue}
               formatter={(value) => formatVND(Number(value))}
               prefix={
-                mockKPIData.monthSales.growth.averageOrder > 0 ? 
+                dashboardData.growth.averageOrder >= 0 ? 
                   <ArrowUpOutlined className="text-green-500" /> : 
                   <ArrowDownOutlined className="text-red-500" />
               }
               suffix={
-                <span className={mockKPIData.monthSales.growth.averageOrder > 0 ? 'text-green-500' : 'text-red-500'}>
-                  {Math.abs(mockKPIData.monthSales.growth.averageOrder)}%
+                <span className={dashboardData.growth.averageOrder >= 0 ? 'text-green-500' : 'text-red-500'}>
+                  {Math.abs(dashboardData.growth.averageOrder).toFixed(1)}%
                 </span>
               }
             />

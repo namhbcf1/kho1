@@ -1,52 +1,49 @@
-# KhoAugment POS - Hệ thống quản lý bán hàng thông minh
+# 🇻🇳 Vietnamese POS System (Hệ Thống POS Việt Nam)
 
-KhoAugment POS là một hệ thống quản lý bán hàng (Point of Sale) hiện đại được thiết kế đặc biệt cho thị trường Việt Nam, sử dụng công nghệ Cloudflare để đảm bảo hiệu suất cao và độ tin cậy.
+A complete, production-ready Point of Sale system specifically designed for Vietnamese businesses, built with modern web technologies and Vietnamese business compliance in mind. Uses Cloudflare edge infrastructure for maximum performance and reliability.
 
 ## 🌐 Live Demo & Deployment
 
-**Frontend (Live):** https://kho-augment-pos.pages.dev  
-**Backend API:** https://khoaugment-pos-api-production.bangachieu2.workers.dev  
-**GitHub Repository:** [Will be created]
+**Frontend:** https://kho1.pages.dev  
+**Backend API:** https://kho1-api.workers.dev  
+**GitHub Repository:** https://github.com/your-username/vietnamese-pos-system
 
 ## 🔐 Account Information
 
-### Cloudflare Account
-- **Account ID:** 5b62d10947844251d23e0eac532531dd
-- **Worker Domain:** bangachieu2.workers.dev
-- **Pages Domain:** khoaugment-frontend.pages.dev
-
-### Database & Services
-- **D1 Database (Production):** kho1-production (39657891-9d7b-4a02-8b43-9921eb8c7d8e)
-- **KV Namespace:** kho1-cache-production (6bfe7a89dc0e410da200dab9da839fba)
+### Cloudflare Resources
+- **D1 Database:** vietnamese-pos-db
+- **R2 Storage:** vietnamese-pos-storage
+- **KV Namespace:** CACHE
 - **Worker Name:** kho1-api
-- **Pages Project:** kho-augment-pos
+- **Pages Project:** kho1
 
 ### Environment Configuration
-- **Production API URL:** https://khoaugment-pos-api-production.bangachieu2.workers.dev
-- **Frontend Deployment:** https://khoaugment-frontend.pages.dev
-- **CORS Origin:** https://khoaugment-frontend.pages.dev
+- **Production API:** https://kho1-api.workers.dev
+- **Frontend URL:** https://kho1.pages.dev
+- **Database:** D1 SQLite on Cloudflare Edge
 
 ## ✅ Implementation Status
 
-### Completed Features
-- **JWT Authentication System** - Full production-ready authentication with access/refresh tokens
-- **Barcode Scanner with Camera** - Real camera integration using ZXing library with flash control
-- **Cloudflare Infrastructure** - D1 database, KV storage, Workers, and Pages deployment
-- **Vietnamese Business Compliance** - Tax calculations, address validation, currency formatting
-- **Payment Gateway Integration** - VNPay, MoMo, ZaloPay with real webhooks
-- **Progressive Web App** - PWA with offline support and service workers
-- **Production-Ready Frontend** - React 18 + TypeScript + Ant Design
-- **Database Schema** - Complete Vietnamese business schema with provinces/districts
+### ✅ Core POS Features
+- **Real-time Sales Processing** - Complete transaction management
+- **Barcode Scanning** - Camera integration with ZXing library
+- **Thermal Receipt Printing** - ESC/POS command support
+- **Offline Capability** - IndexedDB for offline operations
+- **Multi-payment Support** - Cash, card, and digital wallets
 
-### In Progress
-- TypeScript compilation fixes for backend
-- Thermal receipt printing
-- Vietnamese address validation system
+### ✅ Vietnamese Business Integration
+- **VNPay Payment Gateway** - Full VNPay integration
+- **5-Tier Loyalty Program** - Đồng, Bạc, Vàng, Bạch kim, Kim cương
+- **Vietnamese Tax Compliance** - VAT calculations per Vietnamese law
+- **Address Validation** - 63 provinces/cities validation
+- **Phone Validation** - Vietnamese phone number formats
 
-### Planned
-- SSL and domain configuration
-- Monitoring and error tracking
-- Backup and recovery procedures
+### ✅ Management Features
+- **Staff Management** - Role-based permissions system
+- **Customer Management** - Complete CRM with loyalty tracking
+- **Analytics Dashboard** - Vietnamese business metrics
+- **Inventory Management** - Real-time stock tracking
+- **Vietnamese Localization** - Complete UI in Vietnamese
 
 ## 🌟 Tính năng chính
 

@@ -4,36 +4,37 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentication', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/auth/login');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should display login form', async ({ page }) => {
-    await expect(page.locator('h3')).toContainText('Đăng nhập');
-    await expect(page.locator('input[type="email"]')).toBeVisible();
-    await expect(page.locator('input[type="password"]')).toBeVisible();
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
+    await expect(page.locator('h3').first()).toContainText('Đăng nhập');
+    await expect(page.locator('input[type="email"]').first()).toBeVisible();
+    await expect(page.locator('input[type="password"]').first()).toBeVisible();
+    await expect(page.locator('button[type="submit"]').first()).toBeVisible();
   });
 
   test('should show validation errors for empty fields', async ({ page }) => {
-    await page.click('button[type="submit"]');
+    await page.locator('button[type="submit"]').first().click();
     
-    await expect(page.locator('.ant-form-item-explain-error')).toContainText('Vui lòng nhập email!');
+    await expect(page.locator('.ant-form-item-explain-error').first()).toContainText('Vui lòng nhập email!');
   });
 
   test('should show error for invalid email', async ({ page }) => {
-    await page.fill('input[type="email"]', 'invalid-email');
-    await page.click('button[type="submit"]');
+    await page.locator('input[type="email"]').first().fill('invalid-email');
+    await page.locator('button[type="submit"]').first().click();
     
-    await expect(page.locator('.ant-form-item-explain-error')).toContainText('Email không hợp lệ!');
+    await expect(page.locator('.ant-form-item-explain-error').first()).toContainText('Email không hợp lệ!');
   });
 
   test('should login with valid credentials', async ({ page }) => {
-    await page.fill('input[type="email"]', 'admin@khoaugment.com');
-    await page.fill('input[type="password"]', 'admin123');
-    await page.click('button[type="submit"]');
+    await page.locator('input[type="email"]').first().fill('admin@khoaugment.com');
+    await page.locator('input[type="password"]').first().fill('admin123');
+    await page.locator('button[type="submit"]').first().click();
     
     // Should redirect to dashboard
     await expect(page).toHaveURL('/dashboard');
-    await expect(page.locator('h2')).toContainText('Tổng quan hệ thống');
+    await expect(page.locator('h2').first()).toContainText('Tổng quan hệ thống');
   });
 
   test('should navigate to register page', async ({ page }) => {

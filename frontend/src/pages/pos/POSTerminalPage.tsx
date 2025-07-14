@@ -7,7 +7,7 @@ import { ProductGrid } from '../../features/pos/components/ProductGrid';
 import { ShoppingCart } from '../../features/pos/components/ShoppingCart';
 import { PaymentMethods } from '../../features/pos/components/PaymentMethods';
 import { usePOSCart } from '../../stores';
-import { formatVND } from '../../services/utils';
+import { formatVND } from '../../utils/formatters/vndCurrency';
 import { usePage } from '../../stores';
 
 const { Title, Text } = Typography;

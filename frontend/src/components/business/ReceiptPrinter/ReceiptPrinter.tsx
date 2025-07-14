@@ -1,83 +1,69 @@
-import React from 'react';
-import { Button, message } from 'antd';
-import { PrinterOutlined } from '@ant-design/icons';
+// Production-ready Vietnamese receipt printer with thermal printer support
+import React, { useState } from 'react';
+import { Button, Modal, Select, Switch, message, Typography, Space, Row, Col, Card, Divider } from 'antd';
+import { 
+  PrinterOutlined, 
+  SettingOutlined, 
+  EyeOutlined, 
+  FilePdfOutlined,
+  FileImageOutlined,
+  CloudDownloadOutlined,
+  WifiOutlined
+} from '@ant-design/icons';
 import { ReceiptTemplate } from './ReceiptTemplate';
-import type { ReceiptPrinterProps } from './ReceiptPrinter.types';
+import type { ReceiptPrinterProps, PrinterSettings, PrintFormat } from './ReceiptPrinter.types';
 
-export const ReceiptPrinter: React.FC<ReceiptPrinterProps> = ({
-  order,
-  businessInfo,
-  onPrint,
-  disabled = false,
-}) => {
-  const handlePrint = async () => {
-    try {
-      // Create a new window for printing
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        message.error('Không thể mở cửa sổ in. Vui lòng kiểm tra popup blocker.');
-        return;
-      }
+const { Option } = Select;
+const { Text } = Typography;
 
-      // Generate receipt HTML
-      const receiptElement = document.createElement('div');
-      
-      // Add print styles
-      const printStyles = `
-        <style>
-          @media print {
-            body { margin: 0; padding: 0; }
-            * { -webkit-print-color-adjust: exact; }
-          }
-          @page { 
-            size: 80mm auto; 
-            margin: 0; 
-          }
-        </style>
-      `;
-
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Hóa đơn - ${order.id}</title>
-            ${printStyles}
-          </head>
-          <body>
-            <div id="receipt-content"></div>
-          </body>
-        </html>
-      `);
-
-      // Wait for the document to be ready
-      printWindow.document.close();
-      
-      // Trigger print
-      printWindow.focus();
-      printWindow.print();
-      
-      // Close the print window after printing
-      setTimeout(() => {
-        printWindow.close();
-      }, 1000);
-
-      onPrint?.();
-      message.success('Đã gửi lệnh in hóa đơn');
-    } catch (error) {
-      console.error('Print error:', error);
-      message.error('Có lỗi xảy ra khi in hóa đơn');
+// Vietnamese thermal printer configurations
+const VIETNAMESE_PRINTERS = {
+  'xprinter_xp58': {
+    name: 'XPrinter XP-58III',
+    width: 58, // mm
+    encoding: 'utf-8',
+    commands: {
+      init: '\x1B\x40',
+      cutPaper: '\x1D\x56\x00',
+      centerAlign: '\x1B\x61\x01',
+      leftAlign: '\x1B\x61\x00',
+      bold: '\x1B\x45\x01',
+      normal: '\x1B\x45\x00',
+      largeFontSize: '\x1D\x21\x11',
+      normalFontSize: '\x1D\x21\x00',
+      lineFeed: '\x0A'
     }
-  };
-
-  return (
-    <Button
-      type="primary"
-      icon={<PrinterOutlined />}
-      onClick={handlePrint}
-      disabled={disabled}
-    >
-      In hóa đơn
-    </Button>
-  );
-};
-
-export default ReceiptPrinter;
+  },
+  'xprinter_xp80': {
+    name: 'XPrinter XP-80III',
+    width: 80, // mm
+    encoding: 'utf-8',
+    commands: {
+      init: '\x1B\x40',
+      cutPaper: '\x1D\x56\x00',
+      centerAlign: '\x1B\x61\x01',
+      leftAlign: '\x1B\x61\x00',
+      bold: '\x1B\x45\x01',
+      normal: '\x1B\x45\x00',
+      largeFontSize: '\x1D\x21\x11',
+      normalFontSize: '\x1D\x21\x00',
+      lineFeed: '\x0A'
+    }
+  },
+  'epson_tm_t82': {
+    name: 'Epson TM-T82III',
+    width: 80, // mm
+    encoding: 'utf-8',
+    commands: {
+      init: '\x1B\x40',
+      cutPaper: '\x1B\x69',
+      centerAlign: '\x1B\x61\x01',
+      leftAlign: '\x1B\x61\x00',
+      bold: '\x1B\x45\x01',
+      normal: '\x1B\x45\x00',
+      largeFontSize: '\x1D\x21\x11',
+      normalFontSize: '\x1D\x21\x00',
+      lineFeed: '\x0A'
+    }
+  }
+};\n\n// Vietnamese business receipt formats\nconst RECEIPT_FORMATS = {\n  standard: { name: 'Hóa đơn tiêu chuẩn', template: 'standard' },\n  detailed: { name: 'Hóa đơn chi tiết', template: 'detailed' },\n  compact: { name: 'Hóa đơn gọn', template: 'compact' },\n  gift: { name: 'Hóa đơn quà tặng', template: 'gift' }\n};\n\nexport const ReceiptPrinter: React.FC<ReceiptPrinterProps> = ({\n  order,\n  businessInfo,\n  onPrint,\n  disabled = false,\n  format = 'standard',\n  copies = 1\n}) => {\n  const [settingsVisible, setSettingsVisible] = useState(false);\n  const [previewVisible, setPreviewVisible] = useState(false);\n  const [printing, setPrinting] = useState(false);\n  const [printerSettings, setPrinterSettings] = useState<PrinterSettings>({\n    printerType: 'xprinter_xp80',\n    connectionType: 'usb',\n    paperWidth: 80,\n    cutPaper: true,\n    openDrawer: true,\n    printLogo: true,\n    printQR: true,\n    fontSize: 'normal',\n    copies: 1\n  });\n\n  // Enhanced printing with Vietnamese business requirements\n  const handlePrint = async (printFormat: PrintFormat = format) => {\n    if (!order || !businessInfo) {\n      message.error('Thiếu thông tin hóa đơn hoặc cửa hàng');\n      return;\n    }\n\n    setPrinting(true);\n\n    try {\n      // Validate Vietnamese business requirements\n      if (!businessInfo.taxCode) {\n        message.warning('Cảnh báo: Chưa có mã số thuế doanh nghiệp');\n      }\n\n      // Check for Vietnamese business compliance\n      const hasValidVAT = order.items.every(item => item.vatRate !== undefined);\n      if (!hasValidVAT) {\n        message.warning('Cảnh báo: Một số sản phẩm chưa có thông tin VAT');\n      }\n\n      // Generate receipt content with Vietnamese formatting\n      const receiptContent = generateVietnameseReceipt(order, businessInfo, printFormat, printerSettings);\n\n      // Handle different print methods\n      switch (printerSettings.connectionType) {\n        case 'thermal_usb':\n          await printToThermalPrinter(receiptContent);\n          break;\n        case 'thermal_network':\n          await printToNetworkPrinter(receiptContent);\n          break;\n        case 'pdf':\n          await generatePDFReceipt(receiptContent);\n          break;\n        case 'image':\n          await generateImageReceipt(receiptContent);\n          break;\n        default:\n          await printToBrowser(receiptContent);\n      }\n\n      // Open cash drawer if enabled\n      if (printerSettings.openDrawer && printerSettings.connectionType.includes('thermal')) {\n        await openCashDrawer();\n      }\n\n      // Print multiple copies if requested\n      for (let i = 1; i < (printerSettings.copies || 1); i++) {\n        setTimeout(() => {\n          handlePrint(printFormat);\n        }, 1000 * i);\n      }\n\n      onPrint?.();\n      message.success(\n        `Đã in ${printerSettings.copies || 1} bản hóa đơn${printerSettings.openDrawer ? ' và mở ngăn kéo tiền' : ''}`\n      );\n\n    } catch (error: any) {\n      console.error('Print error:', error);\n      message.error(`Lỗi in hóa đơn: ${error.message || 'Không xác định'}`);\n    } finally {\n      setPrinting(false);\n    }\n  };\n\n  // Generate Vietnamese-compliant receipt content\n  const generateVietnameseReceipt = (\n    order: any, \n    businessInfo: any, \n    format: PrintFormat, \n    settings: PrinterSettings\n  ): string => {\n    const printer = VIETNAMESE_PRINTERS[settings.printerType];\n    const { commands } = printer;\n    \n    let content = '';\n    \n    // Initialize printer\n    content += commands.init;\n    \n    // Header with business info\n    content += commands.centerAlign;\n    if (settings.printLogo && businessInfo.logo) {\n      content += `[LOGO: ${businessInfo.logo}]${commands.lineFeed}`;\n    }\n    \n    content += commands.bold + commands.largeFontSize;\n    content += `${businessInfo.name}${commands.lineFeed}`;\n    content += commands.normal + commands.normalFontSize;\n    content += `${businessInfo.address}${commands.lineFeed}`;\n    content += `ĐT: ${businessInfo.phone}${commands.lineFeed}`;\n    \n    if (businessInfo.taxCode) {\n      content += `MST: ${businessInfo.taxCode}${commands.lineFeed}`;\n    }\n    \n    if (businessInfo.website) {\n      content += `${businessInfo.website}${commands.lineFeed}`;\n    }\n    \n    content += commands.lineFeed;\n    content += '================================';\n    content += commands.lineFeed;\n    \n    // Receipt title\n    content += commands.centerAlign + commands.bold;\n    content += 'HÓA ĐƠN BÁN HÀNG';\n    content += commands.lineFeed + commands.normal;\n    \n    // Order information\n    content += commands.leftAlign;\n    content += `Số HĐ: ${order.id}${commands.lineFeed}`;\n    content += `Ngày: ${new Date().toLocaleString('vi-VN')}${commands.lineFeed}`;\n    content += `Thu ngân: ${order.cashier || 'N/A'}${commands.lineFeed}`;\n    \n    if (order.customer) {\n      content += `Khách hàng: ${order.customer}${commands.lineFeed}`;\n    }\n    \n    if (order.loyaltyCard) {\n      content += `Thẻ KH: ${order.loyaltyCard}${commands.lineFeed}`;\n    }\n    \n    content += '================================';\n    content += commands.lineFeed;\n    \n    // Items with Vietnamese formatting\n    order.items.forEach((item: any, index: number) => {\n      content += `${index + 1}. ${item.name}${commands.lineFeed}`;\n      \n      const unitPrice = item.price.toLocaleString('vi-VN');\n      const itemTotal = (item.quantity * item.price).toLocaleString('vi-VN');\n      \n      content += `   ${item.quantity} ${item.unit || 'cái'} x ${unitPrice}đ`;\n      content += ' '.repeat(Math.max(0, printer.width/2 - 20)) + `${itemTotal}đ${commands.lineFeed}`;\n      \n      if (item.vatRate !== undefined) {\n        content += `   (VAT ${item.vatRate}%)${commands.lineFeed}`;\n      }\n      \n      if (item.discount > 0) {\n        content += `   Giảm giá: -${item.discount.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n      }\n    });\n    \n    content += '================================';\n    content += commands.lineFeed;\n    \n    // Totals with Vietnamese tax breakdown\n    content += `Tạm tính:` + ' '.repeat(printer.width/2 - 5) + `${order.subtotal.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    \n    if (order.discount > 0) {\n      content += `Giảm giá:` + ' '.repeat(printer.width/2 - 5) + `-${order.discount.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    }\n    \n    if (order.loyaltyDiscount > 0) {\n      content += `Ưu đãi thành viên:` + ' '.repeat(printer.width/2 - 10) + `-${order.loyaltyDiscount.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    }\n    \n    content += `Thuế VAT:` + ' '.repeat(printer.width/2 - 5) + `${order.vatAmount.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    \n    content += '--------------------------------';\n    content += commands.lineFeed;\n    \n    content += commands.bold;\n    content += `TỔNG CỘNG:` + ' '.repeat(printer.width/2 - 8) + `${order.total.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    content += commands.normal;\n    \n    // Payment details\n    content += `TT ${order.paymentMethod}:` + ' '.repeat(printer.width/2 - 8) + `${order.paid.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    \n    if (order.change > 0) {\n      content += `Tiền thừa:` + ' '.repeat(printer.width/2 - 5) + `${order.change.toLocaleString('vi-VN')}đ${commands.lineFeed}`;\n    }\n    \n    content += '================================';\n    content += commands.lineFeed;\n    \n    // Loyalty points\n    if (order.loyaltyPointsEarned > 0) {\n      content += commands.centerAlign;\n      content += `Điểm tích lũy: +${order.loyaltyPointsEarned} điểm${commands.lineFeed}`;\n      content += `Tổng điểm: ${order.totalLoyaltyPoints} điểm${commands.lineFeed}`;\n      content += commands.leftAlign;\n      content += commands.lineFeed;\n    }\n    \n    // QR code for digital receipt\n    if (settings.printQR && order.digitalReceiptUrl) {\n      content += commands.centerAlign;\n      content += `[QR: ${order.digitalReceiptUrl}]${commands.lineFeed}`;\n      content += 'Quét QR để xem hóa đơn điện tử';\n      content += commands.lineFeed + commands.leftAlign;\n    }\n    \n    // Footer messages\n    content += commands.centerAlign;\n    content += commands.lineFeed;\n    content += 'Cảm ơn quý khách!';\n    content += commands.lineFeed;\n    content += 'Hẹn gặp lại!';\n    content += commands.lineFeed;\n    \n    if (businessInfo.returnPolicy) {\n      content += commands.lineFeed;\n      content += businessInfo.returnPolicy;\n      content += commands.lineFeed;\n    }\n    \n    // Cut paper\n    if (settings.cutPaper) {\n      content += commands.lineFeed + commands.lineFeed;\n      content += commands.cutPaper;\n    }\n    \n    return content;\n  };\n\n  // Print to thermal printer via USB/Serial\n  const printToThermalPrinter = async (content: string): Promise<void> => {\n    try {\n      // Try to use Web Serial API for direct thermal printer communication\n      if ('serial' in navigator) {\n        const port = await (navigator as any).serial.requestPort();\n        await port.open({ baudRate: 9600 });\n        \n        const writer = port.writable.getWriter();\n        const encoder = new TextEncoder();\n        await writer.write(encoder.encode(content));\n        \n        writer.releaseLock();\n        await port.close();\n      } else {\n        // Fallback to browser print with thermal styling\n        await printToBrowser(content);\n      }\n    } catch (error) {\n      throw new Error('Không thể kết nối với máy in nhiệt');\n    }\n  };\n\n  // Print to network thermal printer\n  const printToNetworkPrinter = async (content: string): Promise<void> => {\n    try {\n      // Send to thermal printer via network endpoint\n      const response = await fetch('/api/print/thermal', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({\n          content,\n          printerSettings,\n          printerIP: printerSettings.networkIP\n        })\n      });\n      \n      if (!response.ok) {\n        throw new Error('Lỗi kết nối máy in mạng');\n      }\n    } catch (error) {\n      throw new Error('Không thể in qua mạng');\n    }\n  };\n\n  // Generate PDF receipt\n  const generatePDFReceipt = async (content: string): Promise<void> => {\n    try {\n      const response = await fetch('/api/print/pdf', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({\n          order,\n          businessInfo,\n          format,\n          template: 'vietnamese_standard'\n        })\n      });\n      \n      if (!response.ok) {\n        throw new Error('Lỗi tạo file PDF');\n      }\n      \n      const blob = await response.blob();\n      const url = window.URL.createObjectURL(blob);\n      const a = document.createElement('a');\n      a.href = url;\n      a.download = `hoa-don-${order.id}.pdf`;\n      document.body.appendChild(a);\n      a.click();\n      window.URL.revokeObjectURL(url);\n      document.body.removeChild(a);\n    } catch (error) {\n      throw new Error('Không thể tạo file PDF');\n    }\n  };\n\n  // Generate image receipt\n  const generateImageReceipt = async (content: string): Promise<void> => {\n    try {\n      // Create canvas with receipt content\n      const canvas = document.createElement('canvas');\n      const ctx = canvas.getContext('2d');\n      \n      if (!ctx) {\n        throw new Error('Không thể tạo canvas');\n      }\n      \n      // Set canvas size for Vietnamese receipt\n      canvas.width = 300; // 80mm at 96 DPI\n      canvas.height = Math.max(600, order.items.length * 50 + 400);\n      \n      // Draw receipt content\n      ctx.fillStyle = 'white';\n      ctx.fillRect(0, 0, canvas.width, canvas.height);\n      \n      ctx.fillStyle = 'black';\n      ctx.font = '12px monospace';\n      \n      const lines = content.split('\\n');\n      lines.forEach((line, index) => {\n        ctx.fillText(line, 10, 20 + index * 15);\n      });\n      \n      // Download as image\n      canvas.toBlob((blob) => {\n        if (blob) {\n          const url = window.URL.createObjectURL(blob);\n          const a = document.createElement('a');\n          a.href = url;\n          a.download = `hoa-don-${order.id}.png`;\n          document.body.appendChild(a);\n          a.click();\n          window.URL.revokeObjectURL(url);\n          document.body.removeChild(a);\n        }\n      });\n    } catch (error) {\n      throw new Error('Không thể tạo file hình ảnh');\n    }\n  };\n\n  // Browser print fallback\n  const printToBrowser = async (content: string): Promise<void> => {\n    const printWindow = window.open('', '_blank');\n    if (!printWindow) {\n      throw new Error('Không thể mở cửa sổ in');\n    }\n\n    const htmlContent = `\n      <html>\n        <head>\n          <title>Hóa đơn - ${order.id}</title>\n          <style>\n            @media print {\n              body { margin: 0; padding: 0; }\n              * { -webkit-print-color-adjust: exact; }\n            }\n            @page { \n              size: ${printerSettings.paperWidth}mm auto;\n              margin: 5mm;\n            }\n            body {\n              font-family: 'Courier New', monospace;\n              font-size: 12px;\n              line-height: 1.4;\n              white-space: pre-wrap;\n            }\n          </style>\n        </head>\n        <body>${content.replace(/\\n/g, '<br>')}</body>\n      </html>\n    `;\n\n    printWindow.document.write(htmlContent);\n    printWindow.document.close();\n    printWindow.focus();\n    printWindow.print();\n    \n    setTimeout(() => {\n      printWindow.close();\n    }, 1000);\n  };\n\n  // Open cash drawer\n  const openCashDrawer = async (): Promise<void> => {\n    try {\n      if (printerSettings.connectionType.includes('thermal')) {\n        // Send cash drawer open command\n        const drawerCommand = '\\x1B\\x70\\x00\\x19\\xFA'; // Standard ESC/POS command\n        \n        if ('serial' in navigator) {\n          // Send via serial if available\n          const port = await (navigator as any).serial.requestPort();\n          await port.open({ baudRate: 9600 });\n          \n          const writer = port.writable.getWriter();\n          const encoder = new TextEncoder();\n          await writer.write(encoder.encode(drawerCommand));\n          \n          writer.releaseLock();\n          await port.close();\n        } else {\n          // Send to backend for network printers\n          await fetch('/api/print/drawer', {\n            method: 'POST',\n            headers: {\n              'Content-Type': 'application/json',\n            },\n            body: JSON.stringify({\n              printerIP: printerSettings.networkIP,\n              command: drawerCommand\n            })\n          });\n        }\n      }\n    } catch (error) {\n      console.error('Cash drawer error:', error);\n      // Don't throw error as this is not critical\n    }\n  };\n\n  const handlePreview = () => {\n    setPreviewVisible(true);\n  };\n\n  const handleSettings = () => {\n    setSettingsVisible(true);\n  };\n\n  return (\n    <>\n      <Space.Compact>\n        <Button\n          type=\"primary\"\n          icon={<PrinterOutlined />}\n          onClick={() => handlePrint()}\n          disabled={disabled || printing}\n          loading={printing}\n        >\n          In hóa đơn\n        </Button>\n        \n        <Button\n          icon={<EyeOutlined />}\n          onClick={handlePreview}\n          disabled={disabled}\n        >\n          Xem trước\n        </Button>\n        \n        <Button\n          icon={<SettingOutlined />}\n          onClick={handleSettings}\n          disabled={disabled}\n        />\n      </Space.Compact>\n\n      {/* Printer Settings Modal */}\n      <Modal\n        title=\"Cài đặt máy in\"\n        open={settingsVisible}\n        onCancel={() => setSettingsVisible(false)}\n        footer={[\n          <Button key=\"cancel\" onClick={() => setSettingsVisible(false)}>\n            Hủy\n          </Button>,\n          <Button \n            key=\"save\" \n            type=\"primary\" \n            onClick={() => {\n              setSettingsVisible(false);\n              message.success('Đã lưu cài đặt máy in');\n            }}\n          >\n            Lưu\n          </Button>,\n        ]}\n        width={600}\n      >\n        <Row gutter={[16, 16]}>\n          <Col span={12}>\n            <Card title=\"Loại máy in\" size=\"small\">\n              <Select\n                style={{ width: '100%' }}\n                value={printerSettings.printerType}\n                onChange={(value) => setPrinterSettings(prev => ({ ...prev, printerType: value }))}\n              >\n                {Object.entries(VIETNAMESE_PRINTERS).map(([key, printer]) => (\n                  <Option key={key} value={key}>\n                    {printer.name} ({printer.width}mm)\n                  </Option>\n                ))}\n              </Select>\n            </Card>\n          </Col>\n          \n          <Col span={12}>\n            <Card title=\"Kết nối\" size=\"small\">\n              <Select\n                style={{ width: '100%' }}\n                value={printerSettings.connectionType}\n                onChange={(value) => setPrinterSettings(prev => ({ ...prev, connectionType: value }))}\n              >\n                <Option value=\"thermal_usb\">Máy in nhiệt USB</Option>\n                <Option value=\"thermal_network\">Máy in nhiệt mạng</Option>\n                <Option value=\"browser\">In qua trình duyệt</Option>\n                <Option value=\"pdf\">Xuất file PDF</Option>\n                <Option value=\"image\">Xuất hình ảnh</Option>\n              </Select>\n            </Card>\n          </Col>\n          \n          <Col span={12}>\n            <Card title=\"Tùy chọn\" size=\"small\">\n              <Space direction=\"vertical\" style={{ width: '100%' }}>\n                <div>\n                  <Switch\n                    checked={printerSettings.cutPaper}\n                    onChange={(checked) => setPrinterSettings(prev => ({ ...prev, cutPaper: checked }))}\n                  />\n                  <Text style={{ marginLeft: 8 }}>Cắt giấy tự động</Text>\n                </div>\n                \n                <div>\n                  <Switch\n                    checked={printerSettings.openDrawer}\n                    onChange={(checked) => setPrinterSettings(prev => ({ ...prev, openDrawer: checked }))}\n                  />\n                  <Text style={{ marginLeft: 8 }}>Mở ngăn kéo tiền</Text>\n                </div>\n                \n                <div>\n                  <Switch\n                    checked={printerSettings.printLogo}\n                    onChange={(checked) => setPrinterSettings(prev => ({ ...prev, printLogo: checked }))}\n                  />\n                  <Text style={{ marginLeft: 8 }}>In logo cửa hàng</Text>\n                </div>\n                \n                <div>\n                  <Switch\n                    checked={printerSettings.printQR}\n                    onChange={(checked) => setPrinterSettings(prev => ({ ...prev, printQR: checked }))}\n                  />\n                  <Text style={{ marginLeft: 8 }}>In mã QR</Text>\n                </div>\n              </Space>\n            </Card>\n          </Col>\n          \n          <Col span={12}>\n            <Card title=\"Số bản in\" size=\"small\">\n              <Select\n                style={{ width: '100%' }}\n                value={printerSettings.copies}\n                onChange={(value) => setPrinterSettings(prev => ({ ...prev, copies: value }))}\n              >\n                <Option value={1}>1 bản</Option>\n                <Option value={2}>2 bản</Option>\n                <Option value={3}>3 bản</Option>\n              </Select>\n            </Card>\n          </Col>\n        </Row>\n      </Modal>\n\n      {/* Receipt Preview Modal */}\n      <Modal\n        title=\"Xem trước hóa đơn\"\n        open={previewVisible}\n        onCancel={() => setPreviewVisible(false)}\n        width={400}\n        footer={[\n          <Button key=\"close\" onClick={() => setPreviewVisible(false)}>\n            Đóng\n          </Button>,\n          <Button \n            key=\"print\" \n            type=\"primary\" \n            icon={<PrinterOutlined />}\n            onClick={() => {\n              setPreviewVisible(false);\n              handlePrint();\n            }}\n          >\n            In ngay\n          </Button>,\n        ]}\n      >\n        <div style={{ \n          maxHeight: '60vh', \n          overflow: 'auto',\n          border: '1px solid #d9d9d9',\n          borderRadius: '6px',\n          padding: '16px',\n          backgroundColor: '#fafafa'\n        }}>\n          <ReceiptTemplate\n            order={order}\n            businessInfo={businessInfo}\n            format={format}\n            settings={printerSettings}\n          />\n        </div>\n      </Modal>\n    </>\n  );\n};\n\nexport default ReceiptPrinter;

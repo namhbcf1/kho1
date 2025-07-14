@@ -1,67 +1,115 @@
 import React from 'react';
 import { List, Button, InputNumber, Space, Typography, Divider, Empty } from 'antd';
-import { DeleteOutlined, ClearOutlined } from '@ant-design/icons';
-import { VNDDisplay } from '../../../components/business/VNDCurrency';
-import type { ShoppingCartProps } from '../types/pos.types';
+import { DeleteOutlined, ClearOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { formatVND } from '../../../utils/formatters/vndCurrency';
+import { usePOSCart, usePOSActions } from '../../../stores';
 
 const { Text, Title } = Typography;
 
-export const ShoppingCart: React.FC<ShoppingCartProps> = ({
-  items,
-  onUpdateQuantity,
-  onRemoveItem,
-  onClear,
-  total,
-}) => {
-  if (items.length === 0) {
+export const ShoppingCart: React.FC = () => {
+  const { cart, subtotal, discount, tax, total } = usePOSCart();
+  const { updateCartItem, removeFromCart, clearCart } = usePOSActions();
+
+  const handleUpdateQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      updateCartItem(productId, { quantity });
+    }
+  };
+
+  const handleIncreaseQuantity = (productId: string, currentQuantity: number) => {
+    handleUpdateQuantity(productId, currentQuantity + 1);
+  };
+
+  const handleDecreaseQuantity = (productId: string, currentQuantity: number) => {
+    handleUpdateQuantity(productId, currentQuantity - 1);
+  };
+
+  if (cart.length === 0) {
     return (
-      <Empty 
-        description="Giỏ hàng trống"
-        style={{ marginTop: '50px' }}
-      />
+      <div className="p-4">
+        <Empty 
+          description="Giỏ hàng trống"
+          className="py-8"
+        />
+      </div>
     );
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div className="h-full flex flex-col">
+      {/* Cart Header */}
+      <div className="p-4 border-b">
+        <div className="flex items-center justify-between">
+          <Title level={5} className="!mb-0">
+            Giỏ hàng ({cart.length})
+          </Title>
+          <Button
+            type="text"
+            danger
+            icon={<ClearOutlined />}
+            onClick={clearCart}
+            size="small"
+          >
+            Xóa tất cả
+          </Button>
+        </div>
+      </div>
+
       {/* Cart Items */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-auto">
         <List
-          dataSource={items}
+          dataSource={cart}
           renderItem={(item) => (
-            <List.Item
-              style={{ padding: '12px 0' }}
-              actions={[
-                <Button
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => onRemoveItem?.(item.id)}
-                  size="small"
-                />
-              ]}
-            >
-              <div style={{ width: '100%' }}>
-                <div style={{ marginBottom: 8 }}>
-                  <Text strong>{item.name}</Text>
+            <List.Item className="px-4 py-3 border-b-0">
+              <div className="w-full">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 mr-2">
+                    <Text strong className="text-sm">
+                      {item.product.name}
+                    </Text>
+                    <div className="text-xs text-gray-500">
+                      {formatVND(item.price)} x đơn vị
+                    </div>
+                  </div>
+                  <Button
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => removeFromCart(item.productId)}
+                    size="small"
+                    className="flex-shrink-0"
+                  />
                 </div>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Space>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      type="text"
+                      icon={<MinusOutlined />}
+                      onClick={() => handleDecreaseQuantity(item.productId, item.quantity)}
+                      size="small"
+                      disabled={item.quantity <= 1}
+                    />
                     <InputNumber
                       min={1}
-                      max={item.maxStock || 999}
                       value={item.quantity}
-                      onChange={(value) => onUpdateQuantity?.(item.id, value || 1)}
+                      onChange={(value) => handleUpdateQuantity(item.productId, value || 1)}
                       size="small"
-                      style={{ width: 60 }}
+                      className="w-16 text-center"
+                      controls={false}
                     />
-                    <Text type="secondary">x</Text>
-                    <VNDDisplay amount={item.price} />
-                  </Space>
+                    <Button
+                      type="text"
+                      icon={<PlusOutlined />}
+                      onClick={() => handleIncreaseQuantity(item.productId, item.quantity)}
+                      size="small"
+                    />
+                  </div>
                   
-                  <Text strong>
-                    <VNDDisplay amount={item.price * item.quantity} />
+                  <Text strong className="text-blue-600">
+                    {formatVND(item.total)}
                   </Text>
                 </div>
               </div>
@@ -70,30 +118,35 @@ export const ShoppingCart: React.FC<ShoppingCartProps> = ({
         />
       </div>
 
-      <Divider style={{ margin: '16px 0' }} />
-
       {/* Cart Summary */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <Text>Số lượng:</Text>
-          <Text>{items.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm</Text>
+      <div className="p-4 border-t bg-gray-50">
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <Text>Tạm tính:</Text>
+            <Text>{formatVND(subtotal)}</Text>
+          </div>
+          
+          {discount > 0 && (
+            <div className="flex justify-between text-sm">
+              <Text>Giảm giá:</Text>
+              <Text className="text-green-600">-{formatVND(discount)}</Text>
+            </div>
+          )}
+          
+          <div className="flex justify-between text-sm">
+            <Text>Thuế VAT (10%):</Text>
+            <Text>{formatVND(tax)}</Text>
+          </div>
+          
+          <Divider className="my-2" />
+          
+          <div className="flex justify-between">
+            <Title level={4} className="!mb-0">Tổng cộng:</Title>
+            <Title level={4} className="!mb-0 text-blue-600">
+              {formatVND(total)}
+            </Title>
+          </div>
         </div>
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Title level={4} style={{ margin: 0 }}>Tổng cộng:</Title>
-          <Title level={4} style={{ margin: 0, color: '#1890ff' }}>
-            <VNDDisplay amount={total} />
-          </Title>
-        </div>
-
-        <Button
-          block
-          icon={<ClearOutlined />}
-          onClick={onClear}
-          disabled={items.length === 0}
-        >
-          Xóa tất cả
-        </Button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Alert, Card, Row, Col, Statistic } from 'antd';
 import { 
   DollarOutlined, 
@@ -7,20 +7,38 @@ import {
   UserOutlined, 
   ShopOutlined 
 } from '@ant-design/icons';
+import { DashboardPage } from './pages/DashboardPage';
+import { POSTerminalPage } from './pages/pos/POSTerminalPage';
+import { ProductListPage } from './pages/products/ProductListPage';
+import { CustomerListPage } from './pages/customers/CustomerListPage';
+import { OrderListPage } from './pages/orders/OrderListPage';
 import { useAuth } from './features/auth/hooks/useAuth';
 import { RoleGuard } from './features/auth/components/RoleGuard';
 import { AppHeader } from './components/layout/Header';
 import { AppSidebar } from './components/layout/Sidebar';
 import { AppFooter } from './components/layout/Footer';
-import { LoginForm } from './features/auth/components/LoginForm';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { AuthLoading, PageLoading } from './components/ui/Loading';
+import { ROUTES } from './constants/routes';
+import { useAuthStore } from './stores/authStore';
 import './App.css';
 import './components/ui/Loading/Loading.css';
 
 const { Content } = Layout;
 
 function App() {
-  const { user, isAuthenticated, loading, error, isInitialized, logout, clearError } = useAuth();
+  const { user, isAuthenticated, isLoading, error, isInitialized, logout, clearError, initialize } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Initialize auth on app start
+  useEffect(() => {
+    if (!isInitialized) {
+      initialize();
+    }
+  }, [isInitialized, initialize]);
 
   const handleUserMenuClick = (key: string) => {
     switch (key) {
@@ -28,16 +46,66 @@ function App() {
         logout();
         break;
       case 'profile':
-        // Navigate to profile page
+        navigate('/profile');
         break;
       case 'settings':
-        // Navigate to settings page
+        navigate('/settings');
         break;
     }
   };
 
+  const handleSidebarMenuClick = (key: string) => {
+    switch (key) {
+      case 'dashboard':
+        navigate('/dashboard');
+        break;
+      case 'pos':
+        navigate('/pos');
+        break;
+      case 'products':
+      case 'products-list':
+        navigate('/products');
+        break;
+      case 'customers':
+      case 'customers-list':
+        navigate('/customers');
+        break;
+      case 'orders':
+      case 'orders-list':
+        navigate('/orders');
+        break;
+      case 'analytics':
+        navigate('/analytics');
+        break;
+      case 'staff':
+        navigate('/staff');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      default:
+        // Handle sub-menu items that don't have pages yet
+        console.log('Navigation not implemented for:', key);
+        break;
+    }
+  };
+
+  // Get current page key for sidebar selection
+  const getCurrentPageKey = () => {
+    const path = location.pathname;
+    if (path.includes('/dashboard')) return 'dashboard';
+    if (path.includes('/pos')) return 'pos';
+    if (path.includes('/products')) return 'products';
+    if (path.includes('/customers')) return 'customers';
+    if (path.includes('/orders')) return 'orders';
+    if (path.includes('/analytics')) return 'analytics';
+    if (path.includes('/staff')) return 'staff';
+    if (path.includes('/settings')) return 'settings';
+    return 'dashboard';
+  };
+
   // Show loading screen while auth is initializing
-  if (!isInitialized || loading) {
+  if (!isInitialized || isLoading) {
     return <AuthLoading />;
   }
 
@@ -60,15 +128,23 @@ function App() {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.AUTH.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
+        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+        <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+        <Route path="*" element={<Navigate to={ROUTES.AUTH.LOGIN} replace />} />
       </Routes>
     );
   }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <AppSidebar />
+      <AppSidebar 
+        selectedKey={getCurrentPageKey()}
+        onMenuSelect={handleSidebarMenuClick}
+      />
       
       <Layout>
         <AppHeader 
@@ -80,73 +156,13 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
-            <Route 
-              path="/dashboard" 
-              element={
-                <div style={{ padding: '24px' }}>
-                  <h1 style={{ marginBottom: '16px' }}>Dashboard</h1>
-                  <div style={{ marginBottom: '24px' }}>
-                    <p>Chào mừng đến với KhoAugment POS!</p>
-                    <p>Hệ thống đã được khởi tạo và sẵn sàng hoạt động.</p>
-                  </div>
-                  
-                  <Row gutter={[16, 16]}>
-                    <Col xs={24} sm={12} lg={6}>
-                      <Card>
-                        <Statistic
-                          title="Doanh thu hôm nay"
-                          value={2500000}
-                          formatter={(value) => new Intl.NumberFormat('vi-VN', {
-                            style: 'currency',
-                            currency: 'VND',
-                          }).format(Number(value))}
-                          prefix={<DollarOutlined style={{ color: '#52c41a' }} />}
-                        />
-                      </Card>
-                    </Col>
-                    
-                    <Col xs={24} sm={12} lg={6}>
-                      <Card>
-                        <Statistic
-                          title="Đơn hàng"
-                          value={145}
-                          prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}
-                        />
-                      </Card>
-                    </Col>
-                    
-                    <Col xs={24} sm={12} lg={6}>
-                      <Card>
-                        <Statistic
-                          title="Khách hàng"
-                          value={89}
-                          prefix={<UserOutlined style={{ color: '#722ed1' }} />}
-                        />
-                      </Card>
-                    </Col>
-                    
-                    <Col xs={24} sm={12} lg={6}>
-                      <Card>
-                        <Statistic
-                          title="Sản phẩm"
-                          value={567}
-                          prefix={<ShopOutlined style={{ color: '#eb2f96' }} />}
-                        />
-                      </Card>
-                    </Col>
-                  </Row>
-                </div>
-              } 
-            />
+            <Route path="/dashboard" element={<DashboardPage />} />
             
             <Route 
               path="/pos" 
               element={
                 <RoleGuard allowedRoles={['admin', 'manager', 'cashier', 'staff']}>
-                  <div style={{ padding: '24px' }}>
-                    <h1>Terminal bán hàng</h1>
-                    <p>Giao diện bán hàng đang được phát triển...</p>
-                  </div>
+                  <POSTerminalPage />
                 </RoleGuard>
               } 
             />
@@ -155,10 +171,7 @@ function App() {
               path="/products" 
               element={
                 <RoleGuard allowedRoles={['admin', 'manager']}>
-                  <div style={{ padding: '24px' }}>
-                    <h1>Quản lý sản phẩm</h1>
-                    <p>Tính năng quản lý sản phẩm đang được phát triển...</p>
-                  </div>
+                  <ProductListPage />
                 </RoleGuard>
               } 
             />
@@ -167,10 +180,7 @@ function App() {
               path="/customers" 
               element={
                 <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
-                  <div>
-                    <h1>Quản lý khách hàng</h1>
-                    <p>Tính năng đang phát triển...</p>
-                  </div>
+                  <CustomerListPage />
                 </RoleGuard>
               } 
             />
@@ -179,10 +189,7 @@ function App() {
               path="/orders" 
               element={
                 <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
-                  <div>
-                    <h1>Quản lý đơn hàng</h1>
-                    <p>Tính năng đang phát triển...</p>
-                  </div>
+                  <OrderListPage />
                 </RoleGuard>
               } 
             />

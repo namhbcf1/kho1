@@ -5,6 +5,13 @@ export const ROUTES = {
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   
+  // Auth routes (alternative paths)
+  AUTH: {
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+  },
+  
   // Protected routes
   DASHBOARD: '/dashboard',
   

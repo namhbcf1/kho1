@@ -3,20 +3,26 @@ import { test, expect } from '@playwright/test';
 
 // Helper function to login
 async function login(page: any) {
-  await page.goto('/login');
+  await page.goto('/auth/login');
   await page.waitForLoadState('networkidle');
   
-  // Wait for and fill email field
-  await page.waitForSelector('input[type="email"], input[name="email"], [data-testid="email-input"]', { timeout: 10000 });
-  await page.fill('input[type="email"], input[name="email"], [data-testid="email-input"]', 'admin@khoaugment.com');
+  // Wait for login form to be visible
+  await page.waitForSelector('form[name="login"]', { timeout: 10000 });
   
-  // Wait for and fill password field
-  await page.waitForSelector('input[type="password"], input[name="password"], [data-testid="password-input"]', { timeout: 10000 });
-  await page.fill('input[type="password"], input[name="password"], [data-testid="password-input"]', 'admin123');
+  // Fill email field using Form.Item name
+  const emailInput = page.locator('input[name="email"]').or(page.locator('#email')).or(page.locator('input').nth(0));
+  await emailInput.waitFor({ timeout: 10000 });
+  await emailInput.fill('admin@khoaugment.com');
+  
+  // Fill password field
+  const passwordInput = page.locator('input[name="password"]').or(page.locator('#password')).or(page.locator('input[type="password"]'));
+  await passwordInput.waitFor({ timeout: 10000 });
+  await passwordInput.fill('123456');
   
   // Click login button
-  await page.click('button[type="submit"], button:has-text("Đăng nhập"), [data-testid="login-button"]');
-  await page.waitForTimeout(3000); // Wait for authentication
+  const loginButton = page.locator('button[type="submit"]').or(page.locator('button:has-text("Đăng nhập")'));
+  await loginButton.click();
+  await page.waitForTimeout(5000); // Wait for authentication and redirect
 }
 
 test.describe('Homepage and Landing', () => {
@@ -24,10 +30,20 @@ test.describe('Homepage and Landing', () => {
     await page.goto('/');
     
     // Should either show login page or dashboard if logged in
-    const isLoginPage = page.locator('text=Đăng nhập').isVisible();
-    const isDashboard = page.locator('text=Tổng quan').isVisible();
+    const loginButton = page.locator('button:has-text("Đăng nhập")');
+    const dashboardTitle = page.locator('h1:has-text("Tổng quan"), .ant-typography:has-text("Tổng quan")');
     
-    await expect(isLoginPage.or(isDashboard)).toBeTruthy();
+    // Check if we're on login page or dashboard
+    try {
+      await expect(loginButton).toBeVisible({ timeout: 5000 });
+    } catch {
+      try {
+        await expect(dashboardTitle).toBeVisible({ timeout: 5000 });
+      } catch {
+        // Either login or dashboard should be visible
+        throw new Error('Neither login form nor dashboard is visible');
+      }
+    }
   });
 
   test('should handle 404 pages gracefully', async ({ page }) => {
@@ -42,11 +58,11 @@ test.describe('Authentication Flow', () => {
   test('should redirect unauthenticated users to login', async ({ page }) => {
     await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/(login|auth\/login)/);
   });
 
   test('should show login form elements', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/auth/login');
     await page.waitForLoadState('networkidle');
     
     // Wait for form to render with longer timeout

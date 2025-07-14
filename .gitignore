@@ -167,3 +167,32 @@ uploads/
 storage/
 cache/
 sessions/
+
+# Vietnamese POS specific
+/data/exports/
+/reports/generated/
+/thermal-printer-configs/
+*.receipt
+*.vnpay-log
+
+# Security files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+private-keys/
+certificates/
+
+# Business sensitive files
+/receipts/
+/backups/
+/customer-data/
+*.customer-export
+*.sales-report
+*.financial-data
+
+# Local configuration
+local-config.json
+dev-secrets.json
+.env.*.local
