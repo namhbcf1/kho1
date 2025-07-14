@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, Statistic } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 
@@ -13,7 +13,7 @@ interface KPICardProps {
   precision?: number;
 }
 
-export const KPICard: React.FC<KPICardProps> = ({
+export const KPICard: React.FC<KPICardProps> = memo(({
   title,
   value,
   change,
@@ -76,5 +76,7 @@ export const KPICard: React.FC<KPICardProps> = ({
     </Card>
   );
 };
+
+});
 
 export default KPICard;

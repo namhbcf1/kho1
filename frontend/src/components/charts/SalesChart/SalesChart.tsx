@@ -1,16 +1,19 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import type { SalesChartProps } from './SalesChart.types';
 
-const mockData = [
+interface PaymentMethodData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+const mockData: PaymentMethodData[] = [
   { name: 'Tiền mặt', value: 45, color: '#1890ff' },
   { name: 'VNPay', value: 28, color: '#52c41a' },
   { name: 'MoMo', value: 18, color: '#fa8c16' },
   { name: 'ZaloPay', value: 9, color: '#722ed1' },
 ];
-
-interface SalesChartProps {
-  height?: number;
-}
 
 export const SalesChart: React.FC<SalesChartProps> = ({
   height = 300,
@@ -55,7 +58,7 @@ export const SalesChart: React.FC<SalesChartProps> = ({
             ))}
           </Pie>
           <Tooltip 
-            formatter={(value: number) => [`${value}%`, 'Tỷ lệ']}
+            formatter={(value: number, name: string) => [`${value}%`, 'Tỷ lệ']}
             contentStyle={{ 
               border: 'none', 
               borderRadius: '8px', 

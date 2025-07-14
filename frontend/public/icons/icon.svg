@@ -1,0 +1,7 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="32" fill="#1890ff"/>
+  <path d="M48 72h96v8H48zm0 16h96v8H48zm0 16h64v8H48z" fill="white"/>
+  <circle cx="144" cy="112" r="16" fill="white"/>
+  <path d="M96 48h48v16H96z" fill="white" opacity="0.8"/>
+  <text x="96" y="156" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">POS</text>
+</svg>

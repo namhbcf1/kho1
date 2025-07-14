@@ -1,0 +1,413 @@
+/* Accessibility Enhancements */
+
+/* Focus Management */
+:focus {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip Links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--ant-primary-color, #1890ff);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+  font-weight: 600;
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.sr-only-focusable:focus {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  /* Reset all custom colors to system colors */
+  * {
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+    border-color: ButtonBorder !important;
+  }
+  
+  /* Links */
+  a, .ant-btn-link {
+    color: LinkText !important;
+  }
+  
+  a:visited {
+    color: VisitedText !important;
+  }
+  
+  a:hover, a:focus {
+    color: HighlightText !important;
+    background-color: Highlight !important;
+  }
+  
+  /* Buttons */
+  .ant-btn, button {
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+    border: 2px solid ButtonBorder !important;
+  }
+  
+  .ant-btn:hover, .ant-btn:focus, button:hover, button:focus {
+    background-color: Highlight !important;
+    color: HighlightText !important;
+    border-color: HighlightText !important;
+  }
+  
+  .ant-btn:disabled, button:disabled {
+    background-color: ButtonFace !important;
+    color: GrayText !important;
+    border-color: GrayText !important;
+  }
+  
+  /* Form Controls */
+  .ant-input, .ant-select-selector, input, select, textarea {
+    background-color: Field !important;
+    color: FieldText !important;
+    border: 2px solid ButtonBorder !important;
+  }
+  
+  .ant-input:focus, .ant-select-focused .ant-select-selector, 
+  input:focus, select:focus, textarea:focus {
+    border-color: Highlight !important;
+    box-shadow: 0 0 0 2px Highlight !important;
+  }
+  
+  /* Cards and Containers */
+  .ant-card, .dashboard-widget {
+    background-color: ButtonFace !important;
+    border: 2px solid ButtonBorder !important;
+  }
+  
+  /* Status Colors */
+  .status-indicator, .kpi-card {
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+    border: 2px solid ButtonBorder !important;
+  }
+  
+  /* Charts and Visualizations */
+  .chart-container, .recharts-wrapper {
+    background-color: ButtonFace !important;
+    border: 2px solid ButtonBorder !important;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Disable transform animations */
+  .ant-card:hover,
+  .dashboard-widget:hover,
+  .kpi-card:hover {
+    transform: none !important;
+  }
+  
+  /* Disable fade animations */
+  .ant-fade-enter,
+  .ant-fade-leave,
+  .ant-slide-up-enter,
+  .ant-slide-up-leave {
+    transition: none !important;
+  }
+}
+
+/* Keyboard Navigation Enhancements */
+.keyboard-nav {
+  outline: none;
+}
+
+.keyboard-nav :focus {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 4px;
+  z-index: 1;
+  position: relative;
+}
+
+/* Skip to main content */
+.skip-to-main {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-to-main:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  background: var(--ant-primary-color, #1890ff);
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 9999;
+  display: inline-block;
+  margin: 8px;
+}
+
+/* Focus trap for modals */
+.focus-trap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.focus-trap::before,
+.focus-trap::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: auto;
+  opacity: 0;
+}
+
+.focus-trap::before {
+  left: 0;
+}
+
+.focus-trap::after {
+  right: 0;
+}
+
+/* Announcement regions for screen readers */
+.announcement {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.announcement[aria-live="polite"] {
+  /* Polite announcements */
+}
+
+.announcement[aria-live="assertive"] {
+  /* Urgent announcements */
+}
+
+/* Color blindness support */
+.colorblind-friendly {
+  /* Use patterns in addition to colors */
+}
+
+.colorblind-friendly .status-indicator--success::before {
+  content: '✓';
+  margin-right: 4px;
+}
+
+.colorblind-friendly .status-indicator--warning::before {
+  content: '⚠';
+  margin-right: 4px;
+}
+
+.colorblind-friendly .status-indicator--error::before {
+  content: '✗';
+  margin-right: 4px;
+}
+
+.colorblind-friendly .kpi-card--increase::before {
+  content: '↗';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.colorblind-friendly .kpi-card--decrease::before {
+  content: '↘';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Touch target sizes for mobile */
+@media (max-width: 767px) {
+  .ant-btn, button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px 16px;
+  }
+  
+  .ant-input, input, select, textarea {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+  
+  /* Increase touch targets for small interactive elements */
+  .ant-card-extra .ant-btn {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+/* Text scaling support */
+@media (min-resolution: 1.5dppx) {
+  /* Support for high DPI displays */
+  .ant-btn, .ant-input, .ant-card {
+    border-width: 0.5px;
+  }
+}
+
+/* Zoom support */
+@media (min-resolution: 2dppx) {
+  body {
+    font-size: 16px; /* Ensure minimum readable font size */
+  }
+  
+  .ant-typography {
+    line-height: 1.6; /* Improve readability */
+  }
+}
+
+/* Dark mode accessibility improvements */
+@media (prefers-color-scheme: dark) {
+  :focus {
+    outline-color: #40a9ff;
+  }
+  
+  :focus-visible {
+    outline-color: #40a9ff;
+  }
+  
+  .skip-link {
+    background: #177ddc;
+  }
+  
+  .skip-to-main:focus {
+    background: #177ddc;
+  }
+}
+
+/* Error and validation states */
+.ant-form-item-has-error .ant-input:focus,
+.ant-form-item-has-error .ant-select-focused .ant-select-selector {
+  outline: 2px solid #ff4d4f;
+  outline-offset: 2px;
+}
+
+.ant-form-item-has-success .ant-input:focus,
+.ant-form-item-has-success .ant-select-focused .ant-select-selector {
+  outline: 2px solid #52c41a;
+  outline-offset: 2px;
+}
+
+/* Loading states accessibility */
+.ant-spin-container[aria-busy="true"] {
+  cursor: wait;
+}
+
+.ant-spin-blur {
+  pointer-events: none;
+}
+
+/* Custom focus indicators for complex components */
+.dashboard-widget:focus-within {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.kpi-card:focus-within {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.chart-container:focus-within {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Ensure text remains readable at all zoom levels */
+@media (min-width: 320px) {
+  html {
+    font-size: calc(16px + 0.390625vw);
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 20px;
+  }
+}
+
+/* Prevent horizontal scrolling on small screens */
+@media (max-width: 575px) {
+  body {
+    overflow-x: hidden;
+  }
+  
+  .dashboard-container,
+  .ant-row {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+  }
+}

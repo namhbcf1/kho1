@@ -1,0 +1,81 @@
+/* Dashboard Grid Styles */
+.dashboard-grid {
+  width: 100%;
+  height: 100%;
+}
+
+.dashboard-grid__row {
+  margin: 0;
+  width: 100%;
+}
+
+.dashboard-grid__col {
+  padding: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 575px) {
+  .dashboard-grid {
+    padding: 0 8px;
+  }
+  
+  .dashboard-grid__col {
+    margin-bottom: 12px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .dashboard-grid {
+    padding: 0 12px;
+  }
+  
+  .dashboard-grid__col {
+    margin-bottom: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    padding: 0 16px;
+  }
+  
+  .dashboard-grid__col {
+    margin-bottom: 20px;
+  }
+}
+
+/* Focus and accessibility */
+.dashboard-grid__col:focus-within {
+  outline: 2px solid var(--ant-primary-color, #1890ff);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dashboard-grid__col:focus-within {
+    outline-color: var(--ant-primary-color-dark, #177ddc);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .dashboard-grid__col:focus-within {
+    outline: 3px solid;
+    outline-color: Highlight;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-grid *,
+  .dashboard-grid *::before,
+  .dashboard-grid *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

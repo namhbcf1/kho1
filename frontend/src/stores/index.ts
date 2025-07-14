@@ -5,7 +5,7 @@ export * from './productStore';
 export * from './customerStore';
 export * from './orderStore';
 export * from './inventoryStore';
-export * from './analyticsStore';
+export * from './analyticsStore.enhanced';
 export * from './settingsStore';
 export * from './uiStore';
 

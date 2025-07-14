@@ -247,6 +247,19 @@ declare global {
   interface Navigator {
     locks?: LockManager;
   }
+
+  // Vite environment variables
+  interface ImportMeta {
+    env: {
+      VITE_API_BASE_URL?: string;
+      VITE_CLOUDFLARE_ACCOUNT_ID?: string;
+      VITE_CLOUDFLARE_API_TOKEN?: string;
+      MODE?: string;
+      PROD?: boolean;
+      DEV?: boolean;
+      [key: string]: any;
+    };
+  }
 }
 
 // Module declarations

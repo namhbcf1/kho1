@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+*/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -9,25 +10,26 @@ lerna-debug.log*
 # Build outputs
 dist/
 build/
-.output/
-.vercel/
-.netlify/
+*/dist/
+*/build/
 
-# Environment variables
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+*.env
 
-# IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -37,11 +39,11 @@ ehthumbs.db
 Thumbs.db
 
 # Logs
-logs/
+logs
 *.log
 
 # Runtime data
-pids/
+pids
 *.pid
 *.seed
 *.pid.lock
@@ -51,25 +53,16 @@ coverage/
 *.lcov
 
 # nyc test coverage
-.nyc_output/
+.nyc_output
 
 # Dependency directories
 jspm_packages/
-
-# TypeScript cache
-*.tsbuildinfo
 
 # Optional npm cache directory
 .npm
 
 # Optional eslint cache
 .eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -90,10 +83,6 @@ jspm_packages/
 # Nuxt.js build / generate output
 .nuxt
 
-# Gatsby files
-.cache/
-public
-
 # Storybook build outputs
 .out
 .storybook-out
@@ -106,93 +95,30 @@ temp/
 .wrangler/
 wrangler.toml.bak
 
+# Testing
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Local development
+*.local
+.env.development
+
 # Database
 *.db
 *.sqlite
 *.sqlite3
 
-# Test results
-test-results/
-playwright-report/
-playwright/.cache/
-
-# Local development
-.local/
-.dev/
-
 # Backup files
-*.bak
 *.backup
+*.bak
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Cache
+.cache/
+.vite/
 
-# MacOS
-.AppleDouble
-.LSOverride
+# Build tools
+.turbo/
 
-# Windows
-Desktop.ini
-$RECYCLE.BIN/
-
-# Linux
-*~
-
-# Vim
-*.swp
-*.swo
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Project specific
-uploads/
-storage/
-cache/
-sessions/
-
-# Vietnamese POS specific
-/data/exports/
-/reports/generated/
-/thermal-printer-configs/
-*.receipt
-*.vnpay-log
-
-# Security files
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
-private-keys/
-certificates/
-
-# Business sensitive files
-/receipts/
-/backups/
-/customer-data/
-*.customer-export
-*.sales-report
-*.financial-data
-
-# Local configuration
-local-config.json
-dev-secrets.json
-.env.*.local
+# TypeScript
+*.tsbuildinfo

@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Alert, Card, Row, Col, Statistic } from 'antd';
+import { Layout, Alert, Card, Row, Col, Statistic, ConfigProvider } from 'antd';
 import { 
   DollarOutlined, 
   ShoppingCartOutlined, 
   UserOutlined, 
   ShopOutlined 
 } from '@ant-design/icons';
-import { DashboardPage } from './pages/DashboardPage';
+import { EnhancedDashboardPage } from './pages/DashboardPage.enhanced';
 import { POSTerminalPage } from './pages/pos/POSTerminalPage';
 import { ProductListPage } from './pages/products/ProductListPage';
 import { CustomerListPage } from './pages/customers/CustomerListPage';
@@ -21,15 +21,22 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import { AuthLoading, PageLoading } from './components/ui/Loading';
+import { AccessibilityProvider } from './components/dashboard/AccessibilityProvider/AccessibilityProvider';
 import { ROUTES } from './constants/routes';
 import { useAuthStore } from './stores/authStore';
+import { useUIStore } from './stores/uiStore';
 import './App.css';
 import './components/ui/Loading/Loading.css';
+import './styles/themes.css';
+import './styles/dashboard.css';
+import './styles/accessibility.css';
+import './styles/antd-overrides.css';
 
 const { Content } = Layout;
 
 function App() {
   const { user, isAuthenticated, isLoading, error, isInitialized, logout, clearError, initialize } = useAuthStore();
+  const { theme, isDarkMode } = useUIStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,6 +46,12 @@ function App() {
       initialize();
     }
   }, [isInitialized, initialize]);
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  }, [theme, isDarkMode]);
 
   const handleUserMenuClick = (key: string) => {
     switch (key) {
@@ -139,104 +152,145 @@ function App() {
     );
   }
 
+  // Ant Design theme configuration
+  const antdTheme = {
+    token: {
+      colorPrimary: isDarkMode ? '#177ddc' : '#1890ff',
+      colorBgBase: isDarkMode ? '#000000' : '#ffffff',
+      colorTextBase: isDarkMode ? '#ffffffd9' : '#000000d9',
+      colorBorder: isDarkMode ? '#303030' : '#d9d9d9',
+      borderRadius: 8,
+      wireframe: false,
+    },
+    algorithm: isDarkMode ? 
+      [require('antd/es/theme').darkAlgorithm] : 
+      [require('antd/es/theme').defaultAlgorithm],
+  };
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <AppSidebar 
-        selectedKey={getCurrentPageKey()}
-        onMenuSelect={handleSidebarMenuClick}
-      />
-      
-      <Layout>
-        <AppHeader 
-          user={user} 
-          onMenuClick={handleUserMenuClick}
-        />
-        
-        <Content style={{ margin: '16px' }}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            
-            <Route path="/dashboard" element={<DashboardPage />} />
-            
-            <Route 
-              path="/pos" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager', 'cashier', 'staff']}>
-                  <POSTerminalPage />
-                </RoleGuard>
-              } 
+    <ConfigProvider theme={antdTheme} locale={require('antd/locale/vi_VN')}>
+      <AccessibilityProvider>
+        <div className="dashboard-theme" data-theme={theme}>
+          <Layout style={{ minHeight: '100vh' }} className="main-layout">
+            <AppSidebar 
+              selectedKey={getCurrentPageKey()}
+              onMenuSelect={handleSidebarMenuClick}
             />
             
-            <Route 
-              path="/products" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager']}>
-                  <ProductListPage />
-                </RoleGuard>
-              } 
-            />
-            
-            <Route 
-              path="/customers" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
-                  <CustomerListPage />
-                </RoleGuard>
-              } 
-            />
-            
-            <Route 
-              path="/orders" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
-                  <OrderListPage />
-                </RoleGuard>
-              } 
-            />
-            
-            <Route 
-              path="/analytics" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager']}>
-                  <div>
-                    <h1>Báo cáo & Thống kê</h1>
-                    <p>Tính năng đang phát triển...</p>
-                  </div>
-                </RoleGuard>
-              } 
-            />
-            
-            <Route 
-              path="/staff" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager']}>
-                  <div>
-                    <h1>Quản lý nhân viên</h1>
-                    <p>Tính năng đang phát triển...</p>
-                  </div>
-                </RoleGuard>
-              } 
-            />
-            
-            <Route 
-              path="/settings" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'manager']}>
-                  <div>
-                    <h1>Cài đặt hệ thống</h1>
-                    <p>Tính năng đang phát triển...</p>
-                  </div>
-                </RoleGuard>
-              } 
-            />
-            
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </Content>
-        
-        <AppFooter />
-      </Layout>
-    </Layout>
+            <Layout>
+              <AppHeader 
+                user={user} 
+                onMenuClick={handleUserMenuClick}
+              />
+              
+              <Content 
+                style={{ margin: '16px' }}
+                id="main-content"
+                role="main"
+                aria-label="Nội dung chính"
+              >
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  
+                  <Route 
+                    path="/dashboard" 
+                    element={
+                      <div id="dashboard" role="main" aria-label="Dashboard">
+                        <EnhancedDashboardPage />
+                      </div>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/pos" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager', 'cashier', 'staff']}>
+                        <div role="main" aria-label="Điểm bán hàng">
+                          <POSTerminalPage />
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/products" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <div role="main" aria-label="Quản lý sản phẩm">
+                          <ProductListPage />
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/customers" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
+                        <div role="main" aria-label="Quản lý khách hàng">
+                          <CustomerListPage />
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/orders" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
+                        <div role="main" aria-label="Quản lý đơn hàng">
+                          <OrderListPage />
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/analytics" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <div role="main" aria-label="Báo cáo và thống kê">
+                          <h1>Báo cáo & Thống kê</h1>
+                          <p>Tính năng đang phát triển...</p>
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/staff" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <div role="main" aria-label="Quản lý nhân viên">
+                          <h1>Quản lý nhân viên</h1>
+                          <p>Tính năng đang phát triển...</p>
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route 
+                    path="/settings" 
+                    element={
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <div role="main" aria-label="Cài đặt hệ thống">
+                          <h1>Cài đặt hệ thống</h1>
+                          <p>Tính năng đang phát triển...</p>
+                        </div>
+                      </RoleGuard>
+                    } 
+                  />
+                  
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </Content>
+              
+              <AppFooter />
+            </Layout>
+          </Layout>
+        </div>
+      </AccessibilityProvider>
+    </ConfigProvider>
   );
 }
 
