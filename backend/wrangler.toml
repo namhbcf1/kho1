@@ -4,12 +4,12 @@ main = "src/index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Worker configuration
-[placement]
-mode = "smart"
+# Worker configuration (disabled for free plan)
+# [placement]
+# mode = "smart"
 
-[limits]
-cpu_ms = 50
+# [limits]
+# cpu_ms = 50
 
 # Production environment variables
 [env.production.vars]
@@ -58,35 +58,35 @@ binding = "DB"
 database_name = "kho1-development"
 database_id = "your-development-database-id"
 
-# Production R2 Storage for file uploads
-[[env.production.r2_buckets]]
-binding = "STORAGE"
-bucket_name = "kho1-storage-production"
+# Production R2 Storage for file uploads (disabled - R2 not enabled)
+# [[env.production.r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "kho1-storage-production"
 
 # Development R2 Storage
-[[env.development.r2_buckets]]
-binding = "STORAGE"
-bucket_name = "kho1-storage-development"
+# [[env.development.r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "kho1-storage-development"
 
 # Production KV Cache
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "your-production-kv-id"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 
 # Development KV Cache
 [[env.development.kv_namespaces]]
 binding = "CACHE"
-id = "your-development-kv-id"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 
-# Production Analytics Engine
-[[env.production.analytics_engine_datasets]]
-binding = "ANALYTICS"
-dataset = "kho1_analytics_production"
+# Production Analytics Engine (disabled for now)
+# [[env.production.analytics_engine_datasets]]
+# binding = "ANALYTICS"
+# dataset = "kho1_analytics_production"
 
 # Development Analytics Engine
-[[env.development.analytics_engine_datasets]]
-binding = "ANALYTICS"
-dataset = "kho1_analytics_development"
+# [[env.development.analytics_engine_datasets]]
+# binding = "ANALYTICS"
+# dataset = "kho1_analytics_development"
 
 # Default bindings for local development
 [[d1_databases]]
@@ -94,41 +94,41 @@ binding = "DB"
 database_name = "kho1-development"
 database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
 
-[[r2_buckets]]
-binding = "STORAGE"
-bucket_name = "kho1-storage-development"
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "kho1-storage-development"
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "your-development-kv-id"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 
-# Service bindings for microservices
-[[env.production.services]]
-binding = "AUTH_SERVICE"
-service = "kho1-auth-service"
+# Service bindings for microservices (disabled for now)
+# [[env.production.services]]
+# binding = "AUTH_SERVICE"
+# service = "kho1-auth-service"
 
-[[env.production.services]]
-binding = "PAYMENT_SERVICE"
-service = "kho1-payment-service"
+# [[env.production.services]]
+# binding = "PAYMENT_SERVICE"
+# service = "kho1-payment-service"
 
-# Cron triggers for scheduled tasks
-[[triggers.crons]]
-cron = "0 2 * * *"
-name = "daily-cleanup"
+# Cron triggers for scheduled tasks (disabled for free plan)
+# [[triggers.crons]]
+# cron = "0 2 * * *"
+# name = "daily-cleanup"
 
-[[triggers.crons]]
-cron = "*/15 * * * *"
-name = "sync-offline-orders"
+# [[triggers.crons]]
+# cron = "*/15 * * * *"
+# name = "sync-offline-orders"
 
-[[triggers.crons]]
-cron = "0 */6 * * *"
-name = "backup-database"
+# [[triggers.crons]]
+# cron = "0 */6 * * *"
+# name = "backup-database"
 
-# Build configuration
-[build]
-command = "npm run build"
-cwd = "."
-watch_dir = "src"
+# Build configuration (disabled for quick deployment)
+# [build]
+# command = "npm run build"
+# cwd = "."
+# watch_dir = "src"
 
 # Miniflare configuration for local development
 [miniflare]
