@@ -53,6 +53,9 @@ zone_name = "your-domain.com"
 command = "npm run build"
 cwd = "."
 
+# Pages configuration
+pages_build_output_dir = "frontend/dist"
+
 # Node.js compatibility
 node_compat = true
 
