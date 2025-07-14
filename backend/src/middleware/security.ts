@@ -296,8 +296,8 @@ export function escapeSqlString(str: string): string {
   return str.replace(/'/g, "''");
 }
 
-// Clean up expired tokens periodically
-setInterval(() => {
+// Clean up expired tokens function (called manually when needed)
+export function cleanupExpiredTokens() {
   const now = Date.now();
   
   // Clean up rate limit store
@@ -313,4 +313,4 @@ setInterval(() => {
       csrfTokenStore.delete(key);
     }
   }
-}, 5 * 60 * 1000); // Clean up every 5 minutes
+}

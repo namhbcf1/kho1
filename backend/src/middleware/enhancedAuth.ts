@@ -415,8 +415,8 @@ export async function cleanupExpiredSessions(db: D1Database): Promise<void> {
   }
 }
 
-// Periodic cleanup
-setInterval(async () => {
-  // This would need to be called with the database instance
+// Manual cleanup function (call periodically in handlers)
+export function scheduleCleanup() {
+  // This would need to be called with the database instance in handlers
   console.log('Cleaning up expired sessions...');
-}, 60 * 60 * 1000); // Every hour
+}
