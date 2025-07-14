@@ -54,7 +54,7 @@ app.use('/api/*/auth/register', rateLimiter({
 // General rate limiting
 app.use('/api/*', rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: parseInt(process.env.RATE_LIMIT_REQUESTS || '1000'),
+  maxRequests: 1000, // Default rate limit
 }));
 
 // CSRF protection for state-changing operations
