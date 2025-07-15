@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { authService } from '../services/auth/authService';
 import type { LoginCredentials, User } from '../types';
+import { logger } from '../utils/logger';
 
 interface AuthState {
   user: User | null;
@@ -46,7 +47,7 @@ export const useAuthStore = create<AuthState>()(
             const result = await authService.login(credentials);
             
             if (result.success && result.user && result.tokens) {
-              // Store tokens securely in sessionStorage (not localStorage)
+              // Store tokens securely in sessionStorage ONLY (not localStorage)
               sessionStorage.setItem('access_token', result.tokens.accessToken);
               sessionStorage.setItem('refresh_token', result.tokens.refreshToken);
               
@@ -58,11 +59,22 @@ export const useAuthStore = create<AuthState>()(
                 error: null,
                 isInitialized: true
               });
+              
+              // Log successful authentication (security audit)
+              logger.security('user.login.success', { 
+                userId: result.user.id,
+                email: result.user.email
+              });
             } else {
               throw new Error(result.message || 'Đăng nhập thất bại');
             }
           } catch (error) {
-            console.error('Login error:', error);
+            // Log failed authentication attempt (security audit)
+            logger.security('user.login.failed', { 
+              email: email.toLowerCase().trim(),
+              reason: error instanceof Error ? error.message : 'Unknown error'
+            });
+            
             set({
               error: error instanceof Error ? error.message : 'Đăng nhập thất bại',
               isLoading: false,
@@ -74,13 +86,21 @@ export const useAuthStore = create<AuthState>()(
         },
 
         logout: () => {
+          // Log user logout (security audit)
+          const userId = get().user?.id;
+          if (userId) {
+            logger.security('user.logout', { userId });
+          }
+          
           // Clear all authentication data
           sessionStorage.removeItem('access_token');
           sessionStorage.removeItem('refresh_token');
           localStorage.removeItem('auth-storage');
           
           // Call logout API to invalidate server-side session
-          authService.logout().catch(console.error);
+          authService.logout().catch(error => {
+            logger.error('Logout API error', { error: error instanceof Error ? error.message : String(error) });
+          });
           
           set({
             user: null,
@@ -101,17 +121,28 @@ export const useAuthStore = create<AuthState>()(
             const result = await authService.refreshToken(refreshToken);
             
             if (result.success && result.tokens) {
+              // Store new tokens in sessionStorage only
               sessionStorage.setItem('access_token', result.tokens.accessToken);
               sessionStorage.setItem('refresh_token', result.tokens.refreshToken);
               
               if (result.user) {
                 set({ user: result.user });
               }
+              
+              // Log token refresh (security audit)
+              logger.security('token.refresh.success', { 
+                userId: get().user?.id
+              });
             } else {
               throw new Error(result.message || 'Token refresh failed');
             }
           } catch (error) {
-            console.error('Token refresh error:', error);
+            // Log token refresh failure (security audit)
+            logger.security('token.refresh.failed', { 
+              userId: get().user?.id,
+              reason: error instanceof Error ? error.message : String(error)
+            });
+            
             get().logout();
             throw error;
           }
@@ -137,16 +168,30 @@ export const useAuthStore = create<AuthState>()(
                 isLoading: false,
                 isInitialized: true
               });
+              
+              // Log successful token verification (security audit)
+              logger.security('token.verify.success', { 
+                userId: result.user.id
+              });
             } else {
               // Try to refresh token
               try {
                 await get().refreshToken();
               } catch (refreshError) {
+                // Log token verification and refresh failure (security audit)
+                logger.security('token.verify.failed', {
+                  reason: refreshError instanceof Error ? refreshError.message : String(refreshError)
+                });
+                
                 get().logout();
               }
             }
           } catch (error) {
-            console.error('Auth check error:', error);
+            // Log authentication check error (security audit)
+            logger.security('auth.check.failed', {
+              reason: error instanceof Error ? error.message : String(error)
+            });
+            
             get().logout();
           } finally {
             set({ isLoading: false, isInitialized: true });
@@ -202,28 +247,6 @@ export const useAuthActions = () => useAuthStore((state) => ({
 }));
 
 export const usePermissions = () => useAuthStore((state) => ({
-  // Permission helpers will be re-added here once the authService is updated
-  // to return permission data directly.
-  // For now, we'll return dummy functions or remove if not needed immediately.
-  // Example:
-  // hasPermission: (permission: string) => {
-  //   const { user } = get();
-  //   return permissionService.hasPermission(permission, user || undefined);
-  // },
-  // hasRole: (role: string) => {
-  //   const { user } = get();
-  //   return permissionService.hasRole(role, user || undefined);
-  // },
-  // hasAnyPermission: (permissions: string[]) => {
-  //   const { user } = get();
-  //   return permissionService.hasAnyPermission(permissions, user || undefined);
-  // },
-  // hasAllPermissions: (permissions: string[]) => {
-  //   const { user } = get();
-  //   return permissionService.hasAllPermissions(permissions, user || undefined);
-  // },
-  // canAccessResource: (resource: string, action: string) => {
-  //   const { user } = get();
-  //   return permissionService.canAccessResource(resource, action, user || undefined);
-  // },
+  // Permission helpers will be implemented properly with the authService
+  // No dummy functions or placeholders
 }));

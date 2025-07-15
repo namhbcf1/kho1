@@ -1,5 +1,5 @@
 // API endpoints and configuration
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://kho1-api-production.bangachieu2.workers.dev';
+export const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://kho1-api-production.bangachieu2.workers.dev';
 
 export const API_ENDPOINTS = {
   // Auth

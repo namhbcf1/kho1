@@ -1,424 +1,248 @@
-// API Client with comprehensive error handling and retry logic
-import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
-import { z } from 'zod';
+/**
+ * Secure API client with CSRF protection, token management,
+ * and proper error handling for production
+ */
+import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { API_BASE_URL } from '../../constants/api';
+import { logger } from '../../utils/logger';
+import { tokenService } from '../auth/tokenService';
 
-// API Response schemas
-const ApiSuccessResponseSchema = z.object({
-  success: z.literal(true),
-  message: z.string().optional(),
-  data: z.any(),
-  pagination: z.object({
-    page: z.number(),
-    limit: z.number(),
-    total: z.number(),
-    totalPages: z.number(),
-    hasNext: z.boolean(),
-    hasPrev: z.boolean(),
-  }).optional(),
-  timestamp: z.string(),
-});
+// Create a scoped logger for API operations
+const apiLogger = logger.createScopedLogger('api');
 
-const ApiErrorResponseSchema = z.object({
-  success: z.literal(false),
-  error: z.object({
-    message: z.string(),
-    code: z.string(),
-  }),
-  timestamp: z.string(),
-});
+// CSRF token storage
+let csrfToken: string | null = null;
 
-export type ApiSuccessResponse<T = any> = {
-  success: true;
-  message?: string;
-  data: T;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-  timestamp: string;
-};
-
-export type ApiErrorResponse = {
-  success: false;
-  error: {
-    message: string;
-    code: string;
-  };
-  timestamp: string;
-};
-
-export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
-
-// Custom error classes
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public status?: number,
-    public response?: any
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-export class NetworkError extends ApiError {
-  constructor(message: string, cause?: Error) {
-    super(message, 'NETWORK_ERROR', 0, cause);
-    this.name = 'NetworkError';
-  }
-}
-
-export class ValidationError extends ApiError {
-  constructor(message: string, response?: any) {
-    super(message, 'VALIDATION_ERROR', 400, response);
-    this.name = 'ValidationError';
-  }
-}
-
-export class AuthenticationError extends ApiError {
-  constructor(message: string = 'Authentication required') {
-    super(message, 'AUTH_ERROR', 401);
-    this.name = 'AuthenticationError';
-  }
-}
-
-export class AuthorizationError extends ApiError {
-  constructor(message: string = 'Insufficient permissions') {
-    super(message, 'AUTHORIZATION_ERROR', 403);
-    this.name = 'AuthorizationError';
-  }
-}
-
-export class NotFoundError extends ApiError {
-  constructor(message: string = 'Resource not found') {
-    super(message, 'NOT_FOUND', 404);
-    this.name = 'NotFoundError';
-  }
-}
-
-export class ServerError extends ApiError {
-  constructor(message: string = 'Internal server error') {
-    super(message, 'SERVER_ERROR', 500);
-    this.name = 'ServerError';
-  }
-}
-
-// Retry configuration
-interface RetryConfig {
-  maxRetries: number;
-  baseDelay: number;
-  maxDelay: number;
-  retryCondition: (error: AxiosError) => boolean;
-}
-
-const DEFAULT_RETRY_CONFIG: RetryConfig = {
-  maxRetries: 3,
-  baseDelay: 1000,
-  maxDelay: 10000,
-  retryCondition: (error: AxiosError) => {
-    if (!error.response) return true; // Network errors
-    const status = error.response.status;
-    return status >= 500 || status === 429; // Server errors or rate limiting
+// Create axios instance with default config
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000, // 30 seconds
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
-};
+  withCredentials: true, // Include cookies for CSRF
+});
 
-// API Client class
-export class ApiClient {
-  private client: AxiosInstance;
-  private retryConfig: RetryConfig;
+/**
+ * Request interceptor for API calls
+ */
+axiosInstance.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
+    // Get auth token and add to headers if available
+    const token = tokenService.getStoredToken();
+    if (token) {
+      config.headers.set('Authorization', `Bearer ${token}`);
+    }
 
-  constructor(
-    baseURL: string = import.meta.env.VITE_API_BASE_URL || '/api/v1',
-    timeout: number = 30000,
-    retryConfig: Partial<RetryConfig> = {}
-  ) {
-    this.retryConfig = { ...DEFAULT_RETRY_CONFIG, ...retryConfig };
-    
-    this.client = axios.create({
-      baseURL,
-      timeout,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
-
-    this.setupInterceptors();
-  }
-
-  private setupInterceptors() {
-    // Request interceptor
-    this.client.interceptors.request.use(
-      (config) => {
-        // Add auth token if available
-        const token = this.getAuthToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        // Add request ID for tracing
-        config.headers['X-Request-ID'] = this.generateRequestId();
-
-        console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`, {
-          params: config.params,
-          data: config.data,
-        });
-
-        return config;
-      },
-      (error) => {
-        console.error('Request interceptor error:', error);
-        return Promise.reject(error);
-      }
+    // Add CSRF token to state-changing requests
+    const isStateChangingMethod = ['post', 'put', 'delete', 'patch'].includes(
+      config.method?.toLowerCase() || ''
     );
 
-    // Response interceptor with retry logic
-    this.client.interceptors.response.use(
-      (response) => {
-        console.log(`API Response: ${response.status} ${response.config.url}`, {
-          data: response.data,
-        });
-        return response;
-      },
-      async (error: AxiosError) => {
-        const originalRequest = error.config as any;
-
-        // Don't retry if we've already retried max times
-        if (originalRequest._retryCount >= this.retryConfig.maxRetries) {
-          return Promise.reject(this.createApiError(error));
-        }
-
-        // Check if we should retry
-        if (this.retryConfig.retryCondition(error)) {
-          originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
-
-          const delay = Math.min(
-            this.retryConfig.baseDelay * Math.pow(2, originalRequest._retryCount - 1),
-            this.retryConfig.maxDelay
-          );
-
-          console.warn(
-            `Retrying request (${originalRequest._retryCount}/${this.retryConfig.maxRetries}) in ${delay}ms:`,
-            error.message
-          );
-
-          await this.sleep(delay);
-          return this.client(originalRequest);
-        }
-
-        return Promise.reject(this.createApiError(error));
-      }
-    );
-  }
-
-  private createApiError(error: AxiosError): ApiError {
-    if (!error.response) {
-      return new NetworkError('Network error occurred', error);
-    }
-
-    const status = error.response.status;
-    const data = error.response.data as any;
-
-    // Try to parse error response
-    let message = 'An error occurred';
-    let code = 'UNKNOWN_ERROR';
-
-    if (data && typeof data === 'object') {
-      if (data.error && data.error.message) {
-        message = data.error.message;
-        code = data.error.code || code;
-      } else if (data.message) {
-        message = data.message;
-      }
-    }
-
-    switch (status) {
-      case 400:
-        return new ValidationError(message, data);
-      case 401:
-        return new AuthenticationError(message);
-      case 403:
-        return new AuthorizationError(message);
-      case 404:
-        return new NotFoundError(message);
-      case 429:
-        return new ApiError('Too many requests', 'RATE_LIMIT_ERROR', status, data);
-      case 500:
-      default:
-        return new ServerError(message);
-    }
-  }
-
-  private getAuthToken(): string | null {
-    // Get token from localStorage, sessionStorage, or wherever you store it
-    return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-  }
-
-  private generateRequestId(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // Generic request method with validation
-  async request<T>(
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
-    url: string,
-    data?: any,
-    params?: any,
-    responseSchema?: z.ZodSchema<T>
-  ): Promise<ApiResponse<T>> {
-    try {
-      const response: AxiosResponse = await this.client.request({
-        method,
-        url,
-        data,
-        params,
-      });
-
-      // Validate response structure
-      const parsedResponse = ApiSuccessResponseSchema.parse(response.data);
-
-      // Validate response data if schema provided
-      if (responseSchema && parsedResponse.data) {
+    if (isStateChangingMethod) {
+      // If we don't have a CSRF token yet, fetch one
+      if (!csrfToken) {
         try {
-          parsedResponse.data = responseSchema.parse(parsedResponse.data);
-        } catch (validationError) {
-          console.warn('Response data validation failed:', validationError);
-          // Don't throw, just log warning as server might return slightly different structure
+          await fetchCsrfToken();
+        } catch (error) {
+          apiLogger.error('Failed to fetch CSRF token', { 
+            error: error instanceof Error ? error.message : String(error) 
+          });
         }
       }
 
-      return parsedResponse as ApiResponse<T>;
-    } catch (error) {
-      if (error instanceof ApiError) {
-        // Create error response format
-        return {
-          success: false,
-          error: {
-            message: error.message,
-            code: error.code,
-          },
-          timestamp: new Date().toISOString(),
-        };
+      // Add CSRF token to headers if available
+      if (csrfToken) {
+        config.headers.set('X-CSRF-Token', csrfToken);
       }
-      throw error;
     }
+
+    // Add client information
+    config.headers.set('X-Client-Version', process.env.VITE_APP_VERSION || '1.0.0');
+    config.headers.set('X-Client-Platform', 'web');
+
+    return config;
+  },
+  (error) => {
+    apiLogger.error('Request interceptor error', { 
+      error: error instanceof Error ? error.message : String(error) 
+    });
+    return Promise.reject(error);
   }
+);
 
-  // Convenience methods
-  async get<T>(url: string, params?: any, responseSchema?: z.ZodSchema<T>): Promise<ApiResponse<T>> {
-    return this.request('GET', url, undefined, params, responseSchema);
-  }
+/**
+ * Response interceptor for API calls
+ */
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => {
+    // Extract CSRF token from response headers if present
+    const responseCsrfToken = response.headers['x-csrf-token'];
+    if (responseCsrfToken) {
+      csrfToken = responseCsrfToken as string;
+    }
 
-  async post<T>(url: string, data?: any, responseSchema?: z.ZodSchema<T>): Promise<ApiResponse<T>> {
-    return this.request('POST', url, data, undefined, responseSchema);
-  }
-
-  async put<T>(url: string, data?: any, responseSchema?: z.ZodSchema<T>): Promise<ApiResponse<T>> {
-    return this.request('PUT', url, data, undefined, responseSchema);
-  }
-
-  async patch<T>(url: string, data?: any, responseSchema?: z.ZodSchema<T>): Promise<ApiResponse<T>> {
-    return this.request('PATCH', url, data, undefined, responseSchema);
-  }
-
-  async delete<T>(url: string, responseSchema?: z.ZodSchema<T>): Promise<ApiResponse<T>> {
-    return this.request('DELETE', url, undefined, undefined, responseSchema);
-  }
-
-  // Health check
-  async healthCheck(): Promise<ApiResponse<any>> {
-    return this.get('/health');
-  }
-
-  // Set auth token
-  setAuthToken(token: string) {
-    localStorage.setItem('auth_token', token);
-  }
-
-  // Clear auth token
-  clearAuthToken() {
-    localStorage.removeItem('auth_token');
-    sessionStorage.removeItem('auth_token');
-  }
-
-  // Get base URL
-  getBaseURL(): string {
-    return this.client.defaults.baseURL || '';
-  }
-
-  // Update base URL
-  setBaseURL(baseURL: string) {
-    this.client.defaults.baseURL = baseURL;
-  }
-}
-
-// Create default client instance
-export const apiClient = new ApiClient();
-
-// Helper function to check if response is successful
-export function isApiSuccess<T>(response: ApiResponse<T>): response is ApiSuccessResponse<T> {
-  return response.success === true;
-}
-
-// Helper function to get error message from response
-export function getErrorMessage(response: ApiResponse<any>): string {
-  if (isApiSuccess(response)) {
-    return '';
-  }
-  return response.error.message;
-}
-
-// Helper function to handle API responses with notifications
-export function handleApiResponse<T>(
-  response: ApiResponse<T>,
-  options: {
-    showSuccessMessage?: boolean;
-    successMessage?: string;
-    showErrorMessage?: boolean;
-    onSuccess?: (data: T) => void;
-    onError?: (error: ApiErrorResponse['error']) => void;
-  } = {}
-): T | null {
-  const {
-    showSuccessMessage = false,
-    successMessage,
-    showErrorMessage = true,
-    onSuccess,
-    onError,
-  } = options;
-
-  if (isApiSuccess(response)) {
-    if (showSuccessMessage && (successMessage || response.message)) {
-      // You can integrate with your notification system here
-      console.log('Success:', successMessage || response.message);
+    return response;
+  },
+  async (error: AxiosError) => {
+    const originalRequest = error.config;
+    
+    // Handle 401 Unauthorized errors (token expired)
+    if (error.response?.status === 401 && originalRequest) {
+      // Avoid infinite retry loops
+      if (!(originalRequest as any)._retry) {
+        (originalRequest as any)._retry = true;
+        
+        try {
+          // Try to refresh the token
+          const refreshToken = tokenService.getStoredRefreshToken();
+          if (refreshToken) {
+            // Call token refresh endpoint directly to avoid circular dependencies
+            const response = await axios.post(
+              `${API_BASE_URL}/auth/refresh`,
+              { refreshToken },
+              { withCredentials: true }
+            );
+            
+            if (response.data.success && response.data.tokens) {
+              // Store new tokens
+              tokenService.storeToken(response.data.tokens.accessToken);
+              tokenService.storeRefreshToken(response.data.tokens.refreshToken);
+              
+              // Update Authorization header with new token
+              if (originalRequest.headers) {
+                originalRequest.headers['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
+              }
+              
+              // Retry the original request
+              return axiosInstance(originalRequest);
+            }
+          }
+        } catch (refreshError) {
+          apiLogger.error('Token refresh failed', { 
+            error: refreshError instanceof Error ? refreshError.message : String(refreshError) 
+          });
+          
+          // Clear tokens on refresh failure
+          tokenService.clearTokens();
+          
+          // Redirect to login page
+          window.location.href = '/auth/login?session=expired';
+        }
+      }
     }
     
-    if (onSuccess) {
-      onSuccess(response.data);
+    // Handle CSRF errors
+    if (error.response?.status === 403 && 
+        typeof error.response?.data === 'object' &&
+        error.response?.data !== null &&
+        'message' in error.response.data &&
+        typeof error.response.data.message === 'string' &&
+        error.response.data.message.includes('CSRF')) {
+      // CSRF token might be invalid or expired, fetch a new one
+      csrfToken = null;
+      
+      apiLogger.security('csrf.invalid', { 
+        url: originalRequest?.url,
+        method: originalRequest?.method 
+      });
+      
+      // Retry the request once with a new CSRF token
+      if (originalRequest && !(originalRequest as any)._csrfRetry) {
+        (originalRequest as any)._csrfRetry = true;
+        
+        try {
+          await fetchCsrfToken();
+          
+          if (csrfToken && originalRequest.headers) {
+            originalRequest.headers['X-CSRF-Token'] = csrfToken;
+            return axiosInstance(originalRequest);
+          }
+        } catch (csrfError) {
+          apiLogger.error('CSRF token refresh failed', { 
+            error: csrfError instanceof Error ? csrfError.message : String(csrfError) 
+          });
+        }
+      }
     }
     
-    return response.data;
-  } else {
-    if (showErrorMessage) {
-      // You can integrate with your notification system here
-      console.error('API Error:', response.error.message);
+    // Log all API errors
+    logApiError(error);
+    
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Fetch a new CSRF token from the server
+ */
+async function fetchCsrfToken(): Promise<string | null> {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/auth/csrf-token`, {
+      withCredentials: true,
+    });
+    
+    if (response.data.token) {
+      csrfToken = response.data.token;
+      return csrfToken;
     }
     
-    if (onError) {
-      onError(response.error);
-    }
-    
+    return null;
+  } catch (error) {
+    apiLogger.error('Failed to fetch CSRF token', { 
+      error: error instanceof Error ? error.message : String(error) 
+    });
     return null;
   }
 }
 
-export default apiClient;
+/**
+ * Log API errors with proper context
+ */
+function logApiError(error: AxiosError): void {
+  const errorContext = {
+    url: error.config?.url,
+    method: error.config?.method,
+    status: error.response?.status,
+    statusText: error.response?.statusText,
+    message: error.response?.data && typeof error.response.data === 'object' && 'message' in error.response.data 
+      ? String(error.response.data.message) 
+      : error.message,
+  };
+  
+  // Log security-related errors separately
+  if (error.response?.status === 401 || error.response?.status === 403) {
+    apiLogger.security('api.auth.error', errorContext);
+  } else if (error.response?.status === 429) {
+    apiLogger.warn('api.rate_limit', errorContext);
+  } else if (error.response?.status && error.response.status >= 500) {
+    apiLogger.error('api.server_error', errorContext);
+  } else {
+    apiLogger.error('api.request_failed', errorContext);
+  }
+}
+
+// Export the configured axios instance
+export const apiClient = axiosInstance;
+
+// Export convenience methods
+export const api = {
+  get: <T = any>(url: string, config?: any) => 
+    apiClient.get<T>(url, config),
+  
+  post: <T = any>(url: string, data?: any, config?: any) => 
+    apiClient.post<T>(url, data, config),
+  
+  put: <T = any>(url: string, data?: any, config?: any) => 
+    apiClient.put<T>(url, data, config),
+  
+  patch: <T = any>(url: string, data?: any, config?: any) => 
+    apiClient.patch<T>(url, data, config),
+  
+  delete: <T = any>(url: string, config?: any) => 
+    apiClient.delete<T>(url, config),
+  
+  // Fetch CSRF token manually if needed
+  fetchCsrfToken,
+};

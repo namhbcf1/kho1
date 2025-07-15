@@ -1,6 +1,6 @@
 // Token management service
-import { localStorage } from '../storage/localStorage';
 import { STORAGE_KEYS } from '../../constants/storage';
+import { logger } from '../../utils/logger';
 
 export interface TokenPayload {
   sub: string; // User ID
@@ -36,7 +36,7 @@ class TokenService {
       const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
       return JSON.parse(decoded) as TokenPayload;
     } catch (error) {
-      console.error('Token decode error:', error);
+      logger.error('Token decode error', { error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   }
@@ -153,36 +153,45 @@ class TokenService {
    * Get stored token
    */
   getStoredToken(): string | null {
-    return localStorage.getAuthToken();
+    return sessionStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
   }
 
   /**
    * Get stored refresh token
    */
   getStoredRefreshToken(): string | null {
-    return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+    return sessionStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
   }
 
   /**
    * Store token
    */
   storeToken(token: string): void {
-    localStorage.setAuthToken(token);
+    sessionStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+    // Log token storage (security audit)
+    logger.security('token.store', { 
+      tokenType: 'access',
+      userId: this.getUserId(token) || undefined
+    });
   }
 
   /**
    * Store refresh token
    */
   storeRefreshToken(refreshToken: string): void {
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken, { encrypt: true });
+    sessionStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+    // Log refresh token storage (security audit)
+    logger.security('token.store', { tokenType: 'refresh' });
   }
 
   /**
    * Clear stored tokens
    */
   clearTokens(): void {
-    localStorage.removeAuthToken();
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    sessionStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    // Log token clearing (security audit)
+    logger.security('token.clear');
   }
 
   /**
@@ -254,7 +263,7 @@ class TokenService {
       const decoded = atob(header.replace(/-/g, '+').replace(/_/g, '/'));
       return JSON.parse(decoded);
     } catch (error) {
-      console.error('Token header decode error:', error);
+      logger.error('Token header decode error', { error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   }
@@ -276,7 +285,7 @@ class TokenService {
   }
 
   /**
-   * Create authorization header
+   * Create Authorization header value
    */
   createAuthHeader(token?: string): string | null {
     const authToken = token || this.getStoredToken();
@@ -288,7 +297,7 @@ class TokenService {
   }
 
   /**
-   * Extract token from authorization header
+   * Extract token from Authorization header
    */
   extractTokenFromHeader(authHeader: string): string | null {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -299,14 +308,14 @@ class TokenService {
   }
 
   /**
-   * Compare tokens
+   * Compare two tokens for equality
    */
   areTokensEqual(token1: string, token2: string): boolean {
     return token1 === token2;
   }
 
   /**
-   * Get token summary for debugging
+   * Get token summary
    */
   getTokenSummary(token?: string): {
     isValid: boolean;
@@ -318,8 +327,7 @@ class TokenService {
     algorithm: string | null;
   } {
     const tokenInfo = this.getTokenInfo(token);
-    const header = this.getTokenHeader(token);
-
+    
     return {
       isValid: tokenInfo?.isValid || false,
       userId: tokenInfo?.payload.sub || null,
@@ -327,13 +335,10 @@ class TokenService {
       role: tokenInfo?.payload.role || null,
       expiresAt: tokenInfo?.expiresAt || null,
       expiresIn: tokenInfo?.expiresIn || 0,
-      algorithm: header?.alg || null,
+      algorithm: this.getTokenAlgorithm(token),
     };
   }
 }
 
-// Create and export singleton instance
+// Export singleton instance
 export const tokenService = new TokenService();
-
-// Export class for custom instances
-export { TokenService };
