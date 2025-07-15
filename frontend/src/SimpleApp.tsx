@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { Layout, Form, Input, Button, Typography, Card, Alert, Menu, Avatar, Dropdown, Breadcrumb } from 'antd';
-import { UserOutlined, LockOutlined, ShoppingCartOutlined, AppstoreOutlined, TeamOutlined, BarChartOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Layout, Form, Input, Button, Typography, Card, Alert, Menu, Avatar, Dropdown, Breadcrumb, Statistic, Row, Col, Badge } from 'antd';
+import { UserOutlined, LockOutlined, ShoppingCartOutlined, AppstoreOutlined, TeamOutlined, BarChartOutlined, SettingOutlined, LogoutOutlined, DollarOutlined, ArrowUpOutlined, SyncOutlined } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -20,19 +21,75 @@ const useAuth = () => {
     return stored ? JSON.parse(stored) : null;
   });
 
+  // Effect để sync với localStorage changes
+  useEffect(() => {
+    const syncUser = () => {
+      const stored = localStorage.getItem('auth_user');
+      const parsedUser = stored ? JSON.parse(stored) : null;
+      setUser(parsedUser);
+    };
+
+    // Listen for storage changes
+    window.addEventListener('storage', syncUser);
+    
+    // Check every 100ms for state sync (fallback)
+    const interval = setInterval(syncUser, 100);
+
+    return () => {
+      window.removeEventListener('storage', syncUser);
+      clearInterval(interval);
+    };
+  }, []);
+
   const login = (email: string, password: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (email === 'admin@khoaugment.com' && password === '123456') {
-          const userData: User = {
-            id: '1',
+        // Demo accounts matching the LoginPage
+        const demoUsers = [
+          {
             email: 'admin@khoaugment.com',
-            name: 'Quản trị viên',
-            role: 'admin'
-          };
-          setUser(userData);
-          localStorage.setItem('auth_user', JSON.stringify(userData));
-          resolve();
+            password: '123456',
+            user: {
+              id: 'admin-001',
+              email: 'admin@khoaugment.com',
+              name: 'System Administrator',
+              role: 'admin'
+            }
+          },
+          {
+            email: 'manager@khoaugment.com',
+            password: '123456',
+            user: {
+              id: 'manager-001',
+              email: 'manager@khoaugment.com',
+              name: 'Store Manager',
+              role: 'manager'
+            }
+          },
+          {
+            email: 'cashier@khoaugment.com',
+            password: '123456',
+            user: {
+              id: 'cashier-001',
+              email: 'cashier@khoaugment.com',
+              name: 'Thu ngân viên',
+              role: 'cashier'
+            }
+          }
+        ];
+        
+        const demoUser = demoUsers.find(u => u.email === email && u.password === password);
+        
+        if (demoUser) {
+          // Force update state immediately
+          setUser(demoUser.user);
+          localStorage.setItem('auth_user', JSON.stringify(demoUser.user));
+          
+          // Force a re-render after a short delay to ensure state is updated
+          setTimeout(() => {
+            setUser(demoUser.user);
+            resolve();
+          }, 100);
         } else {
           reject(new Error('Thông tin đăng nhập không chính xác'));
         }
@@ -60,7 +117,10 @@ const LoginPage = () => {
     setError(null);
     try {
       await login(values.email, values.password);
-      navigate('/dashboard');
+      // Force navigation với replace để tránh back button issues
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true });
+      }, 200);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -106,47 +166,155 @@ const LoginPage = () => {
 
         <div style={{ background: '#fafafa', padding: 12, borderRadius: 6, marginTop: 16 }}>
           <Text strong>Tài khoản demo:</Text><br />
-          <Text code>admin@khoaugment.com / 123456</Text>
+          <Text code>admin@khoaugment.com / 123456</Text><br />
+          <Text code>manager@khoaugment.com / 123456</Text><br />
+          <Text code>cashier@khoaugment.com / 123456</Text>
         </div>
       </Card>
     </div>
   );
 };
 
-// Dashboard Page
+// Enhanced Dashboard with React Query
 const DashboardPage = () => {
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: async () => {
+      // Simulate API call with fallback data
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return {
+        todayRevenue: 15450000,
+        totalOrders: 234,
+        totalCustomers: 1847,
+        productsSold: 456,
+        revenueGrowth: 12.5,
+        ordersGrowth: 8.3,
+      };
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  if (isLoading) {
+    return (
+      <div>
+        <Title level={2}>Tổng quan</Title>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i} loading />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert 
+        message="Lỗi tải dữ liệu" 
+        description="Không thể tải thông tin dashboard"
+        type="error" 
+        showIcon 
+      />
+    );
+  }
+
   return (
     <div>
-      <Title level={2}>Tổng quan</Title>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
-        <Card>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <ShoppingCartOutlined style={{ fontSize: 32, color: '#1890ff', marginRight: 16 }} />
-            <div>
-              <Text type="secondary">Doanh thu hôm nay</Text>
-              <div style={{ fontSize: 24, fontWeight: 'bold' }}>₫15,450,000</div>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <AppstoreOutlined style={{ fontSize: 32, color: '#52c41a', marginRight: 16 }} />
-            <div>
-              <Text type="secondary">Đơn hàng</Text>
-              <div style={{ fontSize: 24, fontWeight: 'bold' }}>234</div>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <TeamOutlined style={{ fontSize: 32, color: '#faad14', marginRight: 16 }} />
-            <div>
-              <Text type="secondary">Khách hàng</Text>
-              <div style={{ fontSize: 24, fontWeight: 'bold' }}>1,847</div>
-            </div>
-          </div>
-        </Card>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <Title level={2}>Tổng quan hệ thống</Title>
+        <Badge status="processing" text="Đang cập nhật" />
       </div>
+      
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Doanh thu hôm nay"
+              value={dashboardData?.todayRevenue}
+              precision={0}
+              valueStyle={{ color: '#3f8600' }}
+              prefix={<DollarOutlined />}
+              suffix="₫"
+              formatter={(value) => `${(value as number / 1000000).toFixed(1)}M`}
+            />
+            <div style={{ marginTop: 8 }}>
+              <ArrowUpOutlined style={{ color: '#52c41a' }} />
+              <span style={{ color: '#52c41a', marginLeft: 4 }}>
+                +{dashboardData?.revenueGrowth}%
+              </span>
+              <span style={{ color: '#666', marginLeft: 8 }}>so với hôm qua</span>
+            </div>
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Đơn hàng"
+              value={dashboardData?.totalOrders}
+              valueStyle={{ color: '#1890ff' }}
+              prefix={<ShoppingCartOutlined />}
+            />
+            <div style={{ marginTop: 8 }}>
+              <ArrowUpOutlined style={{ color: '#52c41a' }} />
+              <span style={{ color: '#52c41a', marginLeft: 4 }}>
+                +{dashboardData?.ordersGrowth}%
+              </span>
+              <span style={{ color: '#666', marginLeft: 8 }}>so với hôm qua</span>
+            </div>
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Khách hàng"
+              value={dashboardData?.totalCustomers}
+              valueStyle={{ color: '#faad14' }}
+              prefix={<TeamOutlined />}
+            />
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Sản phẩm đã bán"
+              value={dashboardData?.productsSold}
+              valueStyle={{ color: '#722ed1' }}
+              prefix={<AppstoreOutlined />}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        <Col xs={24} lg={16}>
+          <Card title="Doanh thu 7 ngày qua" extra={<SyncOutlined />}>
+            <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Text type="secondary">Biểu đồ doanh thu sẽ được hiển thị tại đây</Text>
+            </div>
+          </Card>
+        </Col>
+        
+        <Col xs={24} lg={8}>
+          <Card title="Sản phẩm bán chạy">
+            <div style={{ height: 300 }}>
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  padding: '12px 0',
+                  borderBottom: i < 5 ? '1px solid #f0f0f0' : 'none'
+                }}>
+                  <span>Sản phẩm {i}</span>
+                  <Badge count={`${50 + i * 10}`} style={{ backgroundColor: '#52c41a' }} />
+                </div>
+              ))}
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

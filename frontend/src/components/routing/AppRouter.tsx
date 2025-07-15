@@ -1,0 +1,76 @@
+// Main application router with Vietnamese POS routes
+import React, { Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Spin } from 'antd';
+import { RouteGuard, PublicRouteGuard, RoleGuard } from './RouteGuard';
+import { ROUTES } from '../../constants/routes';
+import { MainLayout } from '../../layouts/MainLayout';
+import { AuthLayout } from '../../layouts/AuthLayout';
+import { POSLayout } from '../../layouts/POSLayout';
+
+// Lazy load components for better performance
+const DashboardPage = React.lazy(() => import('../../pages/DashboardPage'));
+const LoginPage = React.lazy(() => import('../../pages/auth/LoginPage'));
+const RegisterPage = React.lazy(() => import('../../pages/auth/RegisterPage'));
+const ForgotPasswordPage = React.lazy(() => import('../../pages/auth/ForgotPasswordPage'));
+
+// POS Pages
+const POSTerminalPage = React.lazy(() => import('../../pages/pos/POSTerminalPage'));
+const ModernPOSPage = React.lazy(() => import('../../pages/pos/ModernPOSPage'));
+
+// Product Pages
+const ProductListPage = React.lazy(() => import('../../pages/products/ProductListPage'));
+const ModernProductPage = React.lazy(() => import('../../pages/products/ModernProductPage'));
+
+// Customer Pages
+const CustomerListPage = React.lazy(() => import('../../pages/customers/CustomerListPage'));
+const ModernCustomerPage = React.lazy(() => import('../../pages/customers/ModernCustomerPage'));
+
+// Order Pages
+const OrderListPage = React.lazy(() => import('../../pages/orders/OrderListPage'));
+const ModernOrderPage = React.lazy(() => import('../../pages/orders/ModernOrderPage'));
+
+// Analytics Pages
+const AnalyticsPage = React.lazy(() => import('../../pages/analytics/AnalyticsPage'));
+const VietnameseAnalyticsPage = React.lazy(() => import('../../pages/analytics/VietnameseAnalyticsPage'));
+
+// Inventory Pages
+const InventoryPage = React.lazy(() => import('../../pages/inventory/InventoryPage'));
+
+// Settings Pages
+const SettingsPage = React.lazy(() => import('../../pages/settings/SettingsPage'));
+
+// Staff Pages
+const StaffPage = React.lazy(() => import('../../pages/staff/StaffPage'));
+
+// Loading component
+const PageLoader: React.FC = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <Spin size="large" tip="Đang tải trang..." />
+  </div>
+);
+
+// Error boundary for routes
+class RouteErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Route error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-4">Có lỗi xảy ra</h2>\n            <p className="text-gray-600 mb-4">Vui lòng thử lại sau.</p>\n            <button \n              onClick={() => window.location.reload()}\n              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"\n            >\n              Tải lại trang\n            </button>\n          </div>\n        </div>\n      );\n    }\n\n    return this.props.children;\n  }\n}\n\n// Main router component\nexport const AppRouter: React.FC = () => {\n  return (\n    <BrowserRouter>\n      <RouteErrorBoundary>\n        <Suspense fallback={<PageLoader />}>\n          <Routes>\n            {/* Public routes */}\n            <Route path={ROUTES.LOGIN} element={\n              <PublicRouteGuard>\n                <AuthLayout>\n                  <LoginPage />\n                </AuthLayout>\n              </PublicRouteGuard>\n            } />\n            \n            <Route path={ROUTES.REGISTER} element={\n              <PublicRouteGuard>\n                <AuthLayout>\n                  <RegisterPage />\n                </AuthLayout>\n              </PublicRouteGuard>\n            } />\n            \n            <Route path={ROUTES.FORGOT_PASSWORD} element={\n              <PublicRouteGuard>\n                <AuthLayout>\n                  <ForgotPasswordPage />\n                </AuthLayout>\n              </PublicRouteGuard>\n            } />\n\n            {/* Protected routes */}\n            <Route path={ROUTES.DASHBOARD} element={\n              <RouteGuard>\n                <MainLayout>\n                  <DashboardPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n\n            {/* POS routes */}\n            <Route path={ROUTES.POS} element={\n              <RouteGuard requiredPermissions={['cashier', 'staff']}>\n                <POSLayout>\n                  <ModernPOSPage />\n                </POSLayout>\n              </RouteGuard>\n            } />\n\n            {/* Product routes */}\n            <Route path={ROUTES.PRODUCTS} element={\n              <Navigate to={ROUTES.PRODUCTS_LIST} replace />\n            } />\n            \n            <Route path={ROUTES.PRODUCTS_LIST} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernProductPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.PRODUCTS_ADD} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <ModernProductPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.PRODUCTS_EDIT} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <ModernProductPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.PRODUCTS_VIEW} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernProductPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.PRODUCTS_CATEGORIES} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <ModernProductPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.PRODUCTS_INVENTORY} element={\n              <RouteGuard>\n                <MainLayout>\n                  <InventoryPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n\n            {/* Customer routes */}\n            <Route path={ROUTES.CUSTOMERS} element={\n              <Navigate to={ROUTES.CUSTOMERS_LIST} replace />\n            } />\n            \n            <Route path={ROUTES.CUSTOMERS_LIST} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernCustomerPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.CUSTOMERS_ADD} element={\n              <RouteGuard requiredPermissions={['cashier', 'staff']}>\n                <MainLayout>\n                  <ModernCustomerPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.CUSTOMERS_EDIT} element={\n              <RouteGuard requiredPermissions={['cashier', 'staff']}>\n                <MainLayout>\n                  <ModernCustomerPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.CUSTOMERS_VIEW} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernCustomerPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.CUSTOMERS_LOYALTY} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernCustomerPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n\n            {/* Order routes */}\n            <Route path={ROUTES.ORDERS} element={\n              <Navigate to={ROUTES.ORDERS_LIST} replace />\n            } />\n            \n            <Route path={ROUTES.ORDERS_LIST} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernOrderPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.ORDERS_VIEW} element={\n              <RouteGuard>\n                <MainLayout>\n                  <ModernOrderPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.ORDERS_REFUNDS} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <ModernOrderPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n\n            {/* Analytics routes */}\n            <Route path={ROUTES.ANALYTICS} element={\n              <Navigate to={ROUTES.ANALYTICS_SALES} replace />\n            } />\n            \n            <Route path={ROUTES.ANALYTICS_SALES} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <VietnameseAnalyticsPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.ANALYTICS_REVENUE} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <VietnameseAnalyticsPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.ANALYTICS_INVENTORY} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <VietnameseAnalyticsPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.ANALYTICS_CUSTOMERS} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <VietnameseAnalyticsPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n\n            {/* Payment routes */}\n            <Route path={ROUTES.PAYMENTS} element={\n              <Navigate to={ROUTES.PAYMENTS_HISTORY} replace />\n            } />\n            \n            <Route path={ROUTES.PAYMENTS_METHODS} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <SettingsPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n            \n            <Route path={ROUTES.PAYMENTS_HISTORY} element={\n              <RouteGuard requiredPermissions={['manager', 'owner']}>\n                <MainLayout>\n                  <VietnameseAnalyticsPage />\n                </MainLayout>\n              </RouteGuard>\n            } />\n\n            {/* Staff routes */}\n            <Route path={ROUTES.STAFF} element={\n              <Navigate to={ROUTES.STAFF_MANAGEMENT} replace />\n            } />\n            \n            <Route path={ROUTES.STAFF_MANAGEMENT} element={\n              <RoleGuard allowedRoles={['owner', 'manager']}>\n                <MainLayout>\n                  <StaffPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n            \n            <Route path={ROUTES.STAFF_PERFORMANCE} element={\n              <RoleGuard allowedRoles={['owner', 'manager']}>\n                <MainLayout>\n                  <StaffPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n            \n            <Route path={ROUTES.STAFF_SHIFTS} element={\n              <RoleGuard allowedRoles={['owner', 'manager']}>\n                <MainLayout>\n                  <StaffPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n\n            {/* Settings routes */}\n            <Route path={ROUTES.SETTINGS} element={\n              <Navigate to={ROUTES.SETTINGS_BUSINESS} replace />\n            } />\n            \n            <Route path={ROUTES.SETTINGS_BUSINESS} element={\n              <RoleGuard allowedRoles={['owner', 'manager']}>\n                <MainLayout>\n                  <SettingsPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n            \n            <Route path={ROUTES.SETTINGS_TAX} element={\n              <RoleGuard allowedRoles={['owner', 'manager']}>\n                <MainLayout>\n                  <SettingsPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n            \n            <Route path={ROUTES.SETTINGS_RECEIPT} element={\n              <RoleGuard allowedRoles={['owner', 'manager']}>\n                <MainLayout>\n                  <SettingsPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n            \n            <Route path={ROUTES.SETTINGS_PAYMENT} element={\n              <RoleGuard allowedRoles={['owner']}>\n                <MainLayout>\n                  <SettingsPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n            \n            <Route path={ROUTES.SETTINGS_BACKUP} element={\n              <RoleGuard allowedRoles={['owner']}>\n                <MainLayout>\n                  <SettingsPage />\n                </MainLayout>\n              </RoleGuard>\n            } />\n\n            {/* Fallback routes */}\n            <Route path=\"/\" element={<Navigate to={ROUTES.DASHBOARD} replace />} />\n            \n            {/* 404 page */}\n            <Route path=\"*\" element={\n              <div className=\"flex items-center justify-center min-h-screen\">\n                <div className=\"text-center\">\n                  <h1 className=\"text-4xl font-bold mb-4\">404</h1>\n                  <p className=\"text-gray-600 mb-4\">Trang không tồn tại</p>\n                  <button \n                    onClick={() => window.history.back()}\n                    className=\"bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-4\"\n                  >\n                    Quay lại\n                  </button>\n                  <button \n                    onClick={() => window.location.href = ROUTES.DASHBOARD}\n                    className=\"bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600\"\n                  >\n                    Về trang chủ\n                  </button>\n                </div>\n              </div>\n            } />\n          </Routes>\n        </Suspense>\n      </RouteErrorBoundary>\n    </BrowserRouter>\n  );\n};\n\nexport default AppRouter;

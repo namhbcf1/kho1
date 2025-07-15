@@ -11,15 +11,15 @@ const DEFAULT_STORAGE_KEYS = {
 // API endpoints fallback
 const DEFAULT_API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/api/auth/login',
-    REGISTER: '/api/auth/register',
-    LOGOUT: '/api/auth/logout',
-    REFRESH: '/api/auth/refresh',
-    ME: '/api/auth/me',
-    PROFILE: '/api/auth/profile',
-    CHANGE_PASSWORD: '/api/auth/change-password',
-    FORGOT_PASSWORD: '/api/auth/forgot-password',
-    RESET_PASSWORD: '/api/auth/reset-password',
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register', 
+    LOGOUT: '/auth/logout',
+    REFRESH: '/auth/refresh',
+    ME: '/auth/me',
+    PROFILE: '/auth/profile',
+    CHANGE_PASSWORD: '/auth/change-password',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
   },
 } as const;
 
@@ -56,6 +56,8 @@ export interface RefreshTokenResponse {
 
 // Simple API client with error handling
 const createApiClient = () => {
+  const API_BASE_URL = 'https://kho1-api-production.bangachieu2.workers.dev';
+  
   const request = async <T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
     try {
       const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
@@ -68,7 +70,9 @@ const createApiClient = () => {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await fetch(url, {
+      const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+      
+      const response = await fetch(fullUrl, {
         ...options,
         headers,
       });
@@ -194,29 +198,68 @@ class AuthService {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Check credentials against mock user
-    if (credentials.email === 'admin@khoaugment.com' && credentials.password === 'admin123') {
-      const user: User = {
-        id: 'admin-001',
+    // Demo credentials as shown in LoginPage
+    const demoUsers = [
+      {
         email: 'admin@khoaugment.com',
-        name: 'System Administrator',
-        role: 'admin',
-        permissions: ['*'], // Admin has all permissions
-        avatar: undefined,
-        phone: '+84901234567',
-        position: 'Administrator'
-      };
-      
+        password: '123456',
+        user: {
+          id: 'admin-001',
+          email: 'admin@khoaugment.com',
+          name: 'System Administrator',
+          role: 'admin' as const,
+          permissions: ['*'],
+          avatar: undefined,
+          phone: '+84901234567',
+          position: 'Administrator'
+        }
+      },
+      {
+        email: 'manager@khoaugment.com',
+        password: '123456',
+        user: {
+          id: 'manager-001',
+          email: 'manager@khoaugment.com',
+          name: 'Store Manager',
+          role: 'manager' as const,
+          permissions: ['pos', 'inventory', 'customers', 'reports'],
+          avatar: undefined,
+          phone: '+84901234568',
+          position: 'Manager'
+        }
+      },
+      {
+        email: 'cashier@khoaugment.com',
+        password: '123456',
+        user: {
+          id: 'cashier-001',
+          email: 'cashier@khoaugment.com',
+          name: 'Thu ngân viên',
+          role: 'cashier' as const,
+          permissions: ['pos', 'customers'],
+          avatar: undefined,
+          phone: '+84901234569',
+          position: 'Cashier'
+        }
+      }
+    ];
+    
+    // Check credentials against demo users
+    const demoUser = demoUsers.find(u => 
+      u.email === credentials.email && u.password === credentials.password
+    );
+    
+    if (demoUser) {
       // Store mock tokens
       storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, 'mock_token_12345');
       storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, 'mock_refresh_12345');
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(demoUser.user));
       
-      this.currentUser = user;
-      return user;
+      this.currentUser = demoUser.user;
+      return demoUser.user;
     }
     
-    throw new Error('Invalid credentials');
+    throw new Error('Thông tin đăng nhập không chính xác');
   }
 
   /**

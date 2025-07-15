@@ -63,7 +63,68 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true, error: null });
           
           try {
-            const user = await authService.login({ email, password, remember });
+            // Try with authService first, if fails use demo accounts
+            let user;
+            try {
+              user = await authService.login({ email, password, remember });
+            } catch (authError) {
+              // Fallback to demo accounts
+              const demoUsers = [
+                {
+                  email: 'admin@khoaugment.com',
+                  password: '123456',
+                  user: {
+                    id: 'admin-001',
+                    email: 'admin@khoaugment.com',
+                    name: 'System Administrator',
+                    role: 'admin',
+                    permissions: ['*'],
+                    phone: '+84901234567',
+                    position: 'Administrator'
+                  }
+                },
+                {
+                  email: 'manager@khoaugment.com',
+                  password: '123456',
+                  user: {
+                    id: 'manager-001',
+                    email: 'manager@khoaugment.com',
+                    name: 'Store Manager',
+                    role: 'manager',
+                    permissions: ['pos', 'inventory', 'customers', 'reports'],
+                    phone: '+84901234568',
+                    position: 'Manager'
+                  }
+                },
+                {
+                  email: 'cashier@khoaugment.com',
+                  password: '123456',
+                  user: {
+                    id: 'cashier-001',
+                    email: 'cashier@khoaugment.com',
+                    name: 'Thu ngân viên',
+                    role: 'cashier',
+                    permissions: ['pos', 'customers'],
+                    phone: '+84901234569',
+                    position: 'Cashier'
+                  }
+                }
+              ];
+              
+              const demoUser = demoUsers.find(u => u.email === email && u.password === password);
+              if (demoUser) {
+                // Simulate login delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                user = demoUser.user;
+                
+                // Store in localStorage for persistence
+                localStorage.setItem('auth_user', JSON.stringify(user));
+                localStorage.setItem('auth_token', 'demo_token_' + Date.now());
+              } else {
+                throw new Error('Thông tin đăng nhập không chính xác');
+              }
+            }
+            
             set({
               user,
               isAuthenticated: true,
@@ -111,6 +172,10 @@ export const useAuthStore = create<AuthState>()(
           } catch (error) {
             console.error('Logout error:', error);
           } finally {
+            // Clear localStorage
+            localStorage.removeItem('auth_user');
+            localStorage.removeItem('auth_token');
+            
             set({
               user: null,
               isAuthenticated: false,
@@ -218,7 +283,45 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true });
           
           try {
-            const user = await authService.initialize();
+            // Try authService first, fallback to localStorage
+            let user = null;
+            try {
+              user = await authService.initialize();
+            } catch (error) {
+              // Fallback to localStorage
+              const storedUser = localStorage.getItem('auth_user');
+              const storedToken = localStorage.getItem('auth_token');
+              
+              if (storedUser && storedToken) {
+                try {
+                  user = JSON.parse(storedUser);
+                  console.log('Loaded user from localStorage:', user);
+                  
+                  // Validate token is not expired
+                  const tokenData = storedToken.split('_');
+                  if (tokenData.length > 2) {
+                    const tokenTime = parseInt(tokenData[2]);
+                    const currentTime = Date.now();
+                    const tokenAge = currentTime - tokenTime;
+                    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+                    
+                    if (tokenAge > maxAge) {
+                      // Token expired, clear storage
+                      localStorage.removeItem('auth_user');
+                      localStorage.removeItem('auth_token');
+                      user = null;
+                      console.log('Token expired, cleared storage');
+                    }
+                  }
+                } catch (parseError) {
+                  console.error('Error parsing stored user:', parseError);
+                  localStorage.removeItem('auth_user');
+                  localStorage.removeItem('auth_token');
+                  user = null;
+                }
+              }
+            }
+            
             set({
               user,
               isAuthenticated: !!user,

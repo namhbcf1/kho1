@@ -489,7 +489,7 @@ export function useDashboard() {
     // Configuration
     selectedPeriod: analytics.selectedPeriod,
     dateRange: analytics.dateRange,
-    autoRefresh: autoRefresh.enabled,
+    autoRefreshEnabled: autoRefresh.enabled,
     
     // Actions
     actions: {

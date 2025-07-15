@@ -1,0 +1,27 @@
+export const roleMiddleware = (allowedRoles) => {
+    return async (c, next) => {
+        try {
+            const user = c.get('user');
+            if (!user) {
+                return c.json({
+                    success: false,
+                    error: { code: 'UNAUTHORIZED', message: 'User not authenticated' }
+                }, 401);
+            }
+            const userRole = user.role;
+            if (!allowedRoles.includes(userRole)) {
+                return c.json({
+                    success: false,
+                    error: { code: 'FORBIDDEN', message: 'Insufficient permissions' }
+                }, 403);
+            }
+            await next();
+        }
+        catch (error) {
+            return c.json({
+                success: false,
+                error: { code: 'SERVER_ERROR', message: 'Role verification failed' }
+            }, 500);
+        }
+    };
+};

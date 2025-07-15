@@ -1,23 +1,25 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Alert, Card, Row, Col, Statistic, ConfigProvider } from 'antd';
+import { Layout, Alert, Card, Row, Col, Statistic, ConfigProvider, theme } from 'antd';
+import viVN from 'antd/locale/vi_VN';
 import { 
   DollarOutlined, 
   ShoppingCartOutlined, 
   UserOutlined, 
   ShopOutlined 
 } from '@ant-design/icons';
-import { EnhancedDashboardPage } from './pages/DashboardPage.enhanced';
-import { POSTerminalPage } from './pages/pos/POSTerminalPage';
-import { ProductListPage } from './pages/products/ProductListPage';
-import { CustomerListPage } from './pages/customers/CustomerListPage';
-import { OrderListPage } from './pages/orders/OrderListPage';
+import ModernDashboardPage from './pages/DashboardPage.modern';
+import ModernPOSPage from './pages/pos/ModernPOSPage';
+import ModernProductPage from './pages/products/ModernProductPage';
+import ModernCustomerPage from './pages/customers/ModernCustomerPage';
+import ModernOrderPage from './pages/orders/ModernOrderPage';
 import { useAuth } from './hooks/useAuth';
 import { RoleGuard } from './features/auth/components/RoleGuard';
 import { AppHeader } from './components/layout/Header';
 import { AppSidebar } from './components/layout/Sidebar';
 import { AppFooter } from './components/layout/Footer';
-import LoginPage from './pages/auth/LoginPage';
+import { AuthLayout } from './layouts/AuthLayout';
+import EnhancedLoginPage from './pages/auth/EnhancedLoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import { AuthLoading, PageLoading } from './components/ui/Loading';
@@ -52,6 +54,15 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [theme, isDarkMode]);
+
+  // Handle navigation when auth state changes
+  useEffect(() => {
+    if (isAuthenticated && user && (location.pathname === '/login' || location.pathname === '/auth/login')) {
+      console.log('🔄 Auth state changed, redirecting to dashboard...');
+      const redirectTo = (location.state as any)?.from?.pathname || '/dashboard';
+      navigate(redirectTo, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate, location.pathname, location.state]);
 
   const handleUserMenuClick = (key: string) => {
     switch (key) {
@@ -141,18 +152,18 @@ function App() {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.AUTH.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
-        <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
-        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-        <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+        <Route path={ROUTES.LOGIN} element={<EnhancedLoginPage />} />
+        <Route path={ROUTES.AUTH.LOGIN} element={<EnhancedLoginPage />} />
+        <Route path={ROUTES.REGISTER} element={<AuthLayout><RegisterPage /></AuthLayout>} />
+        <Route path={ROUTES.AUTH.REGISTER} element={<AuthLayout><RegisterPage /></AuthLayout>} />
+        <Route path={ROUTES.FORGOT_PASSWORD} element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
+        <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
         <Route path="*" element={<Navigate to={ROUTES.AUTH.LOGIN} replace />} />
       </Routes>
     );
   }
 
-  // Ant Design theme configuration
+  // Ant Design theme configuration (simplified to avoid algorithm issues)
   const antdTheme = {
     token: {
       colorPrimary: isDarkMode ? '#177ddc' : '#1890ff',
@@ -162,13 +173,10 @@ function App() {
       borderRadius: 8,
       wireframe: false,
     },
-    algorithm: isDarkMode ? 
-      [require('antd/es/theme').darkAlgorithm] : 
-      [require('antd/es/theme').defaultAlgorithm],
   };
 
   return (
-    <ConfigProvider theme={antdTheme} locale={require('antd/locale/vi_VN')}>
+    <ConfigProvider theme={antdTheme} locale={viVN}>
       <AccessibilityProvider>
         <div className="dashboard-theme" data-theme={theme}>
           <Layout style={{ minHeight: '100vh' }} className="main-layout">
@@ -196,7 +204,7 @@ function App() {
                     path="/dashboard" 
                     element={
                       <div id="dashboard" role="main" aria-label="Dashboard">
-                        <EnhancedDashboardPage />
+                        <ModernDashboardPage />
                       </div>
                     } 
                   />
@@ -206,7 +214,7 @@ function App() {
                     element={
                       <RoleGuard allowedRoles={['admin', 'manager', 'cashier', 'staff']}>
                         <div role="main" aria-label="Điểm bán hàng">
-                          <POSTerminalPage />
+                          <ModernPOSPage />
                         </div>
                       </RoleGuard>
                     } 
@@ -217,7 +225,7 @@ function App() {
                     element={
                       <RoleGuard allowedRoles={['admin', 'manager']}>
                         <div role="main" aria-label="Quản lý sản phẩm">
-                          <ProductListPage />
+                          <ModernProductPage />
                         </div>
                       </RoleGuard>
                     } 
@@ -228,7 +236,7 @@ function App() {
                     element={
                       <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
                         <div role="main" aria-label="Quản lý khách hàng">
-                          <CustomerListPage />
+                          <ModernCustomerPage />
                         </div>
                       </RoleGuard>
                     } 
@@ -239,7 +247,7 @@ function App() {
                     element={
                       <RoleGuard allowedRoles={['admin', 'manager', 'cashier']}>
                         <div role="main" aria-label="Quản lý đơn hàng">
-                          <OrderListPage />
+                          <ModernOrderPage />
                         </div>
                       </RoleGuard>
                     } 

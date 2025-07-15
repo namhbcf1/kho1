@@ -111,11 +111,7 @@ class EnhancedAuthService {
   private saltRounds: number = 12;
 
   constructor() {
-    // Initialize cleanup interval
-    setInterval(() => {
-      // Note: This would need database access to work properly
-      console.log('Scheduling session cleanup...');
-    }, 60 * 60 * 1000); // Every hour
+    // Note: Cleanup will be handled manually in handlers to avoid global scope issues
   }
 
   // Enhanced login with brute force protection

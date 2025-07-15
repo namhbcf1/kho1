@@ -1,6 +1,7 @@
-// Enhanced Auth Hook with robust error handling and proper initialization
-import { useState, useEffect, useCallback } from 'react';
-import { authService, User, LoginCredentials } from '../../../services/auth/authService';
+// Enhanced Auth Hook using Zustand store
+import { useEffect, useCallback } from 'react';
+import { useAuthStore } from '../stores/authStore';
+import { authService, User, LoginCredentials } from '../services/authService';
 import { message } from 'antd';
 
 interface UseAuthReturn {
@@ -14,152 +15,130 @@ interface UseAuthReturn {
   updateProfile: (data: Partial<User>) => Promise<{ success: boolean; message?: string }>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
+  // Additional methods
+  refreshAuth: () => Promise<void>;
+  isTokenExpired: () => boolean;
 }
 
+// Simplified hook that uses the store
 export const useAuth = (): UseAuthReturn => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const store = useAuthStore();
 
   // Initialize auth on mount
   useEffect(() => {
-    let isMounted = true;
+    if (!store.isInitialized) {
+      store.initialize();
+    }
+  }, [store.isInitialized, store.initialize]);
 
-    const initializeAuth = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Set up periodic auth check
+  useEffect(() => {
+    if (!store.isAuthenticated) return;
 
-        // Wait for auth service to initialize
-        const currentUser = await authService.initialize();
-        
-        if (isMounted) {
-          setUser(currentUser);
-          setIsInitialized(true);
-        }
-      } catch (error) {
-        console.error('Auth initialization failed:', error);
-        if (isMounted) {
-          const errorMessage = error instanceof Error ? error.message : 'Authentication initialization failed';
-          setError(errorMessage);
-          setUser(null);
-          setIsInitialized(true);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+    const interval = setInterval(() => {
+      store.checkAuthStatus();
+    }, 5 * 60 * 1000); // Check every 5 minutes
 
-    initializeAuth();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    return () => clearInterval(interval);
+  }, [store.isAuthenticated, store.checkAuthStatus]);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      const user = await authService.login(credentials);
-      setUser(user);
-      
-      message.success('Đăng nhập thành công!');
-      return { success: true };
+      const success = await store.login(credentials);
+      if (success) {
+        message.success('Đăng nhập thành công!');
+        store.updateLastActivity();
+        return { success: true };
+      } else {
+        const errorMessage = store.error || 'Đăng nhập thất bại';
+        message.error(errorMessage);
+        return { success: false, message: errorMessage };
+      }
     } catch (error) {
       console.error('Login error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại';
-      setError(errorMessage);
       message.error(errorMessage);
       return { success: false, message: errorMessage };
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [store]);
 
   const logout = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      await authService.logout();
-      setUser(null);
-      
+      await store.logout();
       message.success('Đăng xuất thành công!');
     } catch (error) {
       console.error('Logout error:', error);
-      // Clear auth anyway
-      setUser(null);
-      const errorMessage = error instanceof Error ? error.message : 'Đăng xuất thất bại';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+      message.error('Đăng xuất thất bại');
     }
-  }, []);
+  }, [store]);
 
   const updateProfile = useCallback(async (data: Partial<User>) => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      // Note: This would need to be implemented in authService
-      // For now, just update local state
-      if (user) {
-        const updatedUser = { ...user, ...data };
-        setUser(updatedUser);
+      if (!store.user) {
+        throw new Error('No user to update');
+      }
+
+      const response = await authService.updateProfile(data);
+      if (response.success && response.user) {
+        store.setUser(response.user);
         message.success('Cập nhật thông tin thành công!');
         return { success: true };
       }
       
-      throw new Error('No user to update');
+      throw new Error(response.message || 'Update failed');
     } catch (error) {
       console.error('Update profile error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Cập nhật thất bại';
-      setError(errorMessage);
       message.error(errorMessage);
       return { success: false, message: errorMessage };
-    } finally {
-      setLoading(false);
     }
-  }, [user]);
+  }, [store]);
 
   const checkAuth = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
+      await store.checkAuthStatus();
     } catch (error) {
       console.error('Check auth error:', error);
-      setUser(null);
-      const errorMessage = error instanceof Error ? error.message : 'Xác thực thất bại';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+    }
+  }, [store]);
+
+  const refreshAuth = useCallback(async () => {
+    try {
+      await store.initialize();
+    } catch (error) {
+      console.error('Auth refresh error:', error);
+    }
+  }, [store]);
+
+  const isTokenExpired = useCallback(() => {
+    const token = authService.getAuthToken();
+    if (!token) return true;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp < now;
+    } catch {
+      return true;
     }
   }, []);
 
   const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  const isAuthenticated = !!user && authService.isAuthenticated();
+    store.setError(null);
+  }, [store]);
 
   return {
-    user,
-    isAuthenticated,
-    loading,
-    error,
-    isInitialized,
+    user: store.user,
+    isAuthenticated: store.isAuthenticated,
+    loading: store.loading,
+    error: store.error,
+    isInitialized: store.isInitialized,
     login,
     logout,
     updateProfile,
     checkAuth,
     clearError,
+    refreshAuth,
+    isTokenExpired,
   };
 };

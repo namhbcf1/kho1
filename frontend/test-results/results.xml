@@ -1,0 +1,19 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="10.387794">
+<testsuite name="quick-test-latest.spec.ts" timestamp="2025-07-15T07:35:26.857Z" hostname="chromium" tests="1" failures="0" skipped="0" time="9.03" errors="0">
+<testcase name="Quick Test Latest › Test latest deployment" classname="quick-test-latest.spec.ts" time="9.03">
+<system-out>
+<![CDATA[🎯 Testing latest deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m3[39m
+❌ JavaScript errors: [33m0[39m
+✅ No JavaScript errors!
+✅ Login form found! Testing login...
+💾 Auth user: NOT FOUND
+❌ Login failed
+✅ Latest deployment test completed
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

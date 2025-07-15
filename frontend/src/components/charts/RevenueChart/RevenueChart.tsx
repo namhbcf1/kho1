@@ -143,8 +143,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = memo(({
       </ResponsiveContainer>
     </div>
   );
-};
-
 });
 
 export default RevenueChart;

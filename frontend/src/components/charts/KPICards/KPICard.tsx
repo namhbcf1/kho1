@@ -75,8 +75,6 @@ export const KPICard: React.FC<KPICardProps> = memo(({
       )}
     </Card>
   );
-};
-
 });
 
 export default KPICard;

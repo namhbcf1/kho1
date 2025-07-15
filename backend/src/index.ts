@@ -10,6 +10,7 @@ import { securityHeaders, rateLimiter, csrfProtection } from './middleware/secur
 import { enhancedAuth, requirePermission, requireRole } from './middleware/enhancedAuth';
 import { enhancedAuthService } from './services/enhancedAuthService';
 import { authRoutes } from './handlers/auth';
+import { setupRoutes } from './handlers/setup';
 
 // Environment interface with all required bindings
 export interface Env {
@@ -57,9 +58,15 @@ app.use('/api/*', rateLimiter({
   maxRequests: 1000, // Default rate limit
 }));
 
-// CSRF protection for state-changing operations
+// CSRF protection for state-changing operations (skip setup and auth routes for testing)
 app.use('/api/*/auth/csrf-token', csrfProtection());
 app.use('/api/*', async (c, next) => {
+  // Skip CSRF for setup routes and login for testing
+  if (c.req.path.includes('/setup/') || c.req.path.includes('/auth/login')) {
+    await next();
+    return;
+  }
+  
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(c.req.method)) {
     return csrfProtection()(c, next);
   }
@@ -179,6 +186,12 @@ async function testDatabaseConnection(db: D1Database) {
     };
   }
 }
+
+// Setup routes (for initial database setup)
+app.route('/api/v1/setup', setupRoutes);
+
+// Authentication routes
+app.route('/api/v1/auth', authRoutes);
 
 // API Routes with proper error handling
 

@@ -24,7 +24,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           borderRadius: 8,
           fontSize: 14,
         },
-        algorithm: theme === 'dark' ? 'darkAlgorithm' : 'defaultAlgorithm',
+        // algorithm: theme === 'dark' ? 'darkAlgorithm' : 'defaultAlgorithm',
       }}
     >
       <Layout className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

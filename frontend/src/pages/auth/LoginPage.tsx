@@ -3,7 +3,7 @@ import React from 'react';
 import { Form, Input, Button, Checkbox, Typography, Space, Alert } from 'antd';
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../features/auth/hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../constants/routes';
 
 const { Title, Text } = Typography;
@@ -30,9 +30,13 @@ export const LoginPage: React.FC = () => {
         password: values.password,
         remember: values.remember,
       });
-      navigate(from, { replace: true });
+      // Navigate will happen automatically when auth state changes
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
     } catch (error) {
       // Error is handled by the store
+      console.error('Login error:', error);
     }
   };
 
@@ -85,7 +89,7 @@ export const LoginPage: React.FC = () => {
         >
           <Input
             prefix={<UserOutlined className="text-gray-400" />}
-            placeholder="Nhập email của bạn"
+            placeholder="admin@khoaugment.com"
             autoComplete="email"
           />
         </Form.Item>
@@ -106,7 +110,7 @@ export const LoginPage: React.FC = () => {
         >
           <Input.Password
             prefix={<LockOutlined className="text-gray-400" />}
-            placeholder="Nhập mật khẩu của bạn"
+            placeholder="123456"
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             autoComplete="current-password"
           />
