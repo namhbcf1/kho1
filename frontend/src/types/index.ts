@@ -4,6 +4,49 @@ export * from './global';
 // Re-export shared types for convenience (if available)
 // export * from '../../../shared/types';
 
+// Authentication types
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'manager' | 'cashier' | 'staff';
+  permissions: string[];
+  avatar?: string;
+  phone?: string;
+  position?: string;
+  active: boolean;
+  lastLogin?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+  remember?: boolean;
+  deviceId?: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  user?: User;
+  tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  message?: string;
+}
+
+export interface RefreshTokenResponse {
+  success: boolean;
+  tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  user?: User;
+  message?: string;
+}
+
 // Component prop types
 export interface BaseComponentProps {
   className?: string;
