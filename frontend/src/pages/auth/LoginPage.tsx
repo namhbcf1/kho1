@@ -89,7 +89,7 @@ export const LoginPage: React.FC = () => {
         >
           <Input
             prefix={<UserOutlined className="text-gray-400" />}
-            placeholder="admin@khoaugment.com"
+            placeholder="user@company.com"
             autoComplete="email"
           />
         </Form.Item>
@@ -103,14 +103,14 @@ export const LoginPage: React.FC = () => {
               message: 'Vui lòng nhập mật khẩu!',
             },
             {
-              min: 6,
-              message: 'Mật khẩu phải có ít nhất 6 ký tự!',
+              min: 8,
+              message: 'Mật khẩu phải có ít nhất 8 ký tự!',
             },
           ]}
         >
           <Input.Password
             prefix={<LockOutlined className="text-gray-400" />}
-            placeholder="123456"
+            placeholder="Nhập mật khẩu"
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             autoComplete="current-password"
           />
@@ -156,25 +156,14 @@ export const LoginPage: React.FC = () => {
         </div>
       </Form>
 
-      {/* Demo Accounts */}
-      <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-        <Text strong className="block mb-2">
-          Tài khoản demo:
+      {/* Production Login Notice */}
+      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+        <Text strong className="block mb-2 text-blue-700">
+          Thông báo:
         </Text>
-        <Space direction="vertical" size="small" className="w-full">
-          <div className="flex justify-between text-sm">
-            <Text>Admin:</Text>
-            <Text code>admin@khoaugment.com / 123456</Text>
-          </div>
-          <div className="flex justify-between text-sm">
-            <Text>Quản lý:</Text>
-            <Text code>manager@khoaugment.com / 123456</Text>
-          </div>
-          <div className="flex justify-between text-sm">
-            <Text>Thu ngân:</Text>
-            <Text code>cashier@khoaugment.com / 123456</Text>
-          </div>
-        </Space>
+        <Text className="text-blue-600 text-sm">
+          Vui lòng sử dụng tài khoản được cấp bởi quản trị viên hệ thống.
+        </Text>
       </div>
     </div>
   );

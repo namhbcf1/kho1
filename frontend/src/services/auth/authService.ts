@@ -1,5 +1,7 @@
 // JWT Authentication service with robust error handling
 import { storageAdapter } from '../../utils/storage/storageAdapter';
+import { secureStorageAdapter } from '../../utils/storage/secureStorageAdapter';
+import { csrfProtection } from '../../utils/security/csrfProtection';
 
 // Fallback constants if imports fail
 const DEFAULT_STORAGE_KEYS = {
@@ -60,8 +62,8 @@ const createApiClient = () => {
   
   const request = async <T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
     try {
-      const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
-      const headers: HeadersInit = {
+      const token = secureStorageAdapter.getToken();
+      let headers: HeadersInit = {
         'Content-Type': 'application/json',
         ...options.headers,
       };
@@ -70,11 +72,17 @@ const createApiClient = () => {
         headers.Authorization = `Bearer ${token}`;
       }
 
+      // Add CSRF protection for state-changing requests
+      if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method?.toUpperCase() || 'GET')) {
+        headers = await csrfProtection.addTokenToHeaders(headers);
+      }
+
       const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
       
       const response = await fetch(fullUrl, {
         ...options,
         headers,
+        credentials: 'include', // Include cookies for CSRF token
       });
 
       if (!response.ok) {
@@ -140,8 +148,6 @@ class AuthService {
   private refreshTimer: number | null = null;
   private initialized = false;
   private initPromise: Promise<void> | null = null;
-  private mockMode = false;
-
   /**
    * Initialize auth service
    */
@@ -162,23 +168,19 @@ class AuthService {
 
   private async _performInitialization(): Promise<void> {
     try {
-      const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
+      // Initialize CSRF protection
+      await csrfProtection.initialize();
+      
+      const token = secureStorageAdapter.getToken();
       if (!token) {
         this.initialized = true;
         return;
       }
 
-      // If we have a mock token, enable mock mode
-      if (token === 'mock_token_12345') {
-        this.mockMode = true;
-      }
-
-      // Try to get current user (from storage first, then API if not in mock mode)
+      // Try to get current user from storage first, then API
       const user = await this.getCurrentUser();
       if (user) {
-        if (!this.mockMode) {
-          this.setupTokenRefresh(3600); // Default 1 hour for real tokens
-        }
+        this.setupTokenRefresh(3600); // Default 1 hour for real tokens
       } else {
         this.clearAuthData();
       }
@@ -191,117 +193,38 @@ class AuthService {
     }
   }
 
-  /**
-   * Mock login for development/testing when backend is not available
-   */
-  private async mockLogin(credentials: LoginCredentials): Promise<User> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Demo credentials as shown in LoginPage
-    const demoUsers = [
-      {
-        email: 'admin@khoaugment.com',
-        password: '123456',
-        user: {
-          id: 'admin-001',
-          email: 'admin@khoaugment.com',
-          name: 'System Administrator',
-          role: 'admin' as const,
-          permissions: ['*'],
-          avatar: undefined,
-          phone: '+84901234567',
-          position: 'Administrator'
-        }
-      },
-      {
-        email: 'manager@khoaugment.com',
-        password: '123456',
-        user: {
-          id: 'manager-001',
-          email: 'manager@khoaugment.com',
-          name: 'Store Manager',
-          role: 'manager' as const,
-          permissions: ['pos', 'inventory', 'customers', 'reports'],
-          avatar: undefined,
-          phone: '+84901234568',
-          position: 'Manager'
-        }
-      },
-      {
-        email: 'cashier@khoaugment.com',
-        password: '123456',
-        user: {
-          id: 'cashier-001',
-          email: 'cashier@khoaugment.com',
-          name: 'Thu ngân viên',
-          role: 'cashier' as const,
-          permissions: ['pos', 'customers'],
-          avatar: undefined,
-          phone: '+84901234569',
-          position: 'Cashier'
-        }
-      }
-    ];
-    
-    // Check credentials against demo users
-    const demoUser = demoUsers.find(u => 
-      u.email === credentials.email && u.password === credentials.password
-    );
-    
-    if (demoUser) {
-      // Store mock tokens
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, 'mock_token_12345');
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, 'mock_refresh_12345');
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(demoUser.user));
-      
-      this.currentUser = demoUser.user;
-      return demoUser.user;
-    }
-    
-    throw new Error('Thông tin đăng nhập không chính xác');
-  }
 
   /**
    * Login user
    */
   async login(credentials: LoginCredentials): Promise<User> {
-    try {
-      // Try API login first
-      const response = await apiClient.post<LoginResponse>(
-        DEFAULT_API_ENDPOINTS.AUTH.LOGIN,
-        credentials
-      );
+    const response = await apiClient.post<LoginResponse>(
+      DEFAULT_API_ENDPOINTS.AUTH.LOGIN,
+      credentials
+    );
 
-      if (!response.success || !response.data) {
-        throw new Error(response.message || 'Login failed');
-      }
-
-      const { user, token, refreshToken, expiresIn } = response.data;
-
-      // Store tokens
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, token);
-      if (refreshToken) {
-        storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
-      }
-
-      // Store user data
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
-
-      // Set current user
-      this.currentUser = user;
-
-      // Setup token refresh
-      this.setupTokenRefresh(expiresIn);
-
-      return user;
-    } catch (error) {
-      console.error('Login error, falling back to mock mode:', error);
-      
-      // Fall back to mock login if API fails
-      this.mockMode = true;
-      return this.mockLogin(credentials);
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Đăng nhập thất bại');
     }
+
+    const { user, token, refreshToken, expiresIn } = response.data;
+
+    // Store tokens securely
+    secureStorageAdapter.setToken(token, expiresIn);
+    if (refreshToken) {
+      secureStorageAdapter.setRefreshToken(refreshToken);
+    }
+
+    // Store user data
+    storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+
+    // Set current user
+    this.currentUser = user;
+
+    // Setup token refresh
+    this.setupTokenRefresh(expiresIn);
+
+    return user;
   }
 
   /**
@@ -320,10 +243,10 @@ class AuthService {
 
       const { user, token, refreshToken, expiresIn } = response.data;
 
-      // Store tokens and user data
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, token);
+      // Store tokens and user data securely
+      secureStorageAdapter.setToken(token, expiresIn);
       if (refreshToken) {
-        storageAdapter.setItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+        secureStorageAdapter.setRefreshToken(refreshToken);
       }
       storageAdapter.setItem(DEFAULT_STORAGE_KEYS.USER_DATA, JSON.stringify(user));
 
@@ -358,7 +281,7 @@ class AuthService {
    */
   async refreshToken(): Promise<string | null> {
     try {
-      const refreshToken = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN);
+      const refreshToken = secureStorageAdapter.getRefreshToken();
       if (!refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -374,8 +297,8 @@ class AuthService {
 
       const { token, expiresIn } = response.data;
 
-      // Update stored token
-      storageAdapter.setItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN, token);
+      // Update stored token securely
+      secureStorageAdapter.setToken(token, expiresIn);
 
       // Setup next refresh
       this.setupTokenRefresh(expiresIn);
@@ -407,11 +330,6 @@ class AuthService {
       }
     } catch (error) {
       console.error('Error parsing stored user:', error);
-    }
-
-    // In mock mode, don't try API
-    if (this.mockMode) {
-      return null;
     }
 
     // Try to fetch from API
@@ -518,7 +436,7 @@ class AuthService {
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {
-    const token = storageAdapter.getItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
+    const token = secureStorageAdapter.getToken();
     return !!token;
   }
 
@@ -576,10 +494,12 @@ class AuthService {
   }
 
   private clearAuthData(): void {
-    // Clear tokens
-    storageAdapter.removeItem(DEFAULT_STORAGE_KEYS.AUTH_TOKEN);
-    storageAdapter.removeItem(DEFAULT_STORAGE_KEYS.REFRESH_TOKEN);
+    // Clear tokens securely
+    secureStorageAdapter.clear();
     storageAdapter.removeItem(DEFAULT_STORAGE_KEYS.USER_DATA);
+
+    // Clear CSRF token
+    csrfProtection.clearToken();
 
     // Clear current user
     this.currentUser = null;

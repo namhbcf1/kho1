@@ -1,0 +1,643 @@
+/* Modern Responsive Design for Vietnamese POS System */
+/* Mobile-first approach with Vietnamese business requirements */
+
+/* Mobile First Base Styles */
+.responsive-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.mobile-nav-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 999;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu.open {
+  transform: translateX(0);
+}
+
+/* Mobile POS Interface */
+.pos-mobile {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 70px;
+}
+
+.pos-mobile-header {
+  background: white;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 70px;
+  z-index: 100;
+}
+
+.pos-mobile-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.pos-mobile-footer {
+  background: white;
+  padding: 1rem;
+  border-top: 1px solid #f0f0f0;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+}
+
+/* Vietnamese Touch-Friendly Buttons */
+.vn-touch-button {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.vn-touch-button:active {
+  transform: scale(0.95);
+}
+
+.vn-touch-button.primary {
+  background: #d4380d;
+  color: white;
+}
+
+.vn-touch-button.primary:hover {
+  background: #ad2c02;
+}
+
+.vn-touch-button.secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.vn-touch-button.secondary:hover {
+  background: #e6e6e6;
+}
+
+/* Mobile Product Grid */
+.mobile-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.mobile-product-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.mobile-product-card:active {
+  transform: scale(0.98);
+}
+
+.mobile-product-image {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  background: #f5f5f5;
+}
+
+.mobile-product-info {
+  padding: 12px;
+}
+
+.mobile-product-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.mobile-product-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #d4380d;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Mobile Cart */
+.mobile-cart {
+  background: white;
+  border-radius: 12px 12px 0 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.mobile-cart-header {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.mobile-cart-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-cart-item-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+.mobile-cart-item-info {
+  flex: 1;
+}
+
+.mobile-cart-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.mobile-cart-item-price {
+  font-size: 14px;
+  color: #d4380d;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.mobile-cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-quantity-control {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mobile-quantity-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.mobile-quantity-btn:hover {
+  background: #e6e6e6;
+}
+
+.mobile-quantity-input {
+  width: 40px;
+  height: 32px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+}
+
+/* Mobile Payment */
+.mobile-payment {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.mobile-payment-summary {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mobile-payment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mobile-payment-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.mobile-payment-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.mobile-payment-total {
+  font-size: 18px;
+  font-weight: 700;
+  color: #d4380d;
+}
+
+.mobile-payment-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.mobile-payment-method {
+  padding: 12px;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-payment-method.selected {
+  border-color: #d4380d;
+  background: #fff2e8;
+}
+
+.mobile-payment-method-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.mobile-payment-method-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Tablet Styles */
+@media (min-width: 768px) {
+  .responsive-container {
+    padding: 0 2rem;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
+
+  .pos-mobile {
+    padding-top: 0;
+  }
+
+  .mobile-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .mobile-product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .mobile-product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .mobile-product-image {
+    height: 120px;
+  }
+
+  .mobile-product-name {
+    font-size: 16px;
+  }
+
+  .mobile-product-price {
+    font-size: 18px;
+  }
+
+  .mobile-cart-item {
+    padding: 16px 1rem;
+  }
+
+  .mobile-cart-item-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .mobile-cart-item-name {
+    font-size: 16px;
+  }
+
+  .mobile-cart-item-price {
+    font-size: 16px;
+  }
+
+  .mobile-payment-methods {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .mobile-payment-method {
+    padding: 16px;
+  }
+}
+
+/* Desktop Styles */
+@media (min-width: 1024px) {
+  .responsive-container {
+    max-width: 1200px;
+    padding: 0 3rem;
+  }
+
+  .mobile-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .mobile-product-image {
+    height: 150px;
+  }
+
+  .mobile-product-name {
+    font-size: 18px;
+  }
+
+  .mobile-product-price {
+    font-size: 20px;
+  }
+
+  .mobile-cart {
+    max-height: 70vh;
+  }
+
+  .mobile-cart-item {
+    padding: 20px 1rem;
+  }
+
+  .mobile-cart-item-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .mobile-cart-item-name {
+    font-size: 18px;
+  }
+
+  .mobile-cart-item-price {
+    font-size: 18px;
+  }
+
+  .mobile-payment-methods {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .mobile-payment-method {
+    padding: 20px;
+  }
+
+  .mobile-payment-method-icon {
+    font-size: 32px;
+  }
+
+  .mobile-payment-method-name {
+    font-size: 14px;
+  }
+}
+
+/* Large Desktop Styles */
+@media (min-width: 1440px) {
+  .responsive-container {
+    max-width: 1400px;
+  }
+
+  .mobile-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .mobile-product-image {
+    height: 180px;
+  }
+
+  .mobile-product-name {
+    font-size: 20px;
+  }
+
+  .mobile-product-price {
+    font-size: 22px;
+  }
+}
+
+/* Print Styles for Vietnamese Receipts */
+@media print {
+  .mobile-nav,
+  .mobile-cart-item-controls,
+  .mobile-payment-methods,
+  .vn-touch-button {
+    display: none !important;
+  }
+
+  .mobile-cart,
+  .mobile-payment {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .mobile-cart-item {
+    break-inside: avoid;
+  }
+
+  .mobile-payment-summary {
+    border-bottom: 2px solid #333 !important;
+  }
+
+  .mobile-payment-total {
+    font-size: 20px !important;
+  }
+
+  /* Vietnamese Receipt Header */
+  .receipt-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
+
+  .receipt-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .receipt-header p {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+}
+
+/* Vietnamese Keyboard Support */
+.vn-input {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  ime-mode: active;
+}
+
+.vn-input:focus {
+  outline: 2px solid #d4380d;
+  outline-offset: 2px;
+}
+
+/* Vietnamese Number Formatting */
+.vn-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: 'tnum';
+  text-align: right;
+}
+
+/* Vietnamese Date/Time Display */
+.vn-datetime {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 14px;
+  color: #666;
+}
+
+/* High DPI Display Support */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mobile-product-image,
+  .mobile-cart-item-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .mobile-nav,
+  .mobile-cart,
+  .mobile-payment {
+    background: #1a1a1a;
+    color: white;
+  }
+
+  .mobile-product-card {
+    background: #2a2a2a;
+    color: white;
+  }
+
+  .mobile-product-image {
+    background: #3a3a3a;
+  }
+
+  .mobile-cart-item {
+    border-bottom-color: #3a3a3a;
+  }
+
+  .mobile-payment-method {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+    color: white;
+  }
+
+  .mobile-payment-method.selected {
+    border-color: #d4380d;
+    background: #2a1a1a;
+  }
+
+  .mobile-quantity-control {
+    background: #3a3a3a;
+  }
+
+  .mobile-quantity-btn:hover {
+    background: #4a4a4a;
+  }
+
+  .vn-touch-button.secondary {
+    background: #3a3a3a;
+    color: white;
+  }
+
+  .vn-touch-button.secondary:hover {
+    background: #4a4a4a;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-product-card,
+  .mobile-cart-item,
+  .mobile-payment-method,
+  .vn-touch-button {
+    transition: none;
+  }
+
+  .mobile-menu {
+    transition: none;
+  }
+}
+
+/* Vietnamese Font Loading */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  src: url('/fonts/BeVietnamPro-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  src: url('/fonts/BeVietnamPro-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  src: url('/fonts/BeVietnamPro-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

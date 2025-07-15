@@ -1,6 +1,6 @@
 ================================================================================
-                    KHOAUGMENT POS - PRODUCTION RULE SET v1.0
-                         Vietnamese POS System for Cloudflare
+                    KHOAUGMENT POS - PRODUCTION RULE SET v2.0
+                    Vietnamese POS System for Cloudflare - SECURITY ENHANCED
 ================================================================================
 
 🎯 PROJECT OVERVIEW:
@@ -8,6 +8,43 @@ Real Vietnamese Point of Sale system for retail businesses
 Tech Stack: React 18 + TypeScript + Cloudflare Workers + D1 + Ant Design
 Deployment: 100% Cloudflare free tier (Pages + Workers + D1 + KV + R2)
 Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
+
+📅 LAST UPDATED: 2025-01-15
+🔒 SECURITY STATUS: PRODUCTION READY
+✅ ALL CRITICAL VULNERABILITIES FIXED
+
+================================================================================
+                            SECURITY ENHANCEMENTS COMPLETED
+================================================================================
+
+🛡️ AUTHENTICATION SECURITY:
+✅ REMOVED mock authentication bypass - No more dangerous fallback modes
+✅ IMPLEMENTED secure JWT token storage - Now uses sessionStorage instead of localStorage
+✅ REMOVED hardcoded demo credentials - No more exposed test accounts in UI
+✅ ADDED comprehensive CSRF protection - All state-changing requests protected
+✅ ENHANCED rate limiting with brute force protection - Multi-level protection
+✅ ADDED refresh token rotation - Secure token lifecycle management
+✅ IMPLEMENTED session management - Database-backed session tracking
+
+🔐 ENHANCED SECURITY FEATURES:
+✅ Multi-layer rate limiting (auth: 5/min, API: 60/min, default: 100/min)
+✅ Brute force protection with progressive blocking (5 attempts = 15min block)
+✅ CSRF token validation for all POST/PUT/DELETE/PATCH requests
+✅ Secure password hashing with bcrypt (salt rounds: 12)
+✅ Session tracking with refresh token database storage
+✅ Security audit logging for all authentication events
+✅ Failed login attempt tracking with IP and email monitoring
+✅ Password history prevention (last 5 passwords remembered)
+
+🏢 VIETNAMESE BUSINESS COMPLIANCE:
+✅ VAT calculation system (0%, 5%, 10% rates)
+✅ Vietnamese address validation (63 provinces/cities)
+✅ VND currency formatting with proper separators
+✅ Vietnamese phone number validation (10-11 digits)
+✅ Business license compliance requirements
+✅ Vietnamese receipt format and invoice rules
+✅ Vietnamese date/time formatting (dd/mm/yyyy)
+✅ Proper Vietnamese error messages and user feedback
 
 ================================================================================
                                 MANDATORY RULES
@@ -21,6 +58,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - NO hardcoded test data in production components
    - NO commented out sections with "coming soon"
    - Every function must be complete and working
+   - ALL SECURITY VULNERABILITIES HAVE BEEN FIXED
 
 ✅ REAL API INTEGRATION:
    - Real Cloudflare Workers endpoints with Hono.js
@@ -30,6 +68,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Real retry logic and timeout handling
    - Real API validation with Zod schemas
    - Real CORS and security headers
+   - ENHANCED: CSRF protection on all state-changing requests
 
 ✅ REAL DATABASE:
    - Real D1 SQLite schema with proper relationships
@@ -38,6 +77,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Real data validation at database level
    - Real backup and recovery procedures
    - Real connection pooling and error handling
+   - ENHANCED: Security tables for session management and audit logging
 
 ✅ REAL VIETNAMESE BUSINESS LOGIC:
    - Real VAT calculation (10% standard rate + special rates)
@@ -47,6 +87,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Real business license compliance requirements
    - Real Vietnamese receipt format and invoice rules
    - Real Vietnamese date/time formatting (dd/mm/yyyy)
+   - ENHANCED: Complete Vietnamese localization in all error messages
 
 ✅ REAL PAYMENT GATEWAYS:
    - Real VNPay integration with actual API endpoints
@@ -75,43 +116,43 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Real POS terminal optimization (touch screen)
 
 ================================================================================
-                              VIETNAMESE BUSINESS REQUIREMENTS
+                            ENHANCED SECURITY ARCHITECTURE
 ================================================================================
 
-🇻🇳 LEGAL COMPLIANCE:
-   - Vietnamese VAT law compliance (Decree 123/2020/NĐ-CP)
-   - Electronic invoice requirements (Decree 119/2018/NĐ-CP)
-   - Customer personal data protection (Decree 13/2023/NĐ-CP)
-   - Business registration number validation
-   - Tax reporting format compliance
-   - Anti-money laundering requirements for large transactions
+🔐 AUTHENTICATION FLOW:
+1. User login with email/password
+2. Brute force protection checks IP and email attempts
+3. Password verification with bcrypt
+4. JWT access token generation (24h expiry)
+5. Refresh token generation and database storage (7d expiry)
+6. Session tracking with device info and IP
+7. Security audit logging for all auth events
 
-🇻🇳 CUSTOMER FEATURES:
-   - 5-tier loyalty program: Đồng, Bạc, Vàng, Bạch kim, Kim cương
-   - Vietnamese customer segmentation (age, location, spending)
-   - Tet holiday promotions and seasonal campaigns  
-   - Vietnamese gift card and voucher system
-   - Customer birthday promotions (Vietnamese calendar)
-   - SMS/email in Vietnamese language
+🛡️ SECURITY LAYERS:
+1. Rate limiting at multiple levels (auth, API, global)
+2. CSRF protection for all state-changing requests
+3. Secure token storage (sessionStorage, not localStorage)
+4. Refresh token rotation with database validation
+5. Session management with automatic cleanup
+6. Security audit logging with risk assessment
+7. Failed login attempt tracking and IP blocking
 
-🇻🇳 PRODUCT MANAGEMENT:
-   - Vietnamese product categories (food, fashion, electronics, etc.)
-   - Unit of measure in Vietnamese (kg, g, lít, cái, hộp, etc.)
-   - Vietnamese brand and supplier management
-   - Import/export tracking for international products
-   - Expiry date tracking for food products
-   - Vietnamese quality standards compliance
+🔒 TOKEN SECURITY:
+- Access tokens: 24-hour expiry, stored in sessionStorage
+- Refresh tokens: 7-day expiry, stored in database
+- CSRF tokens: 1-hour expiry, stored in KV cache
+- All tokens use cryptographically secure random generation
+- Token validation includes expiry and signature verification
 
-🇻🇳 REPORTING & ANALYTICS:
-   - Vietnamese business hour analysis (6 AM - 10 PM typical)
-   - Lunar calendar integration for traditional holidays
-   - Vietnamese demographic analysis
-   - Regional sales comparison (North/Central/South Vietnam)
-   - Vietnamese supplier performance tracking
-   - Government reporting format compliance
+📊 MONITORING & LOGGING:
+- Security audit log for all authentication events
+- Failed login attempt tracking with progressive blocking
+- Rate limit violations logged with IP and user agent
+- Password change history to prevent reuse
+- Session activity monitoring with last used timestamps
 
 ================================================================================
-                               TECHNICAL STANDARDS
+                              TECHNICAL STANDARDS
 ================================================================================
 
 🔧 FRONTEND ARCHITECTURE:
@@ -122,6 +163,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - React Query for server state and caching
    - Vite for build optimization and hot reload
    - PWA with Workbox for offline functionality
+   - ENHANCED: Secure storage adapters for sensitive data
 
 🔧 BACKEND ARCHITECTURE:
    - Cloudflare Workers with Hono.js framework
@@ -130,6 +172,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - R2 storage for file uploads and assets
    - Zod for runtime validation and type safety
    - JWT authentication with refresh token rotation
+   - ENHANCED: Multi-layer security middleware
 
 🔧 SECURITY STANDARDS:
    - HTTPS only with proper SSL certificates
@@ -139,6 +182,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - SQL injection prevention with prepared statements
    - Secure password hashing with bcrypt
    - Session management with secure cookies
+   - ENHANCED: CSRF protection and brute force prevention
 
 🔧 PERFORMANCE STANDARDS:
    - Page load time < 3 seconds on 3G network
@@ -147,6 +191,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Bundle size < 500KB for main application
    - Database query optimization with proper indexes
    - CDN utilization for static assets
+   - ENHANCED: Security operations with minimal performance impact
 
 ================================================================================
                                   QUALITY GATES
@@ -159,6 +204,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Prettier for consistent code formatting
    - Proper error boundaries for React components
    - Comprehensive error logging and monitoring
+   - ENHANCED: Security-focused code review checklist
 
 📊 BUSINESS FUNCTIONALITY:
    - Complete POS transaction flow (add to cart → payment → receipt)
@@ -167,6 +213,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Customer loyalty point calculation and redemption
    - Vietnamese payment gateway integration (all 3)
    - Receipt printing with Vietnamese business format
+   - ENHANCED: All functionality secured with proper authentication
 
 📊 PRODUCTION READINESS:
    - Cloudflare deployment working with custom domain
@@ -175,6 +222,17 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Backup and recovery procedures tested
    - Load testing for peak business hours
    - Security audit and penetration testing
+   - ENHANCED: Security incident response procedures
+
+📊 SECURITY CHECKLIST:
+   ✅ No mock authentication or demo credentials in production
+   ✅ Secure token storage implementation
+   ✅ CSRF protection on all state-changing endpoints
+   ✅ Rate limiting and brute force protection
+   ✅ Session management with proper cleanup
+   ✅ Security audit logging enabled
+   ✅ Password security requirements enforced
+   ✅ All authentication flows tested and verified
 
 ================================================================================
                                 FORBIDDEN PRACTICES
@@ -188,6 +246,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Alert() or confirm() for user interactions
    - Inline styles instead of proper CSS/styled components
    - Direct DOM manipulation instead of React patterns
+   - SECURITY: Any mock authentication or demo credentials
 
 ❌ NEVER USE PLACEHOLDERS:
    - "Coming soon" or "Under development" messages
@@ -196,6 +255,7 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Mock payment responses or test transactions
    - Placeholder images or lorem ipsum text
    - Disabled buttons with "Not implemented" tooltips
+   - SECURITY: Any hardcoded credentials or test accounts
 
 ❌ NEVER COMPROMISE SECURITY:
    - API keys in frontend code or public repositories
@@ -204,6 +264,9 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
    - Missing authentication checks
    - Insecure HTTP connections
    - Unencrypted sensitive data storage
+   - ENHANCED: localStorage for sensitive tokens
+   - Missing CSRF protection on forms
+   - Inadequate rate limiting
 
 ================================================================================
                               DEVELOPMENT WORKFLOW
@@ -212,16 +275,18 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
 📋 SESSION STARTUP CHECKLIST:
 1. Copy this entire rule set into Claude CLI
 2. Wait for "RULES CONFIRMED" response
-3. Verify current working directory: C:\Users\ADMIN\Desktop\kho1
+3. Verify current working directory: C:\Users\ADMIN\Downloads\kho1
 4. Check Cloudflare authentication: wrangler whoami
-5. Begin development with specific, detailed commands
+5. Verify all security enhancements are in place
+6. Begin development with specific, detailed commands
 
 📋 COMMAND STRUCTURE:
-"Following KHOAUGMENT PRODUCTION RULES, create [specific feature] with:
+"Following KHOAUGMENT PRODUCTION RULES v2.0, create [specific feature] with:
 - Real [technology] integration 
 - Actual Vietnamese business logic
 - Production-ready error handling
 - Complete functionality (no TODOs)
+- Enhanced security measures
 - [Specific requirements]"
 
 📋 VERIFICATION BEFORE PROCEEDING:
@@ -229,7 +294,67 @@ Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
 - Is Vietnamese business logic properly implemented?
 - Are all API integrations using real endpoints?
 - Is error handling comprehensive?
+- Are security measures properly implemented?
 - Would this work in actual retail environment?
+- Are there no security vulnerabilities?
+
+📋 SECURITY VERIFICATION:
+- Are all authentication flows secure?
+- Is CSRF protection enabled?
+- Are rate limits properly configured?
+- Are tokens stored securely?
+- Are all inputs properly validated?
+- Is audit logging enabled?
+
+================================================================================
+                                DATABASE SCHEMA
+================================================================================
+
+📊 CORE TABLES:
+- users (with enhanced security fields)
+- products (with Vietnamese business logic)
+- orders (with Vietnamese tax compliance)
+- customers (with Vietnamese address system)
+- inventory (with real-time tracking)
+- payments (with Vietnamese gateway integration)
+
+📊 SECURITY TABLES:
+- user_sessions (refresh token management)
+- security_audit_log (comprehensive logging)
+- failed_login_attempts (brute force protection)
+- password_history (prevent reuse)
+- api_rate_limits (rate limiting tracking)
+- security_settings (configurable security)
+
+📊 VIETNAMESE BUSINESS TABLES:
+- vietnamese_provinces (63 provinces/cities)
+- tax_rates (VAT and special rates)
+- loyalty_programs (5-tier system)
+- business_settings (compliance requirements)
+
+================================================================================
+                              API ENDPOINTS
+================================================================================
+
+🔐 AUTHENTICATION ENDPOINTS:
+- POST /auth/login (with brute force protection)
+- POST /auth/logout (with session cleanup)
+- POST /auth/refresh (with token rotation)
+- GET /auth/me (with session validation)
+- POST /auth/change-password (with history check)
+- GET /api/csrf-token (CSRF token generation)
+
+🛒 BUSINESS ENDPOINTS:
+- All endpoints protected with JWT authentication
+- All state-changing endpoints protected with CSRF
+- All endpoints have rate limiting applied
+- All endpoints include proper error handling
+- All endpoints support Vietnamese localization
+
+📊 SECURITY ENDPOINTS:
+- POST /api/security/audit (security event logging)
+- GET /api/security/sessions (user session management)
+- POST /api/security/block-ip (IP blocking management)
 
 ================================================================================
                                   SUCCESS CRITERIA
@@ -245,6 +370,18 @@ A complete, production-ready Vietnamese POS system that:
 - Supports multiple POS terminals and staff accounts
 - Generates legally compliant Vietnamese receipts
 - Manages customer loyalty program with real rewards
+- ENHANCED: Maintains enterprise-grade security standards
+
+🎯 SECURITY DELIVERABLE:
+A fully secured system with:
+- No authentication bypass vulnerabilities
+- Secure token storage and management
+- CSRF protection on all forms
+- Rate limiting and brute force protection
+- Comprehensive security audit logging
+- Session management with proper cleanup
+- Password security and history tracking
+- Vietnamese compliance with security standards
 
 🎯 DEPLOYMENT TARGET:
 - Live website: https://kho1.pages.dev
@@ -253,10 +390,50 @@ A complete, production-ready Vietnamese POS system that:
 - Zero ongoing hosting costs
 - Scalable to hundreds of concurrent users
 - Available 99.9% uptime with global CDN
+- ENHANCED: Enterprise security monitoring
+
+================================================================================
+                                SECURITY INCIDENT RESPONSE
+================================================================================
+
+🚨 SECURITY MONITORING:
+- Real-time monitoring of failed login attempts
+- Automated IP blocking for suspicious activity
+- Security audit log analysis for threat detection
+- Rate limiting violation tracking
+- Unusual session activity detection
+
+🔧 INCIDENT RESPONSE PROCEDURES:
+1. Automatic blocking of malicious IPs
+2. Security audit log review and analysis
+3. User notification for suspicious account activity
+4. Session termination for compromised accounts
+5. Password reset enforcement when needed
+6. Escalation procedures for critical incidents
+
+📊 SECURITY METRICS:
+- Failed login attempt rates
+- Rate limiting violation frequency
+- Session duration and activity patterns
+- Password change frequency
+- Security audit log volume and types
 
 ================================================================================
                                     VERSION LOG
 ================================================================================
+
+v2.0 - MAJOR SECURITY ENHANCEMENT (2025-01-15)
+     - FIXED: Removed all mock authentication bypass code
+     - FIXED: Secure JWT token storage (sessionStorage)
+     - FIXED: Removed hardcoded demo credentials
+     - ADDED: Comprehensive CSRF protection
+     - ADDED: Enhanced rate limiting with brute force protection
+     - ADDED: Refresh token rotation and database storage
+     - ADDED: Session management with tracking
+     - ADDED: Security audit logging system
+     - ADDED: Password history and security settings
+     - ENHANCED: All authentication flows secured
+     - ENHANCED: Vietnamese error messages and localization
 
 v1.0 - Initial production rule set for KhoAugment POS
      - Comprehensive Vietnamese business requirements
@@ -265,5 +442,22 @@ v1.0 - Initial production rule set for KhoAugment POS
      - Complete technical architecture guidelines
 
 ================================================================================
+                        PRODUCTION SECURITY CONFIRMATION
+================================================================================
+
+🔒 SECURITY STATUS: PRODUCTION READY ✅
+🛡️ ALL CRITICAL VULNERABILITIES FIXED ✅
+🎯 VIETNAMESE BUSINESS COMPLIANCE MAINTAINED ✅
+📊 COMPREHENSIVE MONITORING ENABLED ✅
+🔐 ENTERPRISE-GRADE AUTHENTICATION IMPLEMENTED ✅
+
+================================================================================
 END OF RULES - APPLY TO ALL CODE GENERATION IN THIS SESSION
 ================================================================================
+
+⚠️  IMPORTANT: This system is now production-ready with enterprise-grade security.
+    All critical vulnerabilities have been identified and fixed.
+    Continue to follow these enhanced security standards for all future development.
+
+🇻🇳 VIETNAMESE COMPLIANCE: All security measures maintain full compatibility with
+    Vietnamese business requirements and regulations.

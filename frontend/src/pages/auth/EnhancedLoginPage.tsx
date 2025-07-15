@@ -27,32 +27,7 @@ interface LoginFormData {
   remember: boolean;
 }
 
-const demoAccounts = [
-  {
-    email: 'admin@khoaugment.com',
-    password: '123456',
-    role: 'System Administrator',
-    avatar: '👨‍💻',
-    permissions: ['All Access', 'User Management', 'System Settings'],
-    color: '#f56a00'
-  },
-  {
-    email: 'manager@khoaugment.com',
-    password: '123456',
-    role: 'Store Manager',
-    avatar: '👩‍💼',
-    permissions: ['Store Management', 'Staff Reports', 'Inventory'],
-    color: '#7265e6'
-  },
-  {
-    email: 'cashier@khoaugment.com',
-    password: '123456',
-    role: 'Cashier',
-    avatar: '👨‍💰',
-    permissions: ['POS System', 'Customer Service', 'Daily Reports'],
-    color: '#00a2ae'
-  }
-];
+// Demo accounts removed for production security
 
 const features = [
   {
@@ -82,7 +57,6 @@ export const EnhancedLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, isLoading, error, clearError } = useAuth();
-  const [selectedDemo, setSelectedDemo] = useState<number | null>(null);
   const [showFeatures, setShowFeatures] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -122,14 +96,6 @@ export const EnhancedLoginPage: React.FC = () => {
     }
   };
 
-  const handleDemoLogin = (account: typeof demoAccounts[0]) => {
-    setSelectedDemo(demoAccounts.indexOf(account));
-    form.setFieldsValue({
-      email: account.email,
-      password: account.password,
-      remember: true,
-    });
-  };
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('vi-VN', { 
@@ -345,49 +311,14 @@ export const EnhancedLoginPage: React.FC = () => {
                 </Form.Item>
               </Form>
 
-              <Divider>hoặc</Divider>
-
-              {/* Demo Accounts */}
-              <div className="demo-accounts">
-                <div className="demo-header">
-                  <Text strong className="text-gray-700">
-                    Tài khoản demo
-                  </Text>
-                  <Text className="text-gray-500 text-sm">
-                    Chọn tài khoản để đăng nhập nhanh
-                  </Text>
-                </div>
-
-                <div className="demo-accounts-grid">
-                  {demoAccounts.map((account, index) => (
-                    <Card
-                      key={index}
-                      className={`demo-account-card ${selectedDemo === index ? 'selected' : ''}`}
-                      onClick={() => handleDemoLogin(account)}
-                      hoverable
-                      size="small"
-                    >
-                      <div className="demo-account-content">
-                        <div className="demo-avatar" style={{ backgroundColor: account.color }}>
-                          {account.avatar}
-                        </div>
-                        <div className="demo-info">
-                          <div className="demo-role">{account.role}</div>
-                          <div className="demo-email">{account.email}</div>
-                          <div className="demo-permissions">
-                            {account.permissions.slice(0, 2).map((perm, i) => (
-                              <span key={i} className="demo-permission">
-                                <CheckCircleOutlined className="mr-1" />
-                                {perm}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <RightOutlined className="demo-arrow" />
-                      </div>
-                    </Card>
-                  ))}
-                </div>
+              {/* Production Notice */}
+              <div className="bg-blue-50 p-4 rounded-lg mt-4">
+                <Text strong className="text-blue-700 block mb-2">
+                  Thông báo hệ thống:
+                </Text>
+                <Text className="text-blue-600 text-sm">
+                  Vui lòng liên hệ quản trị viên để được cấp tài khoản truy cập.
+                </Text>
               </div>
 
               {/* Register Link */}

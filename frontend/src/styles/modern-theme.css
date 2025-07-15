@@ -1,0 +1,564 @@
+/* Modern Vietnamese POS Theme - Production Ready */
+/* Enhanced for Vietnamese business requirements */
+
+:root {
+  /* Vietnamese Brand Colors */
+  --primary-red: #da020e;
+  --primary-gold: #ffb81c;
+  --primary-blue: #003f7f;
+  --primary-green: #00a651;
+  
+  /* Modern Color Palette */
+  --primary-50: #fef2f2;
+  --primary-100: #fee2e2;
+  --primary-200: #fecaca;
+  --primary-300: #fca5a5;
+  --primary-400: #f87171;
+  --primary-500: #ef4444;
+  --primary-600: #dc2626;
+  --primary-700: #b91c1c;
+  --primary-800: #991b1b;
+  --primary-900: #7f1d1d;
+  
+  /* Neutral Colors */
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  
+  /* Success Colors */
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+  
+  /* Warning Colors */
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  
+  /* Error Colors */
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-300: #fca5a5;
+  --error-400: #f87171;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  
+  /* Vietnamese Currency Colors */
+  --vnd-primary: #d4a574;
+  --vnd-secondary: #8b6f47;
+  --vnd-accent: #f4e4bc;
+  
+  /* Typography */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-vietnamese: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease-out;
+  --transition-base: 0.3s ease-out;
+  --transition-slow: 0.5s ease-out;
+  
+  /* Layout */
+  --max-width-sm: 640px;
+  --max-width-md: 768px;
+  --max-width-lg: 1024px;
+  --max-width-xl: 1280px;
+  --max-width-2xl: 1536px;
+  
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal: 1040;
+  --z-popover: 1050;
+  --z-tooltip: 1060;
+  --z-toast: 1070;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body {
+  font-family: var(--font-family-vietnamese);
+  color: var(--neutral-800);
+  background-color: var(--neutral-50);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Vietnamese Typography */
+.vietnamese-text {
+  font-family: var(--font-family-vietnamese);
+  font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+.vnd-currency {
+  font-family: var(--font-family-mono);
+  font-weight: 600;
+  color: var(--vnd-primary);
+}
+
+/* Modern Components */
+.modern-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+  transition: all var(--transition-base);
+}
+
+.modern-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.modern-card.elevated {
+  box-shadow: var(--shadow-lg);
+}
+
+.modern-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.modern-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modern-button.primary {
+  background: var(--primary-600);
+  color: white;
+}
+
+.modern-button.primary:hover:not(:disabled) {
+  background: var(--primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.modern-button.secondary {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+  border: 1px solid var(--neutral-300);
+}
+
+.modern-button.secondary:hover:not(:disabled) {
+  background: var(--neutral-200);
+  border-color: var(--neutral-400);
+}
+
+.modern-button.success {
+  background: var(--success-600);
+  color: white;
+}
+
+.modern-button.success:hover:not(:disabled) {
+  background: var(--success-700);
+}
+
+.modern-button.warning {
+  background: var(--warning-500);
+  color: white;
+}
+
+.modern-button.warning:hover:not(:disabled) {
+  background: var(--warning-600);
+}
+
+.modern-button.error {
+  background: var(--error-500);
+  color: white;
+}
+
+.modern-button.error:hover:not(:disabled) {
+  background: var(--error-600);
+}
+
+.modern-button.ghost {
+  background: transparent;
+  color: var(--neutral-600);
+  border: 1px solid transparent;
+}
+
+.modern-button.ghost:hover:not(:disabled) {
+  background: var(--neutral-100);
+  color: var(--neutral-800);
+}
+
+.modern-button.large {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-base);
+}
+
+.modern-button.small {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+}
+
+/* Form Controls */
+.modern-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  transition: all var(--transition-fast);
+  background: white;
+}
+
+.modern-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.modern-input:invalid {
+  border-color: var(--error-500);
+}
+
+.modern-input:disabled {
+  background: var(--neutral-100);
+  color: var(--neutral-500);
+  cursor: not-allowed;
+}
+
+.modern-select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  background: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modern-select:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Layout Components */
+.modern-container {
+  max-width: var(--max-width-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.modern-grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.modern-grid.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.modern-grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.modern-grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.modern-flex {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.modern-flex.center {
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-flex.between {
+  justify-content: space-between;
+}
+
+.modern-flex.wrap {
+  flex-wrap: wrap;
+}
+
+/* Status Badges */
+.modern-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.modern-badge.success {
+  background: var(--success-100);
+  color: var(--success-700);
+}
+
+.modern-badge.warning {
+  background: var(--warning-100);
+  color: var(--warning-700);
+}
+
+.modern-badge.error {
+  background: var(--error-100);
+  color: var(--error-700);
+}
+
+.modern-badge.info {
+  background: var(--primary-100);
+  color: var(--primary-700);
+}
+
+/* Vietnamese Business Components */
+.vnd-display {
+  font-family: var(--font-family-mono);
+  font-weight: 600;
+  color: var(--vnd-primary);
+}
+
+.vnd-display.large {
+  font-size: var(--text-2xl);
+}
+
+.vnd-display.small {
+  font-size: var(--text-sm);
+}
+
+.vietnamese-address {
+  font-family: var(--font-family-vietnamese);
+  line-height: 1.4;
+}
+
+.business-card {
+  background: linear-gradient(135deg, var(--primary-50) 0%, white 100%);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.business-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-red), var(--primary-gold));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modern-grid.cols-2,
+  .modern-grid.cols-3,
+  .modern-grid.cols-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-flex {
+    flex-direction: column;
+  }
+  
+  .modern-button {
+    width: 100%;
+  }
+  
+  .modern-container {
+    padding: 0 var(--space-3);
+  }
+}
+
+/* Loading States */
+.loading-skeleton {
+  background: linear-gradient(90deg, var(--neutral-200) 25%, var(--neutral-300) 50%, var(--neutral-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --neutral-800: #000000;
+    --neutral-100: #ffffff;
+    --primary-600: #cc0000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neutral-50: #1a1a1a;
+    --neutral-100: #2a2a2a;
+    --neutral-200: #3a3a3a;
+    --neutral-800: #f5f5f5;
+    --neutral-900: #ffffff;
+  }
+  
+  body {
+    background-color: var(--neutral-50);
+    color: var(--neutral-800);
+  }
+  
+  .modern-card {
+    background: var(--neutral-100);
+    border-color: var(--neutral-200);
+  }
+  
+  .modern-input,
+  .modern-select {
+    background: var(--neutral-100);
+    border-color: var(--neutral-200);
+    color: var(--neutral-800);
+  }
+}
