@@ -289,4 +289,7 @@ INSERT INTO system_health_metrics (timestamp, metric_name, metric_value, unit, e
 VALUES 
   (datetime('now'), 'database_initialized', 1, 'boolean', 'production'),
   (datetime('now'), 'monitoring_enabled', 1, 'boolean', 'production'),
-  (datetime('now'), 'logging_system_version', 1.0, 'version', 'production'); 
+  (datetime('now'), 'logging_system_version', 1.0, 'version', 'production');
+
+-- Record migration
+INSERT INTO d1_migrations (name, applied_at) VALUES ('0011_create_monitoring_tables.sql', datetime('now')); 

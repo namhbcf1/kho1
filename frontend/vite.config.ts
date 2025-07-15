@@ -1,118 +1,10 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
-    react({
-      fastRefresh: true,
-      babel: {
-        plugins: [
-          ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }]
-        ]
-      }
-    }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/kho1-api-production\.bangachieu2\.workers\.dev\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
-              },
-              cacheKeyWillBeUsed: async ({ request }) => {
-                return `${request.url}?lang=vi`;
-              },
-            },
-          },
-          {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'images-cache',
-              expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-              },
-            },
-          },
-          {
-            urlPattern: /\.(?:woff|woff2|ttf|otf)$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'fonts-cache',
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-            },
-          },
-        ],
-      },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-      manifest: {
-        name: 'KhoAugment POS - Hệ thống bán hàng Việt Nam',
-        short_name: 'KhoAugment POS',
-        description: 'Hệ thống quản lý bán hàng hiện đại cho doanh nghiệp Việt Nam',
-        theme_color: '#d4380d',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        lang: 'vi-VN',
-        dir: 'ltr',
-        icons: [
-          {
-            src: 'icons/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: 'icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ],
-        categories: ['business', 'productivity', 'finance'],
-        shortcuts: [
-          {
-            name: 'Bán hàng',
-            short_name: 'POS',
-            description: 'Mở giao diện bán hàng',
-            url: '/pos',
-            icons: [{ src: 'icons/pos-shortcut.png', sizes: '96x96' }]
-          },
-          {
-            name: 'Sản phẩm',
-            short_name: 'Products',
-            description: 'Quản lý sản phẩm',
-            url: '/products',
-            icons: [{ src: 'icons/products-shortcut.png', sizes: '96x96' }]
-          },
-          {
-            name: 'Báo cáo',
-            short_name: 'Reports',
-            description: 'Xem báo cáo bán hàng',
-            url: '/analytics',
-            icons: [{ src: 'icons/analytics-shortcut.png', sizes: '96x96' }]
-          }
-        ]
-      },
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      }
-    })
+    react()
   ],
   resolve: {
     alias: {
@@ -184,30 +76,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           antd: ['antd', '@ant-design/icons'],
-          charts: ['@ant-design/plots'],
-          utils: ['lodash', 'dayjs'],
-          
-          vietnamese: [
-            './src/utils/formatters/vndCurrency.ts',
-            './src/utils/formatters/vietnameseDate.ts',
-            './src/utils/validation/phoneValidation.ts',
-            './src/utils/validation/addressValidation.ts'
-          ],
-          
-          business: [
-            './src/services/business/analyticsService.ts',
-            './src/services/business/customerService.ts',
-            './src/services/business/inventoryService.ts',
-            './src/services/business/orderService.ts',
-            './src/services/business/productService.ts'
-          ],
-          
-          auth: [
-            './src/services/auth/authService.ts',
-            './src/services/auth/permissionService.ts',
-            './src/utils/security/csrfProtection.ts',
-            './src/utils/storage/secureStorageAdapter.ts'
-          ]
+          utils: ['dayjs'],
         },
         
         chunkFileNames: 'js/[name]-[hash].js',
@@ -236,32 +105,11 @@ export default defineConfig({
       'react-dom',
       'antd',
       '@ant-design/icons',
-      'lodash',
       'dayjs',
-      '@ant-design/plots',
       'react-router-dom',
       'zustand'
     ],
     exclude: []
-  },
-  
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `
-          @import "@/styles/variables.scss";
-          @import "@/styles/vietnamese-mixins.scss";
-        `
-      }
-    },
-    postcss: {
-      plugins: [
-        require('autoprefixer'),
-        require('cssnano')({
-          preset: 'default'
-        })
-      ]
-    }
   },
   
   define: {
