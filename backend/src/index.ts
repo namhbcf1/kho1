@@ -5,6 +5,7 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { authRoutes } from './handlers/auth';
 import { setupRoutes } from './handlers/setup';
+import { dashboardHandler } from './handlers/analytics/dashboardHandler.js';
 import { rateLimiter, securityHeaders } from './middleware/security';
 import { csrfProtection } from './middleware/security/csrfMiddleware';
 import { createErrorResponse, createSuccessResponse } from './services/database/d1Service';
@@ -192,6 +193,133 @@ app.route('/api/v1/setup', setupRoutes);
 
 // Authentication routes
 app.route('/api/v1/auth', authRoutes);
+
+// Analytics routes
+app.get('/api/v1/analytics/dashboard', dashboardHandler.getDashboardStats);
+app.get('/api/v1/analytics/sales/top-products', async (c) => {
+  try {
+    const limit = parseInt(c.req.query('limit') || '5');
+    const period = c.req.query('period') || 'month';
+    
+    const db = c.env.DB;
+    let dateFilter = '';
+    
+    if (period === 'day') {
+      dateFilter = "DATE(o.created_at) = DATE('now')";
+    } else if (period === 'week') {
+      dateFilter = "DATE(o.created_at) >= DATE('now', '-7 days')";
+    } else {
+      dateFilter = "DATE(o.created_at) >= DATE('now', '-30 days')";
+    }
+    
+    const topProducts = await db.prepare(`
+      SELECT 
+        p.id,
+        p.name,
+        p.price,
+        SUM(oi.quantity) as sold,
+        SUM(oi.total) as revenue
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      JOIN orders o ON oi.order_id = o.id
+      WHERE ${dateFilter} AND o.status = 'completed'
+      GROUP BY p.id, p.name, p.price
+      ORDER BY sold DESC
+      LIMIT ?
+    `).bind(limit).all();
+    
+    return c.json({
+      success: true,
+      data: topProducts.results || []
+    });
+    
+  } catch (error) {
+    console.error('Top products error:', error);
+    return c.json({
+      success: false,
+      error: 'Failed to fetch top products'
+    }, 500);
+  }
+});
+
+app.get('/api/v1/analytics/inventory/low-stock', async (c) => {
+  try {
+    const limit = parseInt(c.req.query('limit') || '5');
+    const threshold = parseInt(c.req.query('threshold') || '10');
+    
+    const db = c.env.DB;
+    const lowStockProducts = await db.prepare(`
+      SELECT 
+        id,
+        name,
+        price,
+        stock,
+        min_stock
+      FROM products
+      WHERE stock <= ? AND active = 1
+      ORDER BY stock ASC
+      LIMIT ?
+    `).bind(threshold, limit).all();
+    
+    return c.json({
+      success: true,
+      data: lowStockProducts.results || []
+    });
+    
+  } catch (error) {
+    console.error('Low stock error:', error);
+    return c.json({
+      success: false,
+      error: 'Failed to fetch low stock products'
+    }, 500);
+  }
+});
+
+// Logs endpoint for frontend logging
+app.post('/api/v1/logs', async (c) => {
+  try {
+    const { level, message, data } = await c.req.json();
+    
+    // Log to console in development
+    if (c.env.ENVIRONMENT === 'development') {
+      console.log(`[${level.toUpperCase()}] ${message}`, data);
+    }
+    
+    // Store in database for production logging
+    if (c.env.DB) {
+      await c.env.DB.prepare(`
+        INSERT INTO error_logs (
+          id, message, severity, ip, user_agent, created_at
+        ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).bind(
+        crypto.randomUUID(),
+        `${message}: ${JSON.stringify(data)}`,
+        level,
+        c.req.header('CF-Connecting-IP') || 'unknown',
+        c.req.header('User-Agent') || 'unknown'
+      ).run();
+    }
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Logging error:', error);
+    return c.json({ success: false }, 200); // Don't fail the main request
+  }
+});
+
+app.post('/api/v1/logs/api-error', async (c) => {
+  try {
+    const errorData = await c.req.json();
+    
+    // Log API errors
+    console.error('API Error logged from frontend:', errorData);
+    
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('API error logging failed:', error);
+    return c.json({ success: false }, 200);
+  }
+});
 
 // API Routes with proper error handling
 
