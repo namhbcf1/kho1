@@ -12,7 +12,7 @@ import { OptimizedDashboardQueries } from './services/database/optimizedQueries'
 import { ProductService } from './services/database/productService';
 
 // Environment interface with all required bindings
-export interface Env {
+export interface Env extends Record<string, unknown> {
   DB: D1Database;
   CACHE: KVNamespace;
   KV: KVNamespace;

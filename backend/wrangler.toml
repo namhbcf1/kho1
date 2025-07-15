@@ -24,6 +24,8 @@ JWT_EXPIRE_TIME = "7d"
 REFRESH_TOKEN_EXPIRE_TIME = "30d"
 BCRYPT_ROUNDS = "12"
 ADMIN_EMAIL = "admin@khoaugment.com"
+JWT_SECRET = "kho1-production-jwt-secret-2025"
+REFRESH_SECRET = "kho1-production-refresh-secret-2025"
 
 # Development environment variables  
 [env.development.vars]
@@ -130,9 +132,4 @@ id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 # cwd = "."
 # watch_dir = "src"
 
-# Miniflare configuration for local development
-[miniflare]
-upstream = "http://localhost:3000"
-kv_persist = true
-d1_persist = true
-cache_persist = true
+# Note: Miniflare configuration removed due to wrangler compatibility

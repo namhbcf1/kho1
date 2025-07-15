@@ -17,6 +17,7 @@ interface AuthState {
   logout: () => void;
   refreshToken: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  initialize: () => Promise<void>;
   clearError: () => void;
   updateUser: (userData: Partial<User>) => void;
 }
@@ -196,6 +197,11 @@ export const useAuthStore = create<AuthState>()(
           } finally {
             set({ isLoading: false, isInitialized: true });
           }
+        },
+
+        initialize: async () => {
+          // Initialize is the same as checkAuth
+          await get().checkAuth();
         },
 
         clearError: () => set({ error: null }),

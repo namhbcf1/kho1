@@ -3,12 +3,13 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
-import { ProductService } from './services/database/productService';
-import { createErrorResponse, createSuccessResponse } from './services/database/d1Service';
-import { OptimizedDashboardQueries } from './services/database/optimizedQueries';
-import { securityHeaders, rateLimiter, csrfProtection } from './middleware/security';
 import { authRoutes } from './handlers/auth';
 import { setupRoutes } from './handlers/setup';
+import { rateLimiter, securityHeaders } from './middleware/security';
+import { csrfProtection } from './middleware/security/csrfMiddleware';
+import { createErrorResponse, createSuccessResponse } from './services/database/d1Service';
+import { OptimizedDashboardQueries } from './services/database/optimizedQueries';
+import { ProductService } from './services/database/productService';
 // Create Hono app with proper typing
 const app = new Hono();
 // Security middleware

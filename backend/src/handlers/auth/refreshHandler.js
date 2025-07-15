@@ -1,54 +1,62 @@
-// Token refresh handler
+// JWT refresh token handler
 import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 import jwt from 'jsonwebtoken';
+import { apiRateLimit } from '../../middleware/security/enhancedRateLimit';
+const refreshSchema = z.object({
+    refreshToken: z.string(),
+});
 export const refreshHandler = new Hono()
-    .post('/', async (c) => {
+    .post('/', apiRateLimit, zValidator('json', refreshSchema), async (c) => {
     try {
-        const authHeader = c.req.header('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return c.json({ error: 'No token provided' }, 401);
-        }
-        const token = authHeader.substring(7);
+        const { refreshToken } = c.req.valid('json');
         const { DB } = c.env;
-        // Verify current token (even if expired)
-        let decoded;
-        try {
-            decoded = jwt.verify(token, c.env.JWT_SECRET);
+        // Verify refresh token
+        const decoded = jwt.verify(refreshToken, c.env.JWT_REFRESH_SECRET || c.env.JWT_SECRET);
+        if (decoded.type !== 'refresh') {
+            return c.json({
+                success: false,
+                error: 'Invalid refresh token type'
+            }, 401);
         }
-        catch (error) {
-            if (error.name === 'TokenExpiredError') {
-                decoded = jwt.decode(token);
-            }
-            else {
-                return c.json({ error: 'Invalid token' }, 401);
-            }
+        // Check if refresh token exists in database
+        const session = await DB.prepare(`
+        SELECT s.*, u.* FROM user_sessions s
+        JOIN users u ON s.user_id = u.id
+        WHERE s.refresh_token = ? AND s.expires_at > datetime('now') AND u.active = 1
+      `).bind(refreshToken).first();
+        if (!session) {
+            return c.json({
+                success: false,
+                error: 'Refresh token not found or expired'
+            }, 401);
         }
-        // Get user from database
-        const user = await DB.prepare('SELECT * FROM users WHERE id = ?')
-            .bind(decoded.userId)
-            .first();
-        if (!user || !user.active) {
-            return c.json({ error: 'User not found or inactive' }, 401);
-        }
-        // Generate new token
+        // Generate new access token
         const newToken = jwt.sign({
-            userId: user.id,
-            email: user.email,
-            role: user.role
+            userId: session.user_id,
+            email: session.email,
+            role: session.role
         }, c.env.JWT_SECRET, { expiresIn: '24h' });
+        // Update last used timestamp
+        await DB.prepare(`
+        UPDATE user_sessions 
+        SET last_used = datetime('now')
+        WHERE refresh_token = ?
+      `).bind(refreshToken).run();
         return c.json({
-            token: newToken,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: user.role,
-                permissions: user.permissions ? JSON.parse(user.permissions) : [],
+            success: true,
+            data: {
+                token: newToken,
+                expiresIn: 86400, // 24 hours
             },
         });
     }
     catch (error) {
-        console.error('Token refresh error:', error);
-        return c.json({ error: 'Internal server error' }, 500);
+        console.error('Refresh token error:', error);
+        return c.json({
+            success: false,
+            error: 'Invalid or expired refresh token'
+        }, 401);
     }
 });
