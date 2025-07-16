@@ -1,5 +1,5 @@
 # Production Cloudflare Workers Configuration for KhoAugment POS API
-name = "kho1-api"
+name = "kho1-api-production"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
@@ -52,7 +52,7 @@ CORS_ORIGIN = "http://localhost:3000"
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "kho1-production"
-database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
 
 # Development D1 Database  
 [[env.development.d1_databases]]
