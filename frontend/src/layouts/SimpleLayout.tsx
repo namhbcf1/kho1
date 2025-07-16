@@ -1,5 +1,5 @@
 import {
-    AnalyticsOutlined,
+    BarChartOutlined,
     BarcodeOutlined,
     BellOutlined,
     CreditCardOutlined,
@@ -49,13 +49,12 @@ import {
     KeyOutlined,
     AuditOutlined,
     HistoryOutlined,
-    BackupOutlined,
-    MonitorOutlined,
-    AlertOutlined,
+    CloudUploadOutlined,
+    DesktopOutlined,
+    ExclamationCircleOutlined,
     SyncOutlined,
     LoadingOutlined,
-    CheckCircleOutlined,
-    ExclamationCircleOutlined
+    CheckCircleOutlined
 } from '@ant-design/icons';
 import { Avatar, Badge, Button, Dropdown, Layout, Menu, notification, Space, theme, Typography, Tooltip, Switch, Divider, Progress, Statistic, Card, Row, Col, Alert, Tag, List, Modal, Form, Input, Select, DatePicker, TimePicker, Slider, Rate, Checkbox, Radio, Upload, Transfer, Tree, Cascader, AutoComplete, Mentions, ConfigProvider, Affix, BackTop, Drawer, Tabs, Collapse, Steps, Timeline, Calendar, Popover, Empty, Skeleton, Spin, Result, Breadcrumb, Anchor, PageHeader } from 'antd';
 import React, { useState, useEffect, useCallback } from 'react';
@@ -89,7 +88,7 @@ const SimpleLayout: React.FC = () => {
       icon: <DashboardOutlined />,
       label: 'Tổng quan',
       children: [
-        { key: '/dashboard', label: 'Dashboard chính', icon: <AnalyticsOutlined /> },
+        { key: '/dashboard', label: 'Dashboard chính', icon: <BarChartOutlined /> },
         { key: '/dashboard/admin', label: 'Admin Dashboard', icon: <CrownOutlined /> },
         { key: '/dashboard/reports', label: 'Báo cáo tổng hợp', icon: <LineChartOutlined /> },
         { key: '/dashboard/realtime', label: 'Theo dõi thời gian thực', icon: <SyncOutlined /> }
@@ -172,9 +171,9 @@ const SimpleLayout: React.FC = () => {
       children: [
         { key: '/settings', label: 'Cài đặt chung', icon: <SettingOutlined /> },
         { key: '/settings/security', label: 'Bảo mật', icon: <SafetyOutlined /> },
-        { key: '/settings/backup', label: 'Sao lưu & Khôi phục', icon: <BackupOutlined /> },
+        { key: '/settings/backup', label: 'Sao lưu & Khôi phục', icon: <CloudUploadOutlined /> },
         { key: '/settings/integrations', label: 'Tích hợp API', icon: <ApiOutlined /> },
-        { key: '/settings/monitoring', label: 'Giám sát hệ thống', icon: <MonitorOutlined /> },
+        { key: '/settings/monitoring', label: 'Giám sát hệ thống', icon: <DesktopOutlined /> },
         { key: '/settings/logs', label: 'Nhật ký hệ thống', icon: <AuditOutlined /> }
       ]
     }

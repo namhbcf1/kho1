@@ -503,8 +503,8 @@ app.get('/api/v1/analytics/all', async (c) => {
         return c.json(createErrorResponse(error, 'ALL_ANALYTICS_FETCH_ERROR'), 500);
     }
 });
-// Customer API routes
-app.route('/api/v1/customers', async (c, next) => {
+// Customer API middleware
+app.use('/api/v1/customers/*', async (c, next) => {
     const customerHandler = new CustomerHandler(c.env.DB);
     c.set('customerHandler', customerHandler);
     await next();
@@ -545,8 +545,8 @@ app.get('/api/v1/loyalty/tiers', async (c) => {
     const customerHandler = new CustomerHandler(c.env.DB);
     return customerHandler.getLoyaltyTiers(c);
 });
-// Order API routes
-app.route('/api/v1/orders', async (c, next) => {
+// Order API middleware
+app.use('/api/v1/orders/*', async (c, next) => {
     const orderHandler = new OrderHandler(c.env.DB);
     c.set('orderHandler', orderHandler);
     await next();
@@ -579,8 +579,8 @@ app.get('/api/v1/orders/recent', async (c) => {
     const orderHandler = c.get('orderHandler');
     return orderHandler.getRecentOrders(c);
 });
-// POS API routes
-app.route('/api/v1/pos', async (c, next) => {
+// POS API middleware
+app.use('/api/v1/pos/*', async (c, next) => {
     const posHandler = new POSHandler(c.env.DB);
     c.set('posHandler', posHandler);
     await next();
