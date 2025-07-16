@@ -1,0 +1,18 @@
+# Vietnamese POS Frontend Redirects
+
+# API proxy to backend worker (must be first)
+/api/*  https://kho1-api.bangachieu2.workers.dev/api/:splat  200
+
+# Static assets should not be routed to index.html
+/assets/*  /assets/:splat  200
+/js/*  /js/:splat  200
+/icons/*  /icons/:splat  200
+/*.css  /:splat  200
+/*.js  /:splat  200
+/*.json  /:splat  200
+/*.png  /:splat  200
+/*.svg  /:splat  200
+/*.ico  /:splat  200
+
+# SPA routing - all non-asset and non-API requests should serve index.html
+/*  /index.html  200 
