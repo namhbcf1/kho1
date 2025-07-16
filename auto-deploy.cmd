@@ -10,9 +10,9 @@ echo   KhoAugment POS - Automated Deployment Tool
 echo ================================================
 echo.
 
-REM Set default values - CHANGE THESE TO YOUR VALUES
-set "DEFAULT_GITHUB_REPO=https://github.com/yourusername/khoaugment-pos.git"
-set "DEFAULT_PROJECT_NAME=khoaugment-pos"
+REM Set default values - Updated with your specific values
+set "DEFAULT_GITHUB_REPO=https://github.com/namhbcf1/kho1.git"
+set "DEFAULT_PROJECT_NAME=kho1"
 set "DEFAULT_ENVIRONMENT=production"
 
 REM Colors for better UX - ASCII compatible
@@ -296,7 +296,7 @@ if errorlevel 1 (
 
 REM Deploy to Workers
 echo %INFO% Deploying to Cloudflare Workers...
-wrangler deploy --env !environment! --name !project_name!-api
+wrangler deploy --env !environment! --name kho1-api
 if errorlevel 1 (
     echo %ERROR% Backend deployment failed
     cd ..
@@ -335,7 +335,7 @@ if errorlevel 1 (
 
 REM Deploy to Pages
 echo %INFO% Deploying to Cloudflare Pages...
-wrangler pages deploy dist --project-name !project_name!-frontend --compatibility-date 2024-01-15
+wrangler pages deploy dist --project-name kho1 --compatibility-date 2024-01-15
 if errorlevel 1 (
     echo %ERROR% Frontend deployment failed
     cd ..
@@ -357,8 +357,8 @@ timeout /t 10 /nobreak >nul
 
 REM Health check
 echo %INFO% Performing health checks...
-set "api_url=https://!project_name!-api.workers.dev"
-set "frontend_url=https://!project_name!-frontend.pages.dev"
+set "api_url=https://kho1-api.workers.dev"
+set "frontend_url=https://kho1.pages.dev"
 
 REM Check API health
 curl -f -s %api_url%/health >nul 2>&1
@@ -388,16 +388,17 @@ echo   - Environment: !environment!
 echo   - Version: 2.1.0
 echo.
 echo %ROCKET% Your KhoAugment POS is now live:
-echo   - Frontend: %frontend_url%
+echo   - Frontend: https://kho1.pages.dev
 echo   - Backend API: %api_url%
-echo   - GitHub: !github_repo!
+echo   - GitHub: https://github.com/namhbcf1/kho1
+echo   - Cloudflare Dashboard: https://dash.cloudflare.com/5b62d10947844251d23e0eac532531dd/pages/view/kho1
 echo.
 echo %INFO% Default Login Credentials:
 echo   - Email: admin@khoaugment.com
 echo   - Password: admin123
 echo.
 echo %INFO% Next Steps:
-echo   1. Open %frontend_url% in your browser
+echo   1. Open https://kho1.pages.dev in your browser
 echo   2. Login with the credentials above
 echo   3. Configure your store settings
 echo   4. Add products and start selling!
@@ -407,13 +408,15 @@ echo %SUCCESS% Thank you for using KhoAugment POS! 🚀
 REM Ask to open browser
 set /p "open_browser=Open the application in browser? (y/n): "
 if /i "%open_browser%"=="y" (
-    start %frontend_url%
+    start https://kho1.pages.dev
 )
 
 REM Save deployment log
 echo %timestamp% - Deployment completed successfully > deployment-log.txt
-echo Frontend: %frontend_url% >> deployment-log.txt
+echo Frontend: https://kho1.pages.dev >> deployment-log.txt
 echo API: %api_url% >> deployment-log.txt
+echo GitHub: https://github.com/namhbcf1/kho1 >> deployment-log.txt
+echo Cloudflare Dashboard: https://dash.cloudflare.com/5b62d10947844251d23e0eac532531dd/pages/view/kho1 >> deployment-log.txt
 echo Version: 2.1.0 >> deployment-log.txt
 
 pause

@@ -104,9 +104,10 @@ if exist "deployment-info.json" (
 
 echo.
 echo %ROCKET% Your applications are now available at:
-echo   + Frontend: https://khoaugment-pos-frontend.pages.dev
-echo   + Backend API: https://khoaugment-pos-api.workers.dev
-echo   + GitHub: https://github.com/yourusername/khoaugment-pos
+echo   + Frontend: https://kho1.pages.dev
+echo   + Backend API: https://kho1-api.workers.dev
+echo   + GitHub: https://github.com/namhbcf1/kho1
+echo   + Cloudflare Dashboard: https://dash.cloudflare.com/5b62d10947844251d23e0eac532531dd/pages/view/kho1
 echo.
 echo %INFO% Default Login Credentials:
 echo   + Email: admin@khoaugment.com
@@ -140,12 +141,12 @@ set /p "open_app=Press Y to open, or any key to exit: "
 
 if /i "%open_app%"=="y" (
     echo %ROCKET% Opening your KhoAugment POS system...
-    start https://khoaugment-pos-frontend.pages.dev
+    start https://kho1.pages.dev
     timeout /t 2 /nobreak >nul
     echo %CHECK% Browser opened! Enjoy your new POS system!
 ) else (
     echo %INFO% You can access your POS system anytime at:
-    echo   https://khoaugment-pos-frontend.pages.dev
+    echo   https://kho1.pages.dev
 )
 
 echo.

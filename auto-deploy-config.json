@@ -1,0 +1,12 @@
+{
+  "github_repo": "https://github.com/namhbcf1/kho1.git",
+  "project_name": "kho1",
+  "environment": "production",
+  "auto_open_browser": true,
+  "enable_health_checks": true,
+  "setup_date": "2025-01-16 - Configured for namhbcf1/kho1",
+  "deployment_notes": "Pre-configured for GitHub: namhbcf1/kho1 and Cloudflare: kho1.pages.dev",
+  "frontend_url": "https://kho1.pages.dev",
+  "backend_url": "https://kho1-api.workers.dev",
+  "cloudflare_dashboard": "https://dash.cloudflare.com/5b62d10947844251d23e0eac532531dd/pages/view/kho1"
+}
