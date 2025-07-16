@@ -6,6 +6,9 @@ import { prettyJSON } from 'hono/pretty-json';
 import { authRoutes } from './handlers/auth';
 import { setupRoutes } from './handlers/setup';
 import { dashboardHandler } from './handlers/analytics/dashboardHandler.js';
+import { CustomerHandler } from './handlers/customers/customerHandler';
+import { OrderHandler } from './handlers/orders/orderHandler';
+import { POSHandler } from './handlers/pos/posHandler';
 import { rateLimiter, securityHeaders } from './middleware/security';
 import { csrfProtection } from './middleware/security/csrfMiddleware';
 import { createErrorResponse, createSuccessResponse } from './services/database/d1Service';
@@ -614,6 +617,147 @@ app.get('/api/v1/analytics/all', async (c) => {
     console.error('Error in GET /api/v1/analytics/all:', error);
     return c.json(createErrorResponse(error, 'ALL_ANALYTICS_FETCH_ERROR'), 500);
   }
+});
+
+// Customer API routes
+app.route('/api/v1/customers', async (c, next) => {
+  const customerHandler = new CustomerHandler(c.env.DB);
+  c.set('customerHandler', customerHandler);
+  await next();
+});
+
+app.get('/api/v1/customers', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.getCustomers(c);
+});
+
+app.get('/api/v1/customers/:id', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.getCustomerById(c);
+});
+
+app.post('/api/v1/customers', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.createCustomer(c);
+});
+
+app.put('/api/v1/customers/:id', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.updateCustomer(c);
+});
+
+app.delete('/api/v1/customers/:id', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.deleteCustomer(c);
+});
+
+app.post('/api/v1/customers/:id/loyalty/add', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.addLoyaltyPoints(c);
+});
+
+app.post('/api/v1/customers/:id/loyalty/redeem', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.redeemLoyaltyPoints(c);
+});
+
+app.get('/api/v1/customers/tier/:tier', async (c) => {
+  const customerHandler: CustomerHandler = c.get('customerHandler');
+  return customerHandler.getCustomersByTier(c);
+});
+
+app.get('/api/v1/loyalty/tiers', async (c) => {
+  const customerHandler = new CustomerHandler(c.env.DB);
+  return customerHandler.getLoyaltyTiers(c);
+});
+
+// Order API routes
+app.route('/api/v1/orders', async (c, next) => {
+  const orderHandler = new OrderHandler(c.env.DB);
+  c.set('orderHandler', orderHandler);
+  await next();
+});
+
+app.get('/api/v1/orders', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.getOrders(c);
+});
+
+app.get('/api/v1/orders/:id', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.getOrder(c);
+});
+
+app.post('/api/v1/orders', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.createOrder(c);
+});
+
+app.put('/api/v1/orders/:id/status', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.updateOrderStatus(c);
+});
+
+app.delete('/api/v1/orders/:id', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.deleteOrder(c);
+});
+
+app.get('/api/v1/orders/stats/summary', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.getOrderStats(c);
+});
+
+app.get('/api/v1/orders/recent', async (c) => {
+  const orderHandler: OrderHandler = c.get('orderHandler');
+  return orderHandler.getRecentOrders(c);
+});
+
+// POS API routes
+app.route('/api/v1/pos', async (c, next) => {
+  const posHandler = new POSHandler(c.env.DB);
+  c.set('posHandler', posHandler);
+  await next();
+});
+
+app.post('/api/v1/pos/quick-sale', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.quickSale(c);
+});
+
+app.get('/api/v1/pos/search', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.searchProducts(c);
+});
+
+app.get('/api/v1/pos/barcode/:barcode', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.getProductByBarcode(c);
+});
+
+app.get('/api/v1/pos/customer/:phone', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.getCustomerByPhone(c);
+});
+
+app.get('/api/v1/pos/stats/daily', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.getDailySalesStats(c);
+});
+
+app.get('/api/v1/pos/cash-drawer', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.getCashDrawerStatus(c);
+});
+
+app.get('/api/v1/pos/transactions/recent', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.getRecentTransactions(c);
+});
+
+app.get('/api/v1/pos/receipt/:id', async (c) => {
+  const posHandler: POSHandler = c.get('posHandler');
+  return posHandler.printReceipt(c);
 });
 
 // Payment webhook endpoints (placeholder)

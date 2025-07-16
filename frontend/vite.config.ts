@@ -1,11 +1,121 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/',
   plugins: [
-    react()
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      manifest: {
+        name: 'KhoAugment POS - Hệ thống bán hàng thông minh',
+        short_name: 'KhoAugment POS',
+        description: 'Hệ thống Point of Sale (POS) thông minh cho doanh nghiệp Việt Nam',
+        theme_color: '#1890ff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        scope: '/',
+        start_url: '/',
+        lang: 'vi-VN',
+        categories: ['business', 'productivity', 'finance'],
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ],
+        screenshots: [
+          {
+            src: 'screenshot-wide.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'KhoAugment POS Dashboard'
+          },
+          {
+            src: 'screenshot-narrow.png',
+            sizes: '750x1334',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'KhoAugment POS Mobile'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: 'index.html',
+        navigateFallbackDenylist: [/^\/api/],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+              },
+              cacheKeyWillBeUsed: async ({ request }) => {
+                return `${request.url}`;
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // <== 30 days
+              }
+            }
+          },
+          {
+            urlPattern: /\/api\/.*\.(json)$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // <== 1 day
+              },
+              networkTimeoutSeconds: 10
+            }
+          }
+        ]
+      },
+      devOptions: {
+        enabled: true
+      }
+    })
   ],
   resolve: {
     alias: {

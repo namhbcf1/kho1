@@ -1,6 +1,10 @@
-# 🇻🇳 Vietnamese POS System (Hệ Thống POS Việt Nam)
+# KhoAugment POS - Vietnamese Point of Sale System
 
-A complete, production-ready Point of Sale system specifically designed for Vietnamese businesses, built with modern web technologies and Vietnamese business compliance in mind. Uses Cloudflare edge infrastructure for maximum performance and reliability.
+![KhoAugment POS](https://img.shields.io/badge/Version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Vietnamese Business](https://img.shields.io/badge/Vietnamese-Business%20Compliant-red.svg)
+
+A comprehensive Point of Sale (POS) system designed specifically for Vietnamese businesses, built with modern web technologies and deployed on Cloudflare's edge computing platform.
 
 ## 🌐 Live Demo & Deployment
 

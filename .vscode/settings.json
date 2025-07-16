@@ -1,0 +1,283 @@
+{
+  "// =================================================================": "",
+  "// KHOAUGMENT POS - PRODUCTION WORKSPACE SETTINGS": "",
+  "// Cloudflare Production Environment - NO DEMO/MOCK/OFFLINE": "",
+  "// =================================================================": "",
+  
+  "// === CURSOR AI PRODUCTION CONFIGURATION ===": "",
+  "cursor.rules": [
+    "PRODUCTION SYSTEM: KhoAugment POS for real Vietnamese businesses",
+    "NEVER create mock data, demo data, or placeholder content",
+    "NEVER implement offline features, PWA, or service workers",
+    "100% Cloudflare Workers + D1 + R2 + Pages (production only)",
+    "Frontend: React + TypeScript + Ant Design + Vietnamese locale",
+    "Backend: Hono.js + D1 SQLite + R2 Storage + JWT Auth",
+    "ALL data must come from real API calls to Cloudflare Workers",
+    "ALL database operations must use real D1 production database",
+    "Implement proper Vietnamese business rules (VAT, currency, addresses)",
+    "Use strict TypeScript with no any types",
+    "Implement real payment gateways: VNPay, MoMo, ZaloPay",
+    "Focus on Vietnamese market: VND currency, Vietnamese addresses",
+    "Never use console.log - use proper production logging",
+    "Every feature must be production-ready for real business use",
+    "No TODO comments, no FIXME, no placeholder implementations"
+  ],
+  
+  "// === TYPESCRIPT STRICT PRODUCTION SETTINGS ===": "",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.enabled": "allButAliases",
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
+  "typescript.suggest.includeCompletionsForModuleExports": true,
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.suggest.completeJSDocs": true,
+  
+  "// === JAVASCRIPT PRODUCTION SETTINGS ===": "",
+  "javascript.suggest.autoImports": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "javascript.suggest.completeJSDocs": true,
+  
+  "// === EDITOR STRICT PRODUCTION SETTINGS ===": "",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit",
+    "source.removeUnusedImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.trimAutoWhitespace": true,
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.suggestSelection": "first",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "on"
+  },
+  "editor.parameterHints.enabled": true,
+  "editor.semanticHighlighting.enabled": true,
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  
+  "// === ESLINT STRICT CONFIGURATION ===": "",
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": ["frontend", "backend"],
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  "eslint.lintTask.enable": true,
+  "eslint.run": "onType",
+  
+  "// === PRODUCTION FILE ASSOCIATIONS ===": "",
+  "files.associations": {
+    "*.jsx": "javascriptreact",
+    "*.tsx": "typescriptreact",
+    "wrangler.toml": "toml",
+    "*.sql": "sql",
+    ".cursorrules": "plaintext",
+    ".env.*": "dotenv",
+    "*.d1": "sql",
+    "*.worker.js": "javascript",
+    "*.worker.ts": "typescript"
+  },
+  
+  "// === EMMET PRODUCTION SETTINGS ===": "",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.showSuggestionsAsSnippets": true,
+  
+  "// === FILE EXPLORER PRODUCTION ORGANIZATION ===": "",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, .npmrc",
+    "wrangler.toml": ".wrangler/**, wrangler.*.toml, *.d1",
+    "vite.config.*": "vite.*.config.*, *.config.js, *.config.ts",
+    "tsconfig.json": "tsconfig.*.json",
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+    "*.jsx": "${capture}.test.jsx, ${capture}.stories.jsx",
+    "*.ts": "${capture}.js, ${capture}.d.ts.map, ${capture}.d.ts",
+    "*.tsx": "${capture}.test.tsx, ${capture}.stories.tsx",
+    "*.sql": "migrations/**, schema.sql, seed.sql",
+    ".env": ".env.*, .envrc, env.d.ts",
+    ".gitignore": ".gitattributes, .gitmodules, .gitmessage, .mailmap, .git-blame*",
+    "README.md": "AUTHORS, BACKERS.md, CHANGELOG*, CONTRIBUTING.md, COPYING, CREDITS, Changelog*, INSTALL.md, LICENSE*, MAINTAINERS, Makefile, SPONSORS.md, readme*"
+  },
+  
+  "// === SEARCH PRODUCTION EXCLUSIONS ===": "",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/.wrangler": true,
+    "**/coverage": true,
+    "**/.nyc_output": true,
+    "**/logs": true,
+    "**/*.log": true,
+    "**/test-results": true,
+    "**/playwright-report": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.wrangler/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true
+  },
+  
+  "// === TERMINAL PRODUCTION SETTINGS ===": "",
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
+  
+  "// === GIT PRODUCTION SETTINGS ===": "",
+  "git.enableSmartCommit": false,
+  "git.confirmSync": true,
+  "git.autofetch": true,
+  "git.enableCommitSigning": false,
+  "git.defaultCloneDirectory": "./projects",
+  "git.branchProtection": true,
+  "git.useCommitInputAsStashMessage": true,
+  
+  "// === CSS/SCSS PRODUCTION VALIDATION ===": "",
+  "css.validate": true,
+  "scss.validate": true,
+  "css.lint.unknownAtRules": "ignore",
+  "css.lint.validProperties": ["composes"],
+  
+  "// === TAILWIND CSS PRODUCTION CONFIG ===": "",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "typescript",
+    "typescriptreact": "typescriptreact"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "tailwindCSS.validate": true,
+  "tailwindCSS.lint.cssConflict": "error",
+  "tailwindCSS.lint.invalidApply": "error",
+  "tailwindCSS.lint.invalidScreen": "error",
+  "tailwindCSS.lint.invalidTailwindDirective": "error",
+  "tailwindCSS.lint.invalidVariant": "error",
+  
+  "// === CLOUDFLARE PRODUCTION SETTINGS ===": "",
+  "cloudflare.wrangler.enabled": true,
+  "cloudflare.wrangler.autoStart": false,
+  
+  "// === SQL TOOLS (D1 PRODUCTION DATABASE) ===": "",
+  "sqltools.connections": [
+    {
+      "name": "D1 Production Database",
+      "driver": "SQLite",
+      "database": ".wrangler/state/v3/d1/miniflare-D1DatabaseObject/khoaugment-db.sqlite",
+      "group": "Cloudflare D1 Production"
+    }
+  ],
+  "sqltools.useNodeRuntime": true,
+  "sqltools.format": {
+    "language": "sql",
+    "indentSize": 2
+  },
+  
+  "// === PERFORMANCE PRODUCTION SETTINGS ===": "",
+  "editor.largeFileOptimizations": true,
+  "extensions.ignoreRecommendations": false,
+  
+  "// === DEBUGGING PRODUCTION SETTINGS ===": "",
+  "debug.allowBreakpointsEverywhere": false,
+  "debug.showBreakpointsInOverviewRuler": true,
+  "debug.openDebug": "openOnDebugBreak",
+  "debug.console.fontSize": 14,
+  
+  "// === CODE LENS PRODUCTION ===": "",
+  "editor.codeLens": true,
+  "javascript.referencesCodeLens.enabled": true,
+  "typescript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.showOnAllFunctions": true,
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  
+  "// === SECURITY PRODUCTION SETTINGS ===": "",
+  "security.workspace.trust.untrustedFiles": "prompt",
+  "security.workspace.trust.banner": "always",
+  "security.workspace.trust.startupPrompt": "always",
+  
+  "// === WORKSPACE PRODUCTION SETTINGS ===": "",
+  "workbench.startupEditor": "readme",
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.iconTheme": "vs-seti",
+  "workbench.tree.indent": 20,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.closeOnFileDelete": true,
+  "workbench.editor.highlightModifiedTabs": true,
+  
+  "// === PRODUCTION ERROR HANDLING ===": "",
+  "problems.showCurrentInStatus": true,
+  "problems.sortOrder": "severity",
+  
+  "// === PRODUCTION VALIDATION RULES ===": "",
+  "json.validate.enable": true,
+  "json.schemaDownload.enable": true,
+  
+  "// === NO MOCK/DEMO/OFFLINE CONTENT ENFORCEMENT ===": "",
+  "search.quickOpen.includeSymbols": true,
+  "search.smartCase": true,
+  
+  "// === PRODUCTION ONLY SNIPPETS ===": "",
+  "editor.snippetSuggestions": "top",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  
+  "// === STRICT PRODUCTION LINTING ===": "",
+  "editor.rulers": [80, 120],
+  "editor.wordWrapColumn": 120,
+  
+  "// === VIETNAMESE LANGUAGE SUPPORT ===": "",
+  "files.encoding": "utf8",
+  "files.defaultLanguage": "typescript",
+  
+  "// === PRODUCTION MONITORING ===": "",
+  "telemetry.telemetryLevel": "error",
+  
+  "// === FINAL PRODUCTION ENFORCEMENT ===": "",
+  "extensions.autoUpdate": false,
+  "update.enableWindowsBackgroundUpdates": false,
+  
+  "// === PRODUCTION CODE QUALITY ===": "",
+  "editor.suggest.filterGraceful": true,
+  "editor.suggest.localityBonus": true,
+  "editor.suggest.shareSuggestSelections": false,
+  "editor.multiCursorModifier": "ctrlCmd",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  
+  "// === END PRODUCTION CONFIGURATION ===": ""
+}

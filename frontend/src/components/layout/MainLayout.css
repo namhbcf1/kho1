@@ -1,0 +1,268 @@
+/* Main Layout Styles */
+.main-layout {
+  min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.main-sider {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #f0f0f0;
+  position: fixed !important;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1001;
+  overflow: auto;
+}
+
+.main-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+  min-height: 64px;
+}
+
+.logo-icon {
+  font-size: 28px;
+  margin-right: 8px;
+}
+
+.logo-text {
+  margin: 0 !important;
+  color: #1890ff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.main-menu {
+  border-right: none;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.main-menu .ant-menu-item {
+  height: 48px;
+  line-height: 48px;
+  margin: 4px 8px;
+  border-radius: 6px;
+  width: auto;
+}
+
+.main-menu .ant-menu-item:hover {
+  background-color: #e6f7ff;
+}
+
+.main-menu .ant-menu-item-selected {
+  background-color: #1890ff !important;
+  color: white !important;
+}
+
+.main-menu .ant-menu-item-selected .anticon,
+.main-menu .ant-menu-item-selected span {
+  color: white !important;
+}
+
+/* Header Styles */
+.main-header {
+  background: #fff;
+  padding: 0;
+  border-bottom: 1px solid #f0f0f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 250px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 24px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.user-info:hover {
+  background-color: #f5f5f5;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+/* Content Styles */
+.main-content {
+  margin-left: 250px;
+  min-height: calc(100vh - 64px - 70px);
+  padding: 0;
+  background: #f0f2f5;
+}
+
+.content-wrapper {
+  padding: 24px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Footer Styles */
+.main-footer {
+  text-align: center;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  margin-left: 250px;
+  padding: 16px 24px;
+}
+
+.footer-text {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-header {
+    margin-left: 0;
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .main-footer {
+    margin-left: 0;
+  }
+  
+  .main-sider {
+    position: fixed !important;
+    z-index: 1001;
+  }
+}
+
+@media (max-width: 992px) {
+  .main-sider {
+    left: -250px;
+    transition: left 0.3s ease;
+  }
+  
+  .main-sider.ant-layout-sider-collapsed {
+    left: 0;
+    width: 0 !important;
+  }
+  
+  .user-name {
+    display: none;
+  }
+  
+  .notification-button {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 16px;
+  }
+  
+  .logo-text {
+    font-size: 16px;
+  }
+  
+  .main-menu .ant-menu-item {
+    height: 44px;
+    line-height: 44px;
+  }
+  
+  .footer-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .content-wrapper {
+    padding: 12px;
+  }
+  
+  .main-header {
+    padding: 0 12px;
+  }
+  
+  .header-right {
+    gap: 8px;
+    padding-right: 12px;
+  }
+  
+  .collapse-button {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+/* Dark mode support (for future implementation) */
+@media (prefers-color-scheme: dark) {
+  .main-layout {
+    background: #141414;
+  }
+  
+  .main-header {
+    background: #1f1f1f;
+    border-bottom-color: #303030;
+  }
+  
+  .main-footer {
+    background: #1f1f1f;
+    border-top-color: #303030;
+  }
+  
+  .footer-text {
+    color: #a6a6a6;
+  }
+}
+
+/* Animation for sidebar */
+.ant-layout-sider {
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s !important;
+}
+
+/* Scroll styling */
+.main-sider .ant-layout-sider-children::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-sider .ant-layout-sider-children::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-sider .ant-layout-sider-children::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.main-sider .ant-layout-sider-children::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

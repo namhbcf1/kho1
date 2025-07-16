@@ -52,7 +52,7 @@ CORS_ORIGIN = "http://localhost:3000"
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "kho1-production"
-database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
+database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
 
 # Development D1 Database  
 [[env.development.d1_databases]]
