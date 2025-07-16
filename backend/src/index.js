@@ -5,6 +5,10 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { authRoutes } from './handlers/auth';
 import { setupRoutes } from './handlers/setup';
+import { dashboardHandler } from './handlers/analytics/dashboardHandler.js';
+import { CustomerHandler } from './handlers/customers/customerHandler';
+import { OrderHandler } from './handlers/orders/orderHandler';
+import { POSHandler } from './handlers/pos/posHandler';
 import { rateLimiter, securityHeaders } from './middleware/security';
 import { csrfProtection } from './middleware/security/csrfMiddleware';
 import { createErrorResponse, createSuccessResponse } from './services/database/d1Service';
@@ -141,6 +145,116 @@ async function testDatabaseConnection(db) {
 app.route('/api/v1/setup', setupRoutes);
 // Authentication routes
 app.route('/api/v1/auth', authRoutes);
+// Analytics routes
+app.get('/api/v1/analytics/dashboard', dashboardHandler.getDashboardStats);
+app.get('/api/v1/analytics/sales/top-products', async (c) => {
+    try {
+        const limit = parseInt(c.req.query('limit') || '5');
+        const period = c.req.query('period') || 'month';
+        const db = c.env.DB;
+        let dateFilter = '';
+        if (period === 'day') {
+            dateFilter = "DATE(o.created_at) = DATE('now')";
+        }
+        else if (period === 'week') {
+            dateFilter = "DATE(o.created_at) >= DATE('now', '-7 days')";
+        }
+        else {
+            dateFilter = "DATE(o.created_at) >= DATE('now', '-30 days')";
+        }
+        const topProducts = await db.prepare(`
+      SELECT 
+        p.id,
+        p.name,
+        p.price,
+        SUM(oi.quantity) as sold,
+        SUM(oi.total) as revenue
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      JOIN orders o ON oi.order_id = o.id
+      WHERE ${dateFilter} AND o.status = 'completed'
+      GROUP BY p.id, p.name, p.price
+      ORDER BY sold DESC
+      LIMIT ?
+    `).bind(limit).all();
+        return c.json({
+            success: true,
+            data: topProducts.results || []
+        });
+    }
+    catch (error) {
+        console.error('Top products error:', error);
+        return c.json({
+            success: false,
+            error: 'Failed to fetch top products'
+        }, 500);
+    }
+});
+app.get('/api/v1/analytics/inventory/low-stock', async (c) => {
+    try {
+        const limit = parseInt(c.req.query('limit') || '5');
+        const threshold = parseInt(c.req.query('threshold') || '10');
+        const db = c.env.DB;
+        const lowStockProducts = await db.prepare(`
+      SELECT 
+        id,
+        name,
+        price,
+        stock,
+        min_stock
+      FROM products
+      WHERE stock <= ? AND active = 1
+      ORDER BY stock ASC
+      LIMIT ?
+    `).bind(threshold, limit).all();
+        return c.json({
+            success: true,
+            data: lowStockProducts.results || []
+        });
+    }
+    catch (error) {
+        console.error('Low stock error:', error);
+        return c.json({
+            success: false,
+            error: 'Failed to fetch low stock products'
+        }, 500);
+    }
+});
+// Logs endpoint for frontend logging
+app.post('/api/v1/logs', async (c) => {
+    try {
+        const { level, message, data } = await c.req.json();
+        // Log to console in development
+        if (c.env.ENVIRONMENT === 'development') {
+            console.log(`[${level.toUpperCase()}] ${message}`, data);
+        }
+        // Store in database for production logging
+        if (c.env.DB) {
+            await c.env.DB.prepare(`
+        INSERT INTO error_logs (
+          id, message, severity, ip, user_agent, created_at
+        ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).bind(crypto.randomUUID(), `${message}: ${JSON.stringify(data)}`, level, c.req.header('CF-Connecting-IP') || 'unknown', c.req.header('User-Agent') || 'unknown').run();
+        }
+        return c.json({ success: true });
+    }
+    catch (error) {
+        console.error('Logging error:', error);
+        return c.json({ success: false }, 200); // Don't fail the main request
+    }
+});
+app.post('/api/v1/logs/api-error', async (c) => {
+    try {
+        const errorData = await c.req.json();
+        // Log API errors
+        console.error('API Error logged from frontend:', errorData);
+        return c.json({ success: true });
+    }
+    catch (error) {
+        console.error('API error logging failed:', error);
+        return c.json({ success: false }, 200);
+    }
+});
 // API Routes with proper error handling
 // Products API
 app.get('/api/v1/products', async (c) => {
@@ -388,6 +502,120 @@ app.get('/api/v1/analytics/all', async (c) => {
         console.error('Error in GET /api/v1/analytics/all:', error);
         return c.json(createErrorResponse(error, 'ALL_ANALYTICS_FETCH_ERROR'), 500);
     }
+});
+// Customer API routes
+app.route('/api/v1/customers', async (c, next) => {
+    const customerHandler = new CustomerHandler(c.env.DB);
+    c.set('customerHandler', customerHandler);
+    await next();
+});
+app.get('/api/v1/customers', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.getCustomers(c);
+});
+app.get('/api/v1/customers/:id', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.getCustomerById(c);
+});
+app.post('/api/v1/customers', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.createCustomer(c);
+});
+app.put('/api/v1/customers/:id', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.updateCustomer(c);
+});
+app.delete('/api/v1/customers/:id', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.deleteCustomer(c);
+});
+app.post('/api/v1/customers/:id/loyalty/add', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.addLoyaltyPoints(c);
+});
+app.post('/api/v1/customers/:id/loyalty/redeem', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.redeemLoyaltyPoints(c);
+});
+app.get('/api/v1/customers/tier/:tier', async (c) => {
+    const customerHandler = c.get('customerHandler');
+    return customerHandler.getCustomersByTier(c);
+});
+app.get('/api/v1/loyalty/tiers', async (c) => {
+    const customerHandler = new CustomerHandler(c.env.DB);
+    return customerHandler.getLoyaltyTiers(c);
+});
+// Order API routes
+app.route('/api/v1/orders', async (c, next) => {
+    const orderHandler = new OrderHandler(c.env.DB);
+    c.set('orderHandler', orderHandler);
+    await next();
+});
+app.get('/api/v1/orders', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.getOrders(c);
+});
+app.get('/api/v1/orders/:id', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.getOrder(c);
+});
+app.post('/api/v1/orders', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.createOrder(c);
+});
+app.put('/api/v1/orders/:id/status', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.updateOrderStatus(c);
+});
+app.delete('/api/v1/orders/:id', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.deleteOrder(c);
+});
+app.get('/api/v1/orders/stats/summary', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.getOrderStats(c);
+});
+app.get('/api/v1/orders/recent', async (c) => {
+    const orderHandler = c.get('orderHandler');
+    return orderHandler.getRecentOrders(c);
+});
+// POS API routes
+app.route('/api/v1/pos', async (c, next) => {
+    const posHandler = new POSHandler(c.env.DB);
+    c.set('posHandler', posHandler);
+    await next();
+});
+app.post('/api/v1/pos/quick-sale', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.quickSale(c);
+});
+app.get('/api/v1/pos/search', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.searchProducts(c);
+});
+app.get('/api/v1/pos/barcode/:barcode', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.getProductByBarcode(c);
+});
+app.get('/api/v1/pos/customer/:phone', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.getCustomerByPhone(c);
+});
+app.get('/api/v1/pos/stats/daily', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.getDailySalesStats(c);
+});
+app.get('/api/v1/pos/cash-drawer', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.getCashDrawerStatus(c);
+});
+app.get('/api/v1/pos/transactions/recent', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.getRecentTransactions(c);
+});
+app.get('/api/v1/pos/receipt/:id', async (c) => {
+    const posHandler = c.get('posHandler');
+    return posHandler.printReceipt(c);
 });
 // Payment webhook endpoints (placeholder)
 app.post('/api/v1/payments/vnpay/webhook', async (c) => {

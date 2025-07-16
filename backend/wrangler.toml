@@ -58,7 +58,7 @@ database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
 [[env.development.d1_databases]]
 binding = "DB"
 database_name = "kho1-development"
-database_id = "your-development-database-id"
+database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
 
 # Production R2 Storage for file uploads (disabled - R2 not enabled)
 # [[env.production.r2_buckets]]
