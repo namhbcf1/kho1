@@ -1,210 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhoAugment POS Test</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f0f2f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #1890ff;
-            color: white;
-            border-radius: 8px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .card {
-            background: white;
-            border: 1px solid #d9d9d9;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            transition: box-shadow 0.3s;
-        }
-        .card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .card h3 {
-            color: #1890ff;
-            margin-bottom: 10px;
-        }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        .stat {
-            text-align: center;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin: 5px;
-            min-width: 120px;
-        }
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #3f8600;
-        }
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
-        }
-        .login-section {
-            background: #e6f7ff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .btn {
-            background: #1890ff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        .btn:hover {
-            background: #40a9ff;
-        }
-        .status {
-            display: inline-block;
-            background: #52c41a;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🇻🇳 KhoAugment POS System</h1>
-            <p>Hệ thống bán hàng thông minh cho doanh nghiệp Việt Nam</p>
-            <span class="status">✅ LIVE & DEPLOYED</span>
-        </div>
-
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-value">2,500,000₫</div>
-                <div class="stat-label">Doanh thu hôm nay</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">45</div>
-                <div class="stat-label">Đơn hàng</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">23</div>
-                <div class="stat-label">Khách hàng</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">156</div>
-                <div class="stat-label">Sản phẩm</div>
-            </div>
-        </div>
-
-        <div class="grid">
-            <div class="card">
-                <h3>🛒 Điểm Bán Hàng (POS)</h3>
-                <p>Giao dịch nhanh chóng với hỗ trợ barcode, máy in hóa đơn</p>
-                <button class="btn">Mở POS</button>
-            </div>
-            
-            <div class="card">
-                <h3>📦 Quản Lý Kho</h3>
-                <p>Theo dõi tồn kho, nhập xuất hàng tự động</p>
-                <button class="btn">Xem Kho</button>
-            </div>
-            
-            <div class="card">
-                <h3>👥 Khách Hàng</h3>
-                <p>Chương trình loyalty 5 bậc từ Đồng đến Kim Cương</p>
-                <button class="btn">Quản Lý</button>
-            </div>
-            
-            <div class="card">
-                <h3>💳 Thanh Toán</h3>
-                <p>Tích hợp VNPay, MoMo, ZaloPay</p>
-                <button class="btn">Cài Đặt</button>
-            </div>
-            
-            <div class="card">
-                <h3>📊 Báo Cáo</h3>
-                <p>Analytics và báo cáo thuế theo chuẩn Việt Nam</p>
-                <button class="btn">Xem Báo Cáo</button>
-            </div>
-            
-            <div class="card">
-                <h3>⚙️ Cài Đặt</h3>
-                <p>Cấu hình store, thuế VAT, địa chỉ</p>
-                <button class="btn">Cài Đặt</button>
-            </div>
-        </div>
-
-        <div class="login-section">
-            <h3>🔐 Đăng Nhập Hệ Thống</h3>
-            <p><strong>Email:</strong> admin@khoaugment.com</p>
-            <p><strong>Mật khẩu:</strong> admin123</p>
-            <button class="btn">Đăng Nhập</button>
-            <button class="btn">Đăng Ký</button>
-        </div>
-
-        <div style="margin-top: 30px; text-align: center; color: #666;">
-            <p>✅ <strong>Tính năng đã triển khai:</strong></p>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                <span>✅ Progressive Web App (PWA)</span>
-                <span>✅ Offline Support</span>
-                <span>✅ Vietnamese Tax Compliance</span>
-                <span>✅ Multi-payment Gateway</span>
-                <span>✅ Barcode Scanner</span>
-                <span>✅ Receipt Printer</span>
-                <span>✅ Loyalty Program</span>
-                <span>✅ Role-based Access</span>
-            </div>
-        </div>
-
-        <div style="margin-top: 20px; text-align: center; padding: 20px; background: #f9f9f9; border-radius: 8px;">
-            <p><strong>🚀 Deployment Info:</strong></p>
-            <p>GitHub: <a href="https://github.com/namhbcf1/kho1" target="_blank">https://github.com/namhbcf1/kho1</a></p>
-            <p>Cloudflare Pages: <a href="https://kho1.pages.dev" target="_blank">https://kho1.pages.dev</a></p>
-            <p>Dashboard: <a href="https://dash.cloudflare.com/5b62d10947844251d23e0eac532531dd/pages/view/kho1" target="_blank">Cloudflare Dashboard</a></p>
-        </div>
-    </div>
-
-    <script>
-        // Simple interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    alert('Chức năng ' + this.textContent + ' đang được phát triển!');
-                });
-            });
-        });
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>KhoAugment POS - Hệ thống bán hàng thông minh</title>
+    <meta name="title" content="KhoAugment POS - Hệ thống bán hàng thông minh" />
+    <meta name="description" content="Hệ thống Point of Sale (POS) tối ưu cho Cloudflare với hỗ trợ tiếng Việt, tích hợp VNPay, MoMo, ZaloPay" />
+    <meta name="keywords" content="POS, Point of Sale, bán hàng, quản lý cửa hàng, Việt Nam, VNPay, MoMo, ZaloPay" />
+    <meta name="author" content="KhoAugment" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pos.khoaugment.com/" />
+    <meta property="og:title" content="KhoAugment POS - Hệ thống bán hàng thông minh" />
+    <meta property="og:description" content="Hệ thống Point of Sale (POS) tối ưu cho Cloudflare với hỗ trợ tiếng Việt" />
+    <meta property="og:image" content="https://pos.khoaugment.com/og-image.png" />
+    <meta property="og:locale" content="vi_VN" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://pos.khoaugment.com/" />
+    <meta property="twitter:title" content="KhoAugment POS - Hệ thống bán hàng thông minh" />
+    <meta property="twitter:description" content="Hệ thống Point of Sale (POS) tối ưu cho Cloudflare với hỗ trợ tiếng Việt" />
+    <meta property="twitter:image" content="https://pos.khoaugment.com/twitter-image.png" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1890ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="KhoAugment POS" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#1890ff" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1890ff" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Performance Hints -->
+    <link rel="dns-prefetch" href="//api.khoaugment.com" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "KhoAugment POS",
+      "description": "Hệ thống Point of Sale (POS) tối ưu cho Cloudflare với hỗ trợ tiếng Việt",
+      "url": "https://pos.khoaugment.com",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "VND"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "KhoAugment"
+      },
+      "inLanguage": "vi"
+    }
     </script>
-</body>
+    <script type="module" crossorigin src="/assets/index-Bte3vZBm.js"></script>
+    <link rel="modulepreload" crossorigin href="/js/vendor-DLMra8sI.js">
+    <link rel="modulepreload" crossorigin href="/js/antd-BB4XOCzO.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-eroA-SwF.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- Loading fallback -->
+    <noscript>
+      <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        text-align: center;
+        color: #666;
+      ">
+        <div>
+          <h1>KhoAugment POS</h1>
+          <p>Vui lòng bật JavaScript để sử dụng ứng dụng.</p>
+          <p>Please enable JavaScript to use this application.</p>
+        </div>
+      </div>
+    </noscript>
+    
+  </body>
 </html>
