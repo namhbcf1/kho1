@@ -1,463 +1,787 @@
-================================================================================
-                    KHOAUGMENT POS - PRODUCTION RULE SET v2.0
-                    Vietnamese POS System for Cloudflare - SECURITY ENHANCED
-================================================================================
+# VIETNAMESE POS SYSTEM - DEVELOPMENT RULES
+# 100% Free Cloudflare Stack + Latest 2026 Libraries
 
-🎯 PROJECT OVERVIEW:
-Real Vietnamese Point of Sale system for retail businesses
-Tech Stack: React 18 + TypeScript + Cloudflare Workers + D1 + Ant Design
-Deployment: 100% Cloudflare free tier (Pages + Workers + D1 + KV + R2)
-Target: https://kho1.pages.dev + GitHub: https://github.com/namhbcf1/kho1
+## 1. CLOUDFLARE FREE TIER CONSTRAINTS
 
-📅 LAST UPDATED: 2025-01-15
-🔒 SECURITY STATUS: PRODUCTION READY
-✅ ALL CRITICAL VULNERABILITIES FIXED
+### 1.1 Frontend (Cloudflare Pages - Free Tier)
+- MUST use Cloudflare Pages (500 builds/month limit)
+- MUST optimize build size < 25MB per deployment
+- MUST use Cloudflare CDN for all static assets
+- MUST implement aggressive caching strategies
+- NO external CDNs (use Cloudflare R2 for assets)
 
-================================================================================
-                            SECURITY ENHANCEMENTS COMPLETED
-================================================================================
+### 1.2 Backend (Cloudflare Workers - Free Tier)
+- MUST stay within 100,000 requests/day limit
+- MUST keep Worker script size < 1MB
+- MUST optimize CPU time < 10ms per request
+- MUST implement request batching for analytics
+- MUST use efficient error handling to avoid wasted requests
 
-🛡️ AUTHENTICATION SECURITY:
-✅ REMOVED mock authentication bypass - No more dangerous fallback modes
-✅ IMPLEMENTED secure JWT token storage - Now uses sessionStorage instead of localStorage
-✅ REMOVED hardcoded demo credentials - No more exposed test accounts in UI
-✅ ADDED comprehensive CSRF protection - All state-changing requests protected
-✅ ENHANCED rate limiting with brute force protection - Multi-level protection
-✅ ADDED refresh token rotation - Secure token lifecycle management
-✅ IMPLEMENTED session management - Database-backed session tracking
+### 1.3 Database (Cloudflare D1 - Free Tier)
+- MUST stay within 5GB storage limit
+- MUST optimize for 25M read + 50K write requests/month
+- MUST implement efficient indexing strategies
+- MUST use database-level constraints for data integrity
+- MUST implement soft deletes to preserve history
 
-🔐 ENHANCED SECURITY FEATURES:
-✅ Multi-layer rate limiting (auth: 5/min, API: 60/min, default: 100/min)
-✅ Brute force protection with progressive blocking (5 attempts = 15min block)
-✅ CSRF token validation for all POST/PUT/DELETE/PATCH requests
-✅ Secure password hashing with bcrypt (salt rounds: 12)
-✅ Session tracking with refresh token database storage
-✅ Security audit logging for all authentication events
-✅ Failed login attempt tracking with IP and email monitoring
-✅ Password history prevention (last 5 passwords remembered)
+### 1.4 Storage (Cloudflare R2 - Free Tier)
+- MUST stay within 10GB storage limit
+- MUST optimize image sizes (WebP format mandatory)
+- MUST implement automatic image compression
+- MUST use R2 presigned URLs for direct uploads
+- MUST implement cleanup jobs for unused files
 
-🏢 VIETNAMESE BUSINESS COMPLIANCE:
-✅ VAT calculation system (0%, 5%, 10% rates)
-✅ Vietnamese address validation (63 provinces/cities)
-✅ VND currency formatting with proper separators
-✅ Vietnamese phone number validation (10-11 digits)
-✅ Business license compliance requirements
-✅ Vietnamese receipt format and invoice rules
-✅ Vietnamese date/time formatting (dd/mm/yyyy)
-✅ Proper Vietnamese error messages and user feedback
+### 1.5 KV Store (Cloudflare KV - Free Tier)
+- MUST stay within 1GB storage limit
+- MUST use for caching only (not primary storage)
+- MUST implement TTL for all cached data
+- MUST optimize for 100K read + 1K write operations/day
 
-================================================================================
-                                MANDATORY RULES
-================================================================================
+## 2. TECHNOLOGY STACK REQUIREMENTS (2026 Latest)
 
-✅ PRODUCTION CODE ONLY:
-   - NO mock data, demo content, or placeholder functions
-   - NO TODO comments or "implement later" sections  
-   - NO console.log for fake responses or simulated data
-   - NO setTimeout to simulate API calls or loading
-   - NO hardcoded test data in production components
-   - NO commented out sections with "coming soon"
-   - Every function must be complete and working
-   - ALL SECURITY VULNERABILITIES HAVE BEEN FIXED
+### 2.1 Frontend Stack
+- React 19+ (latest stable)
+- TypeScript 5.5+
+- Vite 6+ (build tool)
+- Ant Design 5.20+ (UI components)
+- Zustand 5+ (state management)
+- React Query 5+ (server state)
+- React Hook Form 7.50+ (form handling)
+- Recharts 2.12+ (data visualization)
+- PWA Workbox 7+ (service worker)
 
-✅ REAL API INTEGRATION:
-   - Real Cloudflare Workers endpoints with Hono.js
-   - Real D1 database queries with actual SQL
-   - Real authentication with JWT and security measures
-   - Real error handling for network failures
-   - Real retry logic and timeout handling
-   - Real API validation with Zod schemas
-   - Real CORS and security headers
-   - ENHANCED: CSRF protection on all state-changing requests
+### 2.2 Backend Stack
+- Cloudflare Workers (latest runtime)
+- Hono.js 4+ (web framework)
+- Zod 3.23+ (validation)
+- Jose 5+ (JWT handling)
+- SQLite with D1 syntax
+- Cloudflare Workers Types latest
 
-✅ REAL DATABASE:
-   - Real D1 SQLite schema with proper relationships
-   - Real migrations with up/down scripts
-   - Real indexes and constraints for performance
-   - Real data validation at database level
-   - Real backup and recovery procedures
-   - Real connection pooling and error handling
-   - ENHANCED: Security tables for session management and audit logging
+### 2.3 Development Tools
+- ESLint 9+ with TypeScript rules
+- Prettier 3.3+
+- Husky 9+ (git hooks)
+- Lint-staged 15+
+- Playwright 1.45+ (E2E testing)
+- Vitest 2+ (unit testing)
 
-✅ REAL VIETNAMESE BUSINESS LOGIC:
-   - Real VAT calculation (10% standard rate + special rates)
-   - Real Vietnamese address validation (63 provinces/cities)
-   - Real VND currency formatting (đ, thousands separators)
-   - Real Vietnamese phone number validation (10-11 digits)
-   - Real business license compliance requirements
-   - Real Vietnamese receipt format and invoice rules
-   - Real Vietnamese date/time formatting (dd/mm/yyyy)
-   - ENHANCED: Complete Vietnamese localization in all error messages
+## 3. ARCHITECTURE RULES
 
-✅ REAL PAYMENT GATEWAYS:
-   - Real VNPay integration with actual API endpoints
-   - Real MoMo e-wallet with QR code generation
-   - Real ZaloPay integration with webhook handling
-   - Real bank card processing through Vietnamese banks
-   - Real cash payment recording and tracking
-   - Real payment reconciliation and reporting
-   - Real refund processing through gateways
+### 3.1 Frontend Architecture
+- MUST follow feature-based folder structure
+- MUST use TypeScript strict mode
+- MUST implement proper error boundaries
+- MUST use React.lazy for code splitting
+- MUST implement PWA offline-first approach
+- MUST use IndexedDB for offline data storage
+- MUST implement service worker for background sync
 
-✅ REAL OFFLINE FUNCTIONALITY:
-   - Real IndexedDB for offline transaction storage
-   - Real Service Worker with background sync
-   - Real PWA installation and native app feel
-   - Real offline inventory checking and alerts
-   - Real queue management for pending transactions
-   - Real conflict resolution for data synchronization
-   - Real network status detection and handling
+### 3.2 Backend Architecture
+- MUST use Hono.js with modular routing
+- MUST implement middleware pipeline
+- MUST use Zod for all input validation
+- MUST implement proper error handling with status codes
+- MUST use database transactions for data consistency
+- MUST implement rate limiting using KV store
 
-✅ REAL HARDWARE INTEGRATION:
-   - Real barcode scanner integration (camera + USB)
-   - Real thermal receipt printer communication
-   - Real cash drawer control (electronic lock)
-   - Real customer display integration
-   - Real scale integration for weighted products
-   - Real POS terminal optimization (touch screen)
+### 3.3 State Management Rules
+- MUST use Zustand for client state
+- MUST use React Query for server state
+- MUST implement optimistic updates for POS operations
+- MUST cache frequently accessed data in KV
+- MUST implement proper state persistence for offline mode
 
-================================================================================
-                            ENHANCED SECURITY ARCHITECTURE
-================================================================================
+## 4. VIETNAMESE BUSINESS RULES
 
-🔐 AUTHENTICATION FLOW:
-1. User login with email/password
-2. Brute force protection checks IP and email attempts
-3. Password verification with bcrypt
-4. JWT access token generation (24h expiry)
-5. Refresh token generation and database storage (7d expiry)
-6. Session tracking with device info and IP
-7. Security audit logging for all auth events
+### 4.1 Currency and Pricing
+- MUST use Vietnamese Dong (VND) as primary currency
+- MUST format currency with proper thousand separators (123.456.789₫)
+- MUST support decimal places for pricing (even though VND rarely uses decimals)
+- MUST implement proper rounding rules for cash payments
+- MUST support discount calculations (percentage and fixed amount)
 
-🛡️ SECURITY LAYERS:
-1. Rate limiting at multiple levels (auth, API, global)
-2. CSRF protection for all state-changing requests
-3. Secure token storage (sessionStorage, not localStorage)
-4. Refresh token rotation with database validation
-5. Session management with automatic cleanup
-6. Security audit logging with risk assessment
-7. Failed login attempt tracking and IP blocking
+### 4.2 Tax Calculations (Vietnamese VAT)
+- MUST implement 0%, 5%, 8%, 10% VAT rates
+- MUST calculate tax-inclusive and tax-exclusive pricing
+- MUST generate proper tax invoices (Hóa đơn VAT)
+- MUST track tax by category for reporting
+- MUST support tax exemptions for certain products
 
-🔒 TOKEN SECURITY:
-- Access tokens: 24-hour expiry, stored in sessionStorage
-- Refresh tokens: 7-day expiry, stored in database
-- CSRF tokens: 1-hour expiry, stored in KV cache
-- All tokens use cryptographically secure random generation
-- Token validation includes expiry and signature verification
+### 4.3 Vietnamese Address System
+- MUST support Vietnamese address hierarchy: Tỉnh/Thành → Quận/Huyện → Phường/Xã
+- MUST implement address autocomplete with Vietnamese dataset
+- MUST validate Vietnamese phone numbers (10-11 digits, starts with 0)
+- MUST support Vietnamese ID card numbers (9 or 12 digits)
 
-📊 MONITORING & LOGGING:
-- Security audit log for all authentication events
-- Failed login attempt tracking with progressive blocking
-- Rate limit violations logged with IP and user agent
-- Password change history to prevent reuse
-- Session activity monitoring with last used timestamps
+### 4.4 Receipt and Invoice Requirements
+- MUST generate Vietnamese receipts with proper format
+- MUST include business registration info
+- MUST support thermal printer integration (80mm paper)
+- MUST implement QR code for digital receipts
+- MUST store receipts for tax compliance (5 years)
 
-================================================================================
-                              TECHNICAL STANDARDS
-================================================================================
+## 5. POS BUSINESS LOGIC RULES
 
-🔧 FRONTEND ARCHITECTURE:
-   - React 18 with Concurrent Features and Suspense
-   - TypeScript 5+ with strict mode and proper typing
-   - Ant Design 5+ with Vietnamese localization
-   - Zustand for state management with persistence
-   - React Query for server state and caching
-   - Vite for build optimization and hot reload
-   - PWA with Workbox for offline functionality
-   - ENHANCED: Secure storage adapters for sensitive data
+### 5.1 Product Management
+- MUST support barcode scanning (EAN-13, Code 128)
+- MUST implement automatic barcode generation
+- MUST support product variants (size, color, etc.)
+- MUST track inventory levels in real-time
+- MUST implement low stock alerts
+- MUST support product bundling and promotions
 
-🔧 BACKEND ARCHITECTURE:
-   - Cloudflare Workers with Hono.js framework
-   - D1 SQLite database with proper schema design
-   - KV storage for caching and session management  
-   - R2 storage for file uploads and assets
-   - Zod for runtime validation and type safety
-   - JWT authentication with refresh token rotation
-   - ENHANCED: Multi-layer security middleware
+### 5.2 Order Processing
+- MUST support multiple payment methods (cash, card, VNPay, MoMo, ZaloPay)
+- MUST implement split payments
+- MUST support order holds and recalls
+- MUST implement customer queue management
+- MUST support returns and refunds with proper tracking
+- MUST implement offline order processing with sync
 
-🔧 SECURITY STANDARDS:
-   - HTTPS only with proper SSL certificates
-   - CORS configuration for production domains
-   - Rate limiting to prevent API abuse
-   - Input sanitization and XSS prevention
-   - SQL injection prevention with prepared statements
-   - Secure password hashing with bcrypt
-   - Session management with secure cookies
-   - ENHANCED: CSRF protection and brute force prevention
+### 5.3 Customer Management
+- MUST implement customer loyalty program
+- MUST track purchase history
+- MUST support customer search by phone/name
+- MUST implement customer debt tracking
+- MUST support customer groups with different pricing
 
-🔧 PERFORMANCE STANDARDS:
-   - Page load time < 3 seconds on 3G network
-   - API response time < 500ms for CRUD operations
-   - Offline functionality working within 2 seconds
-   - Bundle size < 500KB for main application
-   - Database query optimization with proper indexes
-   - CDN utilization for static assets
-   - ENHANCED: Security operations with minimal performance impact
+### 5.4 Staff Management
+- MUST implement role-based access control (Admin, Manager, Cashier)
+- MUST track staff performance metrics
+- MUST implement shift management
+- MUST track sales commissions
+- MUST support multi-user POS terminals
 
-================================================================================
-                                  QUALITY GATES
-================================================================================
+## 6. PERFORMANCE OPTIMIZATION RULES
 
-📊 CODE QUALITY:
-   - Zero TypeScript errors in production build
-   - 90%+ test coverage for business logic
-   - ESLint with zero warnings or errors
-   - Prettier for consistent code formatting
-   - Proper error boundaries for React components
-   - Comprehensive error logging and monitoring
-   - ENHANCED: Security-focused code review checklist
+### 6.1 Frontend Performance
+- MUST achieve Lighthouse score > 90 on all metrics
+- MUST implement virtual scrolling for large lists
+- MUST use React.memo for expensive components
+- MUST implement image lazy loading
+- MUST minimize bundle size with tree shaking
+- MUST implement proper caching headers
 
-📊 BUSINESS FUNCTIONALITY:
-   - Complete POS transaction flow (add to cart → payment → receipt)
-   - Offline transaction capability for 8+ hours
-   - Real-time inventory updates across multiple terminals
-   - Customer loyalty point calculation and redemption
-   - Vietnamese payment gateway integration (all 3)
-   - Receipt printing with Vietnamese business format
-   - ENHANCED: All functionality secured with proper authentication
+### 6.2 Backend Performance
+- MUST optimize database queries with proper indexes
+- MUST implement connection pooling
+- MUST use prepared statements for repeated queries
+- MUST implement background job processing
+- MUST cache frequently accessed data
+- MUST implement proper pagination
 
-📊 PRODUCTION READINESS:
-   - Cloudflare deployment working with custom domain
-   - Database migrations working in production
-   - Monitoring and alerting for critical errors
-   - Backup and recovery procedures tested
-   - Load testing for peak business hours
-   - Security audit and penetration testing
-   - ENHANCED: Security incident response procedures
+### 6.3 Offline Performance
+- MUST cache essential app shell
+- MUST implement background sync for orders
+- MUST store product catalog offline
+- MUST handle network failures gracefully
+- MUST implement conflict resolution for offline changes
 
-📊 SECURITY CHECKLIST:
-   ✅ No mock authentication or demo credentials in production
-   ✅ Secure token storage implementation
-   ✅ CSRF protection on all state-changing endpoints
-   ✅ Rate limiting and brute force protection
-   ✅ Session management with proper cleanup
-   ✅ Security audit logging enabled
-   ✅ Password security requirements enforced
-   ✅ All authentication flows tested and verified
+## 7. SECURITY RULES
 
-================================================================================
-                                FORBIDDEN PRACTICES
-================================================================================
+### 7.1 Authentication & Authorization
+- MUST implement JWT-based authentication
+- MUST use secure token storage (httpOnly cookies)
+- MUST implement proper session management
+- MUST enforce strong password policies
+- MUST implement account lockout after failed attempts
+- MUST use RBAC for feature access
 
-❌ NEVER CREATE:
-   - Mock API responses or fake data generators
-   - setTimeout() to simulate loading or API calls
-   - Hardcoded arrays for dropdown options (use database)
-   - Console.log statements in production code
-   - Alert() or confirm() for user interactions
-   - Inline styles instead of proper CSS/styled components
-   - Direct DOM manipulation instead of React patterns
-   - SECURITY: Any mock authentication or demo credentials
+### 7.2 Data Protection
+- MUST encrypt sensitive data at rest
+- MUST implement proper input sanitization
+- MUST use HTTPS for all communications
+- MUST implement CSRF protection
+- MUST validate file uploads strictly
+- MUST implement audit logging for sensitive operations
 
-❌ NEVER USE PLACEHOLDERS:
-   - "Coming soon" or "Under development" messages
-   - Empty functions with TODO comments
-   - Fake user data or sample products
-   - Mock payment responses or test transactions
-   - Placeholder images or lorem ipsum text
-   - Disabled buttons with "Not implemented" tooltips
-   - SECURITY: Any hardcoded credentials or test accounts
+### 7.3 Payment Security
+- MUST never store card details locally
+- MUST use tokenization for payment methods
+- MUST implement secure webhook validation
+- MUST encrypt payment logs
+- MUST comply with PCI DSS requirements
 
-❌ NEVER COMPROMISE SECURITY:
-   - API keys in frontend code or public repositories
-   - Passwords stored in plain text
-   - Unvalidated user inputs
-   - Missing authentication checks
-   - Insecure HTTP connections
-   - Unencrypted sensitive data storage
-   - ENHANCED: localStorage for sensitive tokens
-   - Missing CSRF protection on forms
-   - Inadequate rate limiting
+## 8. TESTING REQUIREMENTS
 
-================================================================================
-                              DEVELOPMENT WORKFLOW
-================================================================================
+### 8.1 Unit Testing
+- MUST achieve > 80% code coverage
+- MUST test all business logic functions
+- MUST test all utility functions
+- MUST test Zustand stores
+- MUST mock external API calls
 
-📋 SESSION STARTUP CHECKLIST:
-1. Copy this entire rule set into Claude CLI
-2. Wait for "RULES CONFIRMED" response
-3. Verify current working directory: C:\Users\ADMIN\Downloads\kho1
-4. Check Cloudflare authentication: wrangler whoami
-5. Verify all security enhancements are in place
-6. Begin development with specific, detailed commands
+### 8.2 Integration Testing
+- MUST test API endpoints with Hono.js
+- MUST test database operations
+- MUST test payment gateway integrations
+- MUST test file upload operations
 
-📋 COMMAND STRUCTURE:
-"Following KHOAUGMENT PRODUCTION RULES v2.0, create [specific feature] with:
-- Real [technology] integration 
-- Actual Vietnamese business logic
-- Production-ready error handling
-- Complete functionality (no TODOs)
-- Enhanced security measures
-- [Specific requirements]"
+### 8.3 E2E Testing
+- MUST test complete POS workflows
+- MUST test offline scenarios
+- MUST test payment processing
+- MUST test receipt generation
+- MUST test multi-user scenarios
 
-📋 VERIFICATION BEFORE PROCEEDING:
-- Does this create real, working code?
-- Is Vietnamese business logic properly implemented?
-- Are all API integrations using real endpoints?
-- Is error handling comprehensive?
-- Are security measures properly implemented?
-- Would this work in actual retail environment?
-- Are there no security vulnerabilities?
+## 9. DEPLOYMENT RULES
 
-📋 SECURITY VERIFICATION:
-- Are all authentication flows secure?
-- Is CSRF protection enabled?
-- Are rate limits properly configured?
-- Are tokens stored securely?
-- Are all inputs properly validated?
-- Is audit logging enabled?
+### 9.1 CI/CD Pipeline
+- MUST use GitHub Actions for deployment
+- MUST implement automated testing before deployment
+- MUST use Cloudflare Pages for frontend deployment
+- MUST use Wrangler CLI for Workers deployment
+- MUST implement database migration scripts
 
-================================================================================
-                                DATABASE SCHEMA
-================================================================================
+### 9.2 Environment Management
+- MUST separate dev/staging/production environments
+- MUST use environment variables for configuration
+- MUST implement feature flags for gradual rollouts
+- MUST implement proper logging and monitoring
 
-📊 CORE TABLES:
-- users (with enhanced security fields)
-- products (with Vietnamese business logic)
-- orders (with Vietnamese tax compliance)
-- customers (with Vietnamese address system)
-- inventory (with real-time tracking)
-- payments (with Vietnamese gateway integration)
+## 10. CODE QUALITY RULES
 
-📊 SECURITY TABLES:
-- user_sessions (refresh token management)
-- security_audit_log (comprehensive logging)
-- failed_login_attempts (brute force protection)
-- password_history (prevent reuse)
-- api_rate_limits (rate limiting tracking)
-- security_settings (configurable security)
+### 10.1 TypeScript Standards
+- MUST use strict TypeScript configuration
+- MUST define proper interfaces for all data structures
+- MUST use discriminated unions for state management
+- MUST implement proper error types
+- MUST avoid 'any' type usage
 
-📊 VIETNAMESE BUSINESS TABLES:
-- vietnamese_provinces (63 provinces/cities)
-- tax_rates (VAT and special rates)
-- loyalty_programs (5-tier system)
-- business_settings (compliance requirements)
+### 10.2 Code Organization
+- MUST follow the provided folder structure exactly
+- MUST use barrel exports (index.ts files)
+- MUST implement proper component composition
+- MUST use consistent naming conventions
+- MUST document complex business logic
 
-================================================================================
-                              API ENDPOINTS
-================================================================================
+### 10.3 Git Workflow
+- MUST use conventional commit messages
+- MUST implement pull request reviews
+- MUST use semantic versioning
+- MUST tag releases properly
+- MUST maintain clean commit history
 
-🔐 AUTHENTICATION ENDPOINTS:
-- POST /auth/login (with brute force protection)
-- POST /auth/logout (with session cleanup)
-- POST /auth/refresh (with token rotation)
-- GET /auth/me (with session validation)
-- POST /auth/change-password (with history check)
-- GET /api/csrf-token (CSRF token generation)
+## 11. MONITORING AND ANALYTICS
 
-🛒 BUSINESS ENDPOINTS:
-- All endpoints protected with JWT authentication
-- All state-changing endpoints protected with CSRF
-- All endpoints have rate limiting applied
-- All endpoints include proper error handling
-- All endpoints support Vietnamese localization
+### 11.1 Application Monitoring
+- MUST implement error tracking
+- MUST monitor performance metrics
+- MUST track user interactions
+- MUST implement health checks
+- MUST monitor Cloudflare usage limits
 
-📊 SECURITY ENDPOINTS:
-- POST /api/security/audit (security event logging)
-- GET /api/security/sessions (user session management)
-- POST /api/security/block-ip (IP blocking management)
+### 11.2 Business Analytics
+- MUST track sales metrics
+- MUST monitor inventory levels
+- MUST analyze customer behavior
+- MUST track staff performance
+- MUST generate business reports
 
-================================================================================
-                                  SUCCESS CRITERIA
-================================================================================
+## 12. COMPLIANCE AND BACKUP
 
-🎯 FINAL DELIVERABLE:
-A complete, production-ready Vietnamese POS system that:
-- Processes real transactions in Vietnamese retail stores
-- Works offline for extended periods without internet
-- Integrates with actual Vietnamese payment gateways
-- Complies with Vietnamese business and tax regulations
-- Provides real-time inventory and sales analytics
-- Supports multiple POS terminals and staff accounts
-- Generates legally compliant Vietnamese receipts
-- Manages customer loyalty program with real rewards
-- ENHANCED: Maintains enterprise-grade security standards
+### 12.1 Data Backup
+- MUST implement daily D1 database backups
+- MUST backup R2 stored files regularly
+- MUST implement point-in-time recovery
+- MUST test backup restoration procedures
 
-🎯 SECURITY DELIVERABLE:
-A fully secured system with:
-- No authentication bypass vulnerabilities
-- Secure token storage and management
-- CSRF protection on all forms
-- Rate limiting and brute force protection
-- Comprehensive security audit logging
-- Session management with proper cleanup
-- Password security and history tracking
-- Vietnamese compliance with security standards
+### 12.2 Vietnamese Legal Compliance
+- MUST comply with Vietnamese e-invoice regulations
+- MUST implement proper tax reporting
+- MUST maintain transaction records for legal requirements
+- MUST implement data privacy protections
 
-🎯 DEPLOYMENT TARGET:
-- Live website: https://kho1.pages.dev
-- Source code: https://github.com/namhbcf1/kho1
-- 100% Cloudflare free tier utilization
-- Zero ongoing hosting costs
-- Scalable to hundreds of concurrent users
-- Available 99.9% uptime with global CDN
-- ENHANCED: Enterprise security monitoring
+## 13. MOBILE AND PWA REQUIREMENTS
 
-================================================================================
-                                SECURITY INCIDENT RESPONSE
-================================================================================
+### 13.1 PWA Features
+- MUST implement offline functionality
+- MUST support add to home screen
+- MUST implement push notifications
+- MUST support background sync
+- MUST implement app update mechanism
 
-🚨 SECURITY MONITORING:
-- Real-time monitoring of failed login attempts
-- Automated IP blocking for suspicious activity
-- Security audit log analysis for threat detection
-- Rate limiting violation tracking
-- Unusual session activity detection
+### 13.2 Mobile Optimization
+- MUST support touch gestures
+- MUST implement responsive design
+- MUST optimize for mobile performance
+- MUST support device rotation
+- MUST implement mobile-specific UX patterns
 
-🔧 INCIDENT RESPONSE PROCEDURES:
-1. Automatic blocking of malicious IPs
-2. Security audit log review and analysis
-3. User notification for suspicious account activity
-4. Session termination for compromised accounts
-5. Password reset enforcement when needed
-6. Escalation procedures for critical incidents
+## 14. INTEGRATION REQUIREMENTS
 
-📊 SECURITY METRICS:
-- Failed login attempt rates
-- Rate limiting violation frequency
-- Session duration and activity patterns
-- Password change frequency
-- Security audit log volume and types
+### 14.1 Hardware Integration
+- MUST support thermal receipt printers
+- MUST integrate barcode scanners
+- MUST support cash drawer control
+- MUST implement weight scale integration
+- MUST support customer display screens
 
-================================================================================
-                                    VERSION LOG
-================================================================================
+### 14.2 Third-party Services
+- MUST integrate Vietnamese payment gateways (VNPay, MoMo, ZaloPay)
+- MUST integrate Vietnamese SMS providers
+- MUST support email notifications
+- MUST integrate with Vietnamese shipping services
 
-v2.0 - MAJOR SECURITY ENHANCEMENT (2025-01-15)
-     - FIXED: Removed all mock authentication bypass code
-     - FIXED: Secure JWT token storage (sessionStorage)
-     - FIXED: Removed hardcoded demo credentials
-     - ADDED: Comprehensive CSRF protection
-     - ADDED: Enhanced rate limiting with brute force protection
-     - ADDED: Refresh token rotation and database storage
-     - ADDED: Session management with tracking
-     - ADDED: Security audit logging system
-     - ADDED: Password history and security settings
-     - ENHANCED: All authentication flows secured
-     - ENHANCED: Vietnamese error messages and localization
+## 15. MAINTENANCE AND UPDATES
 
-v1.0 - Initial production rule set for KhoAugment POS
-     - Comprehensive Vietnamese business requirements
-     - Real payment gateway integration standards
-     - Production-ready code quality gates
-     - Complete technical architecture guidelines
+### 15.1 Regular Maintenance
+- MUST update dependencies monthly
+- MUST monitor security vulnerabilities
+- MUST optimize database performance quarterly
+- MUST review and update business rules
+- MUST maintain documentation updates
 
-================================================================================
-                        PRODUCTION SECURITY CONFIRMATION
-================================================================================
+### 15.2 Feature Updates
+- MUST implement feature toggle system
+- MUST support backward compatibility
+- MUST implement gradual feature rollouts
+- MUST gather user feedback
+- MUST maintain change logs
 
-🔒 SECURITY STATUS: PRODUCTION READY ✅
-🛡️ ALL CRITICAL VULNERABILITIES FIXED ✅
-🎯 VIETNAMESE BUSINESS COMPLIANCE MAINTAINED ✅
-📊 COMPREHENSIVE MONITORING ENABLED ✅
-🔐 ENTERPRISE-GRADE AUTHENTICATION IMPLEMENTED ✅
+---
 
-================================================================================
-END OF RULES - APPLY TO ALL CODE GENERATION IN THIS SESSION
-================================================================================
+# ENFORCEMENT NOTES:
 
-⚠️  IMPORTANT: This system is now production-ready with enterprise-grade security.
-    All critical vulnerabilities have been identified and fixed.
-    Continue to follow these enhanced security standards for all future development.
+1. All rules marked with "MUST" are mandatory requirements
+2. Violation of Cloudflare free tier limits will result in service suspension
+3. Security rules are non-negotiable and must be implemented first
+4. Performance benchmarks must be met before production deployment
+5. Vietnamese business rules must be validated with local requirements
+6. Code quality gates must pass before merge approval
+7. Testing requirements must be satisfied for each release
+8. Documentation must be updated with each feature addition
 
-🇻🇳 VIETNAMESE COMPLIANCE: All security measures maintain full compatibility with
-    Vietnamese business requirements and regulations.
+cấu trúc toàn bộ trang web. 
+CẤU TRÚC TSX ĐƯỢC ĐIỀU CHỈNH CHO CLOUDFLARE
+1. Cấu trúc tổng quan (Cloudflare optimized)
+khoaugment-pos/
+├── frontend/                   # Cloudflare Pages
+│   ├── src/
+│   │   ├── components/         # Ant Design + custom components
+│   │   ├── features/          # Feature-based modules
+│   │   ├── layouts/           # Layout components
+│   │   ├── pages/             # Page components
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── services/          # Cloudflare Workers API calls
+│   │   ├── stores/            # Zustand state management
+│   │   ├── utils/             # Web API utilities (no Node.js)
+│   │   ├── types/             # TypeScript definitions
+│   │   ├── constants/         # Cloudflare-specific constants
+│   │   ├── assets/            # Static assets for R2
+│   │   └── i18n/              # Vietnamese localization
+│   ├── public/                # PWA manifest, icons
+│   ├── tests/                 # Playwright E2E tests
+│   └── cloudflare-configs/    # Pages-specific configs
+├── backend/                   # Cloudflare Workers
+│   ├── src/
+│   │   ├── handlers/          # Route handlers
+│   │   ├── middleware/        # Auth, CORS, Rate limiting
+│   │   ├── services/          # Business logic
+│   │   ├── utils/             # Web API utilities only
+│   │   ├── types/             # Shared TypeScript types
+│   │   └── schemas/           # Zod validation schemas
+│   ├── migrations/            # D1 database migrations
+│   └── wrangler.toml         # Cloudflare Workers config
+├── shared/                    # Shared types between FE/BE
+│   ├── types/                 # Common TypeScript definitions
+│   ├── constants/             # Shared constants
+│   └── schemas/               # Validation schemas
+└── docs/                      # Documentation
+2. Frontend Structure (Cloudflare Pages)
+2.1 src/components/ (Ant Design focused)
+src/components/
+├── ui/                        # Ant Design wrapper components
+│   ├── Button/
+│   │   ├── Button.tsx         # Ant Button wrapper
+│   │   ├── Button.types.ts    # Button props interface
+│   │   └── index.ts
+│   ├── Form/
+│   │   ├── FormField.tsx      # Ant Form.Item wrapper
+│   │   ├── FormInput.tsx      # Ant Input wrapper
+│   │   ├── FormSelect.tsx     # Ant Select wrapper
+│   │   └── index.ts
+│   ├── Table/
+│   │   ├── DataTable.tsx      # Ant Table with Vietnamese config
+│   │   ├── TableActions.tsx   # Action buttons for tables
+│   │   └── index.ts
+│   ├── Upload/
+│   │   ├── ImageUpload.tsx    # R2 image upload component
+│   │   ├── FileUpload.tsx     # R2 file upload component
+│   │   └── index.ts
+│   ├── Modal/
+│   │   ├── ConfirmModal.tsx   # Ant Modal wrapper
+│   │   ├── FormModal.tsx      # Modal with form
+│   │   └── index.ts
+│   ├── Loading/
+│   │   ├── PageLoading.tsx    # Ant Spin for pages
+│   │   ├── ButtonLoading.tsx  # Loading state for buttons
+│   │   └── index.ts
+│   └── ErrorBoundary/
+│       ├── ErrorBoundary.tsx  # React error boundary
+│       └── index.ts
+├── charts/                    # Recharts components
+│   ├── RevenueChart/
+│   │   ├── RevenueChart.tsx   # Daily/monthly revenue
+│   │   ├── RevenueChart.types.ts
+│   │   └── index.ts
+│   ├── SalesChart/
+│   │   ├── SalesChart.tsx     # Sales analytics
+│   │   ├── SalesChart.types.ts
+│   │   └── index.ts
+│   ├── InventoryChart/
+│   │   ├── InventoryChart.tsx # Stock level visualization
+│   │   └── index.ts
+│   └── KPICards/
+│       ├── KPICard.tsx        # Dashboard KPI display
+│       ├── KPICard.types.ts
+│       └── index.ts
+├── business/                  # Vietnamese business logic components
+│   ├── VNDCurrency/
+│   │   ├── VNDDisplay.tsx     # Vietnamese currency formatter
+│   │   ├── VNDInput.tsx       # VND input with formatting
+│   │   └── index.ts
+│   ├── VNAddress/
+│   │   ├── AddressSelector.tsx # Vietnamese address picker
+│   │   ├── AddressDisplay.tsx  # Address display component
+│   │   └── index.ts
+│   ├── BarcodeScanner/
+│   │   ├── BarcodeScanner.tsx # Barcode scanning component
+│   │   ├── BarcodeDisplay.tsx # Barcode display
+│   │   └── index.ts
+│   └── ReceiptPrinter/
+│       ├── ReceiptTemplate.tsx # Vietnamese receipt template
+│       ├── ReceiptPrinter.tsx  # Print functionality
+│       └── index.ts
+└── layout/                    # Layout components
+    ├── Header/
+    │   ├── AppHeader.tsx      # Main app header
+    │   ├── UserMenu.tsx       # User dropdown menu
+    │   └── index.ts
+    ├── Sidebar/
+    │   ├── AppSidebar.tsx     # Navigation sidebar
+    │   ├── MenuItems.tsx      # Menu configuration
+    │   └── index.ts
+    ├── Footer/
+    │   ├── AppFooter.tsx      # App footer
+    │   └── index.ts
+    └── Breadcrumb/
+        ├── AppBreadcrumb.tsx  # Navigation breadcrumb
+        └── index.ts
+2.2 src/features/ (Business domain features)
+src/features/
+├── auth/
+│   ├── components/
+│   │   ├── LoginForm.tsx      # Vietnamese login form
+│   │   ├── UserProfile.tsx    # User profile management
+│   │   └── RoleGuard.tsx      # Role-based access component
+│   ├── hooks/
+│   │   ├── useAuth.tsx        # Authentication hook
+│   │   ├── useLogin.tsx       # Login logic hook
+│   │   └── usePermissions.tsx # Permission checking hook
+│   ├── services/
+│   │   └── authService.ts     # Cloudflare Workers auth API
+│   ├── stores/
+│   │   └── authStore.ts       # Zustand auth store
+│   └── types/
+│       └── auth.types.ts      # Auth TypeScript types
+├── pos/
+│   ├── components/
+│   │   ├── POSTerminal.tsx    # Main POS interface
+│   │   ├── ProductGrid.tsx    # Product selection grid
+│   │   ├── ShoppingCart.tsx   # Vietnamese shopping cart
+│   │   ├── PaymentMethods.tsx # VN payment methods (VNPay, MoMo, ZaloPay)
+│   │   ├── ReceiptPrint.tsx   # Vietnamese receipt printing
+│   │   ├── BarcodeScanner.tsx # Barcode scanning integration
+│   │   └── OfflineSync.tsx    # PWA offline sync component
+│   ├── hooks/
+│   │   ├── usePOS.tsx         # POS state management
+│   │   ├── useCart.tsx        # Shopping cart logic
+│   │   ├── usePayment.tsx     # Payment processing
+│   │   ├── useBarcode.tsx     # Barcode scanning logic
+│   │   └── useOfflineOrders.tsx # Offline order management
+│   ├── services/
+│   │   ├── posService.ts      # POS API calls
+│   │   ├── paymentService.ts  # Vietnamese payment gateways
+│   │   └── printerService.ts  # Thermal printer integration
+│   ├── stores/
+│   │   └── posStore.ts        # Zustand POS store
+│   └── types/
+│       └── pos.types.ts       # POS TypeScript definitions
+├── products/
+│   ├── components/
+│   │   ├── ProductList.tsx    # Ant Design table with Vietnamese data
+│   │   ├── ProductForm.tsx    # Product create/edit form
+│   │   ├── ProductCard.tsx    # Product display card
+│   │   ├── CategoryManager.tsx # Product categories
+│   │   ├── InventoryTracker.tsx # Stock level tracking
+│   │   ├── BarcodeGenerator.tsx # Barcode generation
+│   │   └── ImageUploader.tsx  # R2 image upload for products
+│   ├── hooks/
+│   │   ├── useProducts.tsx    # Product CRUD operations
+│   │   ├── useCategories.tsx  # Category management
+│   │   ├── useInventory.tsx   # Inventory tracking
+│   │   └── useProductSearch.tsx # Product search functionality
+│   ├── services/
+│   │   ├── productService.ts  # Product API calls
+│   │   └── categoryService.ts # Category API calls
+│   ├── stores/
+│   │   └── productStore.ts    # Zustand product store
+│   └── types/
+│       └── product.types.ts   # Product TypeScript definitions
+├── customers/
+│   ├── components/
+│   │   ├── CustomerList.tsx   # Vietnamese customer list
+│   │   ├── CustomerForm.tsx   # Customer registration form
+│   │   ├── LoyaltyProgram.tsx # Vietnamese loyalty system
+│   │   ├── CustomerHistory.tsx # Purchase history
+│   │   └── AddressBook.tsx    # Vietnamese address management
+│   ├── hooks/
+│   │   ├── useCustomers.tsx   # Customer management
+│   │   └── useLoyalty.tsx     # Loyalty program logic
+│   ├── services/
+│   │   └── customerService.ts # Customer API calls
+│   ├── stores/
+│   │   └── customerStore.ts   # Customer state management
+│   └── types/
+│       └── customer.types.ts  # Customer TypeScript types
+├── orders/
+│   ├── components/
+│   │   ├── OrderList.tsx      # Vietnamese order management
+│   │   ├── OrderDetail.tsx    # Order details view
+│   │   ├── OrderTracking.tsx  # Order status tracking
+│   │   ├── RefundProcess.tsx  # Vietnamese refund process
+│   │   └── OrderReceipt.tsx   # Vietnamese receipt template
+│   ├── hooks/
+│   │   ├── useOrders.tsx      # Order management
+│   │   └── useRefunds.tsx     # Refund processing
+│   ├── services/
+│   │   └── orderService.ts    # Order API calls
+│   ├── stores/
+│   │   └── orderStore.ts      # Order state management
+│   └── types/
+│       └── order.types.ts     # Order TypeScript definitions
+├── analytics/
+│   ├── components/
+│   │   ├── DashboardKPIs.tsx  # Vietnamese business KPIs
+│   │   ├── SalesAnalytics.tsx # Sales performance charts
+│   │   ├── InventoryReports.tsx # Stock reports
+│   │   ├── CustomerAnalytics.tsx # Customer insights
+│   │   ├── RevenueReports.tsx # VND revenue analytics
+│   │   └── ExportReports.tsx  # Vietnamese export functionality
+│   ├── hooks/
+│   │   ├── useAnalytics.tsx   # Analytics data fetching
+│   │   └── useReports.tsx     # Report generation
+│   ├── services/
+│   │   └── analyticsService.ts # Analytics API calls
+│   ├── stores/
+│   │   └── analyticsStore.ts  # Analytics state
+│   └── types/
+│       └── analytics.types.ts # Analytics TypeScript types
+├── payments/
+│   ├── components/
+│   │   ├── VNPayGateway.tsx   # VNPay integration
+│   │   ├── MoMoGateway.tsx    # MoMo integration
+│   │   ├── ZaloPayGateway.tsx # ZaloPay integration
+│   │   ├── CashPayment.tsx    # Cash payment processing
+│   │   └── CardPayment.tsx    # Card payment interface
+│   ├── hooks/
+│   │   ├── useVNPay.tsx       # VNPay payment hook
+│   │   ├── useMoMo.tsx        # MoMo payment hook
+│   │   └── useZaloPay.tsx     # ZaloPay payment hook
+│   ├── services/
+│   │   ├── vnpayService.ts    # VNPay API integration
+│   │   ├── momoService.ts     # MoMo API integration
+│   │   └── zalopayService.ts  # ZaloPay API integration
+│   └── types/
+│       └── payment.types.ts   # Payment TypeScript types
+├── staff/
+│   ├── components/
+│   │   ├── StaffManagement.tsx # Staff management interface
+│   │   ├── PerformanceTracker.tsx # Vietnamese performance metrics
+│   │   ├── ShiftManagement.tsx # Work shift scheduling
+│   │   ├── CommissionTracker.tsx # Sales commission tracking
+│   │   └── StaffReports.tsx   # Staff performance reports
+│   ├── hooks/
+│   │   ├── useStaff.tsx       # Staff management
+│   │   └── usePerformance.tsx # Performance tracking
+│   ├── services/
+│   │   └── staffService.ts    # Staff API calls
+│   └── types/
+│       └── staff.types.ts     # Staff TypeScript types
+└── settings/
+    ├── components/
+    │   ├── BusinessSettings.tsx # Vietnamese business config
+    │   ├── TaxSettings.tsx     # Vietnamese tax configuration
+    │   ├── ReceiptSettings.tsx # Receipt template settings
+    │   ├── PaymentSettings.tsx # Payment gateway config
+    │   ├── LanguageSettings.tsx # Vietnamese/English toggle
+    │   └── BackupSettings.tsx  # D1 backup configuration
+    ├── hooks/
+    │   └── useSettings.tsx     # Settings management
+    ├── services/
+    │   └── settingsService.ts  # Settings API calls
+    └── types/
+        └── settings.types.ts   # Settings TypeScript types
+2.3 src/services/ (Cloudflare Workers API)
+src/services/
+├── api/
+│   ├── client.ts              # Axios client with Cloudflare Workers config
+│   ├── endpoints.ts           # API endpoint constants
+│   ├── interceptors.ts        # Request/response interceptors
+│   └── types.ts               # API response types
+├── cloudflare/
+│   ├── d1Service.ts           # D1 database operations
+│   ├── r2Service.ts           # R2 storage operations
+│   ├── kvService.ts           # KV store operations
+│   └── workersService.ts      # Workers-specific utilities
+├── auth/
+│   ├── authService.ts         # JWT authentication
+│   ├── tokenService.ts        # Token management
+│   └── permissionService.ts   # Role-based permissions
+├── business/
+│   ├── productService.ts      # Product management API
+│   ├── orderService.ts        # Order processing API
+│   ├── customerService.ts     # Customer management API
+│   ├── inventoryService.ts    # Inventory tracking API
+│   └── analyticsService.ts    # Analytics data API
+├── payments/
+│   ├── vnpayService.ts        # VNPay API integration
+│   ├── momoService.ts         # MoMo API integration
+│   ├── zalopayService.ts      # ZaloPay API integration
+│   └── cashService.ts         # Cash payment processing
+├── hardware/
+│   ├── printerService.ts      # Thermal printer integration
+│   ├── scannerService.ts      # Barcode scanner integration
+│   └── cashDrawerService.ts   # Cash drawer control
+├── pwa/
+│   ├── syncService.ts         # Offline sync functionality
+│   ├── cacheService.ts        # Service worker cache management
+│   ├── notificationService.ts # Push notifications
+│   └── installService.ts      # PWA installation prompts
+└── external/
+    ├── smsService.ts          # Vietnamese SMS providers
+    ├── emailService.ts        # Email notifications
+    └── backupService.ts       # External backup services
+2.4 src/stores/ (Zustand state management)
+src/stores/
+├── authStore.ts               # User authentication state
+├── posStore.ts                # POS terminal state
+├── productStore.ts            # Product management state
+├── customerStore.ts           # Customer management state
+├── orderStore.ts              # Order processing state
+├── inventoryStore.ts          # Inventory tracking state
+├── analyticsStore.ts          # Analytics dashboard state
+├── settingsStore.ts           # App settings state
+├── uiStore.ts                 # UI state (modals, loading, etc.)
+├── offlineStore.ts            # PWA offline state
+└── index.ts                   # Store composition and exports
+2.5 src/utils/ (Web API only - no Node.js)
+src/utils/
+├── formatters/
+│   ├── vndCurrency.ts         # Vietnamese currency formatting
+│   ├── vietnameseDate.ts      # Vietnamese date formatting
+│   ├── phoneNumber.ts         # Vietnamese phone formatting
+│   └── address.ts             # Vietnamese address formatting
+├── validators/
+│   ├── vietnameseValidators.ts # Vietnamese-specific validation
+│   ├── businessValidators.ts  # Business logic validation
+│   └── formValidators.ts      # Form validation helpers
+├── api/
+│   ├── errorHandler.ts        # Cloudflare error handling
+│   ├── retryLogic.ts          # API retry mechanisms
+│   └── cacheUtils.ts          # Client-side caching
+├── pwa/
+│   ├── serviceWorkerUtils.ts  # Service worker helpers
+│   ├── offlineUtils.ts        # Offline functionality
+│   └── syncUtils.ts           # Data synchronization
+├── storage/
+│   ├── indexedDBUtils.ts      # Client-side storage
+│   ├── sessionUtils.ts        # Session management
+│   └── cacheUtils.ts          # Local caching
+├── business/
+│   ├── taxCalculation.ts      # Vietnamese tax calculations
+│   ├── discountCalculation.ts # Discount logic
+│   ├── loyaltyCalculation.ts  # Loyalty points calculation
+│   └── inventoryCalculation.ts # Stock calculations
+└── constants/
+    ├── vietnamese.ts          # Vietnamese constants
+    ├── business.ts            # Business logic constants
+    ├── api.ts                 # API configuration constants
+    └── cloudflare.ts          # Cloudflare-specific constants
+3. Backend Structure (Cloudflare Workers)
+3.1 src/handlers/ (Hono.js route handlers)
+src/handlers/
+├── auth/
+│   ├── loginHandler.ts        # JWT login endpoint
+│   ├── registerHandler.ts     # User registration
+│   ├── refreshHandler.ts      # Token refresh
+│   └── logoutHandler.ts       # Session cleanup
+├── products/
+│   ├── productsHandler.ts     # Product CRUD operations
+│   ├── categoriesHandler.ts   # Category management
+│   ├── inventoryHandler.ts    # Stock management
+│   └── searchHandler.ts       # Product search
+├── orders/
+│   ├── ordersHandler.ts       # Order processing
+│   ├── posHandler.ts          # POS order creation
+│   ├── refundsHandler.ts      # Refund processing
+│   └── receiptHandler.ts      # Receipt generation
+├── customers/
+│   ├── customersHandler.ts    # Customer management
+│   ├── loyaltyHandler.ts      # Loyalty program
+│   └── historyHandler.ts      # Purchase history
+├── payments/
+│   ├── vnpayHandler.ts        # VNPay webhook handling
+│   ├── momoHandler.ts         # MoMo webhook handling
+│   ├── zalopayHandler.ts      # ZaloPay webhook handling
+│   └── callbackHandler.ts     # Payment callbacks
+├── analytics/
+│   ├── dashboardHandler.ts    # Dashboard metrics
+│   ├── reportsHandler.ts      # Report generation
+│   └── exportHandler.ts       # Data export
+├── uploads/
+│   ├── r2Handler.ts           # R2 file upload
+│   ├── imageHandler.ts        # Image processing
+│   └── presignedUrlHandler.ts # Presigned URL generation
+└── admin/
+    ├── settingsHandler.ts     # System settings
+    ├── usersHandler.ts        # User management
+    └── backupHandler.ts       # Database backup
+3.2 src/middleware/ (Hono.js middleware)
+src/middleware/
+├── auth/
+│   ├── jwtMiddleware.ts       # JWT token validation
+│   ├── roleMiddleware.ts      # Role-based access control
+│   └── sessionMiddleware.ts   # Session management
+├── security/
+│   ├── corsMiddleware.ts      # CORS configuration
+│   ├── rateLimitMiddleware.ts # Rate limiting with KV
+│   ├── validateMiddleware.ts  # Request validation
+│   └── sanitizeMiddleware.ts  # Input sanitization
+├── logging/
+│   ├── requestLogger.ts       # Request logging
+│   ├── errorLogger.ts         # Error tracking
+│   └── metricsLogger.ts       # Performance metrics
+└── business/
+    ├── inventoryMiddleware.ts # Stock level checking
+    ├── taxMiddleware.ts       # Vietnamese tax calculation
+    └── loyaltyMiddleware.ts   # Loyalty points processing
+4. Shared Types Structure
+shared/
+├── types/
+│   ├── api.types.ts           # API request/response types
+│   ├── business.types.ts      # Business domain types
+│   ├── database.types.ts      # D1 database types
+│   ├── vietnamese.types.ts    # Vietnam-specific types
+│   └── cloudflare.types.ts    # Cloudflare service types
+├── constants/
+│   ├── vietnamese.constants.ts # Vietnamese constants
+│   ├── business.constants.ts  # Business constants
+│   └── api.constants.ts       # API constants
+└── schemas/
+    ├── product.schemas.ts     # Zod product validation
+    ├── order.schemas.ts       # Zod order validation
+    ├── customer.schemas.ts    # Zod customer validation
+    └── auth.schemas.ts        # Zod auth validation

@@ -1,0 +1,244 @@
+/* Theme Toggle Styles - Vietnamese POS System 2025 */
+
+/* Base Theme Toggle */
+.theme-toggle-button {
+  transition: all var(--animation-normal);
+  border-radius: var(--border-radius-md);
+}
+
+.theme-toggle-button:hover {
+  background: var(--color-bg-secondary);
+  transform: translateY(-1px);
+}
+
+/* Dropdown Theme Toggle */
+.theme-toggle-dropdown {
+  position: relative;
+  transition: all var(--animation-normal);
+  border-radius: var(--border-radius-md);
+}
+
+.theme-toggle-dropdown:hover {
+  background: var(--color-bg-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-dropdown .ant-dropdown-menu {
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-secondary);
+  overflow: hidden;
+}
+
+.theme-dropdown .ant-dropdown-menu-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: all var(--animation-fast);
+}
+
+.theme-dropdown .ant-dropdown-menu-item:hover {
+  background: var(--color-bg-secondary);
+}
+
+/* Theme Switcher */
+.theme-switcher {
+  display: inline-flex;
+}
+
+.theme-switcher-button {
+  position: relative;
+  transition: all var(--animation-normal);
+  border-radius: 0;
+}
+
+.theme-switcher-button:first-child {
+  border-top-left-radius: var(--border-radius-md);
+  border-bottom-left-radius: var(--border-radius-md);
+}
+
+.theme-switcher-button:last-child {
+  border-top-right-radius: var(--border-radius-md);
+  border-bottom-right-radius: var(--border-radius-md);
+}
+
+.theme-switcher-button:hover {
+  transform: translateY(-1px);
+  z-index: 1;
+}
+
+.theme-switcher-vietnamese {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+}
+
+.theme-switcher-vietnamese.ant-btn-primary {
+  background: linear-gradient(135deg, #d4af37 0%, #dc143c 100%);
+  border-color: #d4af37;
+}
+
+.theme-switcher-vietnamese.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #e6c757 0%, #e91e63 100%);
+  border-color: #e6c757;
+}
+
+/* Vietnamese Theme Enhancements */
+[data-theme="vietnamese"] .theme-toggle-button {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+  border: 1px solid var(--color-dragon-gold, #d4af37);
+}
+
+[data-theme="vietnamese"] .theme-toggle-button:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(220, 20, 60, 0.2) 100%);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="vietnamese"] .theme-toggle-dropdown {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+  border: 1px solid var(--color-dragon-gold, #d4af37);
+}
+
+[data-theme="vietnamese"] .theme-dropdown .ant-dropdown-menu {
+  border: 1px solid var(--color-dragon-gold, #d4af37);
+  background: var(--color-bg-primary);
+}
+
+[data-theme="vietnamese"] .theme-dropdown .ant-dropdown-menu-item:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .theme-toggle-button:hover {
+  background: var(--color-bg-tertiary);
+}
+
+[data-theme="dark"] .theme-toggle-dropdown:hover {
+  background: var(--color-bg-tertiary);
+}
+
+[data-theme="dark"] .theme-dropdown .ant-dropdown-menu {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border-primary);
+}
+
+[data-theme="dark"] .theme-dropdown .ant-dropdown-menu-item:hover {
+  background: var(--color-bg-tertiary);
+}
+
+/* Icon Animations */
+.theme-toggle-button .anticon,
+.theme-toggle-dropdown .anticon,
+.theme-switcher-button .anticon {
+  transition: all var(--animation-normal);
+}
+
+.theme-toggle-button:hover .anticon,
+.theme-toggle-dropdown:hover .anticon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.theme-switcher-button:hover .anticon {
+  transform: scale(1.1);
+}
+
+/* Badge for Vietnamese Theme */
+.ant-badge-dot {
+  animation: vietnamese-pulse 2s ease-in-out infinite;
+}
+
+@keyframes vietnamese-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .theme-toggle-button,
+  .theme-toggle-dropdown {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .theme-switcher-button {
+    padding: var(--spacing-xs);
+    min-width: 36px;
+  }
+  
+  .theme-dropdown .ant-dropdown-menu-item {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .theme-toggle-button,
+  .theme-toggle-dropdown,
+  .theme-switcher-button {
+    border-width: 2px;
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .theme-dropdown .ant-dropdown-menu {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-button,
+  .theme-toggle-dropdown,
+  .theme-switcher-button {
+    transition: none;
+  }
+  
+  .theme-toggle-button:hover,
+  .theme-toggle-dropdown:hover,
+  .theme-switcher-button:hover {
+    transform: none;
+  }
+  
+  .theme-toggle-button .anticon,
+  .theme-toggle-dropdown .anticon,
+  .theme-switcher-button .anticon {
+    transition: none;
+  }
+  
+  .theme-toggle-button:hover .anticon,
+  .theme-toggle-dropdown:hover .anticon,
+  .theme-switcher-button:hover .anticon {
+    transform: none;
+  }
+  
+  .ant-badge-dot {
+    animation: none;
+  }
+}
+
+/* Focus States */
+.theme-toggle-button:focus,
+.theme-toggle-dropdown:focus,
+.theme-switcher-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+[data-theme="vietnamese"] .theme-toggle-button:focus,
+[data-theme="vietnamese"] .theme-toggle-dropdown:focus,
+[data-theme="vietnamese"] .theme-switcher-button:focus {
+  outline-color: var(--color-dragon-gold, #d4af37);
+}
+
+/* Print Styles */
+@media print {
+  .theme-toggle-button,
+  .theme-toggle-dropdown,
+  .theme-switcher {
+    display: none !important;
+  }
+}

@@ -1,7 +1,8 @@
-// Axios client configured for Cloudflare Workers
+// Enhanced Cloudflare Workers API Client - Vietnamese POS System 2025
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_BASE_URL, REQUEST_TIMEOUT } from '../../constants/api';
 import { storage, STORAGE_KEYS } from '../../constants/storage';
+import { ApiResponse, ApiError } from './types';
 
 export interface ApiClientConfig {
   baseURL?: string;

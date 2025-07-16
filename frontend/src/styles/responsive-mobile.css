@@ -1,0 +1,194 @@
+/* Enhanced Mobile Responsive Design - 2025 */
+/* Optimized for Vietnamese POS System */
+
+/* Mobile First Approach */
+@media (max-width: 480px) {
+  /* Layout Adjustments */
+  .admin-dashboard {
+    padding: 12px;
+  }
+  
+  .dashboard-header {
+    padding: 16px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .dashboard-title h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+  
+  .dashboard-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .dashboard-actions .ant-space {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* KPI Cards - Mobile Optimized */
+  .kpi-card {
+    height: 110px;
+    margin-bottom: 8px;
+  }
+  
+  .kpi-card .ant-card-body {
+    padding: 12px;
+  }
+  
+  .kpi-header {
+    margin-bottom: 8px;
+  }
+  
+  .kpi-icon {
+    padding: 6px;
+  }
+  
+  .kpi-content h3 {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  
+  .kpi-content .ant-typography {
+    font-size: 10px;
+  }
+  
+  /* Charts - Mobile Optimized */
+  .chart-card {
+    height: 250px;
+    margin-bottom: 16px;
+  }
+  
+  .chart-card .ant-card-head {
+    padding: 12px 16px;
+  }
+  
+  .chart-card .ant-card-body {
+    padding: 16px;
+  }
+  
+  .chart-wrapper {
+    height: 200px !important;
+  }
+  
+  /* Tables - Mobile Optimized */
+  .table-card .ant-table {
+    font-size: 11px;
+  }
+  
+  .table-card .ant-table-thead > tr > th {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .table-card .ant-table-tbody > tr > td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .table-card .ant-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+  
+  /* Alert Cards - Mobile */
+  .alerts-card .ant-list-item {
+    padding: 8px 0;
+  }
+  
+  .alerts-card .ant-list-item-meta-title {
+    font-size: 12px;
+  }
+  
+  .alerts-card .ant-list-item-meta-description {
+    font-size: 10px;
+  }
+  
+  /* Real-time Cards - Mobile */
+  .realtime-card .ant-statistic-title {
+    font-size: 10px;
+  }
+  
+  .realtime-card .ant-statistic-content {
+    font-size: 14px;
+  }
+  
+  /* Performance Cards - Mobile */
+  .performance-card {
+    font-size: 11px;
+  }
+  
+  .performance-card .ant-progress {
+    margin-bottom: 4px;
+  }
+  
+  /* Buttons - Mobile Optimized */
+  .ant-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+    height: 28px;
+  }
+  
+  .ant-btn-lg {
+    font-size: 14px;
+    padding: 6px 12px;
+    height: 32px;
+  }
+  
+  /* Input Fields - Mobile */
+  .ant-input {
+    font-size: 14px;
+    padding: 6px 8px;
+  }
+  
+  .ant-select {
+    font-size: 12px;
+  }
+  
+  .ant-picker {
+    font-size: 12px;
+  }
+  
+  /* Modal - Mobile */
+  .ant-modal {
+    margin: 0;
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+  }
+  
+  .ant-modal-content {
+    border-radius: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .ant-modal-header {
+    padding: 12px 16px;
+  }
+  
+  .ant-modal-body {
+    padding: 16px;
+  }
+  
+  /* Drawer - Mobile */
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+  
+  .ant-drawer-body {
+    padding: 16px;
+  }
+  
+  /* Layout Sidebar - Mobile */
+  .ant-layout-sider {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+  \n  .ant-layout-sider-collapsed {\n    width: 80px !important;\n    min-width: 80px !important;\n  }\n  \n  /* Layout Content - Mobile */\n  .ant-layout-content {\n    margin-left: 0 !important;\n    margin: 0;\n    padding: 0;\n  }\n  \n  /* Menu - Mobile */\n  .ant-menu {\n    font-size: 12px;\n  }\n  \n  .ant-menu-item {\n    padding: 0 12px;\n    height: 36px;\n    line-height: 36px;\n  }\n  \n  .ant-menu-submenu-title {\n    padding: 0 12px;\n    height: 36px;\n    line-height: 36px;\n  }\n  \n  /* Header - Mobile */\n  .ant-layout-header {\n    padding: 0 12px;\n    height: 48px;\n    line-height: 48px;\n  }\n  \n  /* Tabs - Mobile */\n  .ant-tabs {\n    font-size: 12px;\n  }\n  \n  .ant-tabs-tab {\n    padding: 6px 12px;\n    margin: 0 4px;\n  }\n  \n  /* Tags - Mobile */\n  .ant-tag {\n    font-size: 10px;\n    padding: 0 4px;\n    margin: 2px;\n  }\n  \n  /* Badge - Mobile */\n  .ant-badge {\n    font-size: 10px;\n  }\n  \n  .ant-badge-count {\n    font-size: 10px;\n    min-width: 16px;\n    height: 16px;\n    line-height: 16px;\n  }\n  \n  /* Avatar - Mobile */\n  .ant-avatar {\n    width: 28px;\n    height: 28px;\n    font-size: 12px;\n  }\n  \n  .ant-avatar-lg {\n    width: 36px;\n    height: 36px;\n    font-size: 14px;\n  }\n  \n  /* Timeline - Mobile */\n  .ant-timeline {\n    font-size: 12px;\n    padding: 8px 0;\n  }\n  \n  .ant-timeline-item {\n    padding-bottom: 12px;\n  }\n  \n  .ant-timeline-item-content {\n    padding: 8px 12px;\n    font-size: 11px;\n  }\n  \n  /* Progress - Mobile */\n  .ant-progress {\n    font-size: 11px;\n  }\n  \n  .ant-progress-text {\n    font-size: 10px;\n  }\n  \n  /* Statistic - Mobile */\n  .ant-statistic {\n    text-align: center;\n  }\n  \n  .ant-statistic-title {\n    font-size: 10px;\n    margin-bottom: 2px;\n  }\n  \n  .ant-statistic-content {\n    font-size: 16px;\n  }\n  \n  /* List - Mobile */\n  .ant-list {\n    font-size: 12px;\n  }\n  \n  .ant-list-item {\n    padding: 8px 0;\n  }\n  \n  .ant-list-item-meta-title {\n    font-size: 12px;\n    margin-bottom: 4px;\n  }\n  \n  .ant-list-item-meta-description {\n    font-size: 10px;\n  }\n  \n  /* Card - Mobile */\n  .ant-card {\n    margin-bottom: 12px;\n  }\n  \n  .ant-card-head {\n    padding: 8px 12px;\n    min-height: 40px;\n  }\n  \n  .ant-card-head-title {\n    font-size: 14px;\n    font-weight: 600;\n  }\n  \n  .ant-card-body {\n    padding: 12px;\n  }\n  \n  .ant-card-small > .ant-card-head {\n    padding: 6px 8px;\n    min-height: 32px;\n  }\n  \n  .ant-card-small > .ant-card-body {\n    padding: 8px;\n  }\n  \n  /* Form - Mobile */\n  .ant-form {\n    font-size: 12px;\n  }\n  \n  .ant-form-item {\n    margin-bottom: 12px;\n  }\n  \n  .ant-form-item-label {\n    font-size: 12px;\n    padding: 0 0 4px;\n  }\n  \n  .ant-form-item-control {\n    font-size: 12px;\n  }\n  \n  /* Select - Mobile */\n  .ant-select-selector {\n    font-size: 12px;\n  }\n  \n  .ant-select-selection-item {\n    font-size: 12px;\n  }\n  \n  /* DatePicker - Mobile */\n  .ant-picker {\n    font-size: 12px;\n  }\n  \n  .ant-picker-input > input {\n    font-size: 12px;\n  }\n  \n  /* Switch - Mobile */\n  .ant-switch {\n    height: 18px;\n    line-height: 18px;\n    min-width: 36px;\n  }\n  \n  .ant-switch-handle {\n    width: 14px;\n    height: 14px;\n    top: 2px;\n    left: 2px;\n  }\n  \n  .ant-switch-checked .ant-switch-handle {\n    left: calc(100% - 16px);\n  }\n  \n  /* Slider - Mobile */\n  .ant-slider {\n    margin: 8px 0;\n  }\n  \n  .ant-slider-handle {\n    width: 12px;\n    height: 12px;\n    margin-top: -4px;\n  }\n  \n  /* Radio - Mobile */\n  .ant-radio-button-wrapper {\n    font-size: 12px;\n    padding: 0 8px;\n    height: 28px;\n    line-height: 28px;\n  }\n  \n  /* Checkbox - Mobile */\n  .ant-checkbox-wrapper {\n    font-size: 12px;\n  }\n  \n  .ant-checkbox {\n    margin-right: 4px;\n  }\n  \n  /* Rate - Mobile */\n  .ant-rate {\n    font-size: 12px;\n  }\n  \n  .ant-rate-star {\n    margin-right: 2px;\n  }\n  \n  /* Upload - Mobile */\n  .ant-upload {\n    font-size: 12px;\n  }\n  \n  .ant-upload-drag {\n    padding: 12px;\n  }\n  \n  /* Breadcrumb - Mobile */\n  .ant-breadcrumb {\n    font-size: 11px;\n    margin-bottom: 8px;\n  }\n  \n  /* Pagination - Mobile */\n  .ant-pagination {\n    font-size: 12px;\n    text-align: center;\n  }\n  \n  .ant-pagination-item {\n    min-width: 28px;\n    height: 28px;\n    line-height: 28px;\n  }\n  \n  /* Steps - Mobile */\n  .ant-steps {\n    font-size: 12px;\n  }\n  \n  .ant-steps-item {\n    margin-right: 8px;\n  }\n  \n  .ant-steps-item-icon {\n    width: 24px;\n    height: 24px;\n    line-height: 24px;\n  }\n  \n  /* Anchor - Mobile */\n  .ant-anchor {\n    font-size: 12px;\n  }\n  \n  .ant-anchor-link {\n    padding: 4px 0;\n  }\n  \n  /* BackTop - Mobile */\n  .ant-back-top {\n    right: 12px;\n    bottom: 12px;\n  }\n  \n  .ant-back-top-content {\n    width: 36px;\n    height: 36px;\n    line-height: 36px;\n  }\n  \n  /* Empty - Mobile */\n  .ant-empty {\n    font-size: 12px;\n    margin: 16px 0;\n  }\n  \n  .ant-empty-image {\n    height: 60px;\n    margin-bottom: 8px;\n  }\n  \n  /* Skeleton - Mobile */\n  .ant-skeleton {\n    padding: 12px;\n  }\n  \n  .ant-skeleton-title {\n    height: 16px;\n    margin-bottom: 8px;\n  }\n  \n  .ant-skeleton-paragraph > li {\n    height: 12px;\n  }\n  \n  /* Spin - Mobile */\n  .ant-spin {\n    font-size: 12px;\n  }\n  \n  .ant-spin-dot {\n    width: 16px;\n    height: 16px;\n  }\n  \n  /* Result - Mobile */\n  .ant-result {\n    padding: 24px 16px;\n  }\n  \n  .ant-result-title {\n    font-size: 16px;\n    margin-bottom: 8px;\n  }\n  \n  .ant-result-subtitle {\n    font-size: 12px;\n  }\n  \n  /* Notification - Mobile */\n  .ant-notification {\n    font-size: 12px;\n    width: calc(100vw - 32px);\n    max-width: calc(100vw - 32px);\n    margin-right: 16px;\n  }\n  \n  .ant-notification-notice {\n    padding: 12px;\n  }\n  \n  /* Message - Mobile */\n  .ant-message {\n    font-size: 12px;\n  }\n  \n  .ant-message-notice {\n    padding: 6px 12px;\n  }\n  \n  /* Tooltip - Mobile */\n  .ant-tooltip {\n    font-size: 11px;\n  }\n  \n  .ant-tooltip-inner {\n    padding: 4px 6px;\n  }\n  \n  /* Popover - Mobile */\n  .ant-popover {\n    font-size: 12px;\n  }\n  \n  .ant-popover-inner {\n    padding: 8px;\n  }\n  \n  /* Popconfirm - Mobile */\n  .ant-popconfirm {\n    font-size: 12px;\n  }\n  \n  .ant-popconfirm-inner {\n    padding: 8px;\n  }\n  \n  /* Custom Mobile Utilities */\n  .mobile-hide {\n    display: none !important;\n  }\n  \n  .mobile-show {\n    display: block !important;\n  }\n  \n  .mobile-full-width {\n    width: 100% !important;\n  }\n  \n  .mobile-text-center {\n    text-align: center !important;\n  }\n  \n  .mobile-no-padding {\n    padding: 0 !important;\n  }\n  \n  .mobile-small-padding {\n    padding: 8px !important;\n  }\n  \n  .mobile-no-margin {\n    margin: 0 !important;\n  }\n  \n  .mobile-small-margin {\n    margin: 8px !important;\n  }\n  \n  .mobile-scroll-x {\n    overflow-x: auto;\n    -webkit-overflow-scrolling: touch;\n  }\n  \n  .mobile-scroll-y {\n    overflow-y: auto;\n    -webkit-overflow-scrolling: touch;\n  }\n  \n  /* Touch Improvements */\n  .mobile-touch-target {\n    min-height: 44px;\n    min-width: 44px;\n  }\n  \n  .mobile-large-touch {\n    min-height: 48px;\n    min-width: 48px;\n  }\n  \n  /* Loading States - Mobile */\n  .mobile-loading {\n    position: relative;\n    pointer-events: none;\n    opacity: 0.6;\n  }\n  \n  .mobile-loading::after {\n    content: '';\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    width: 20px;\n    height: 20px;\n    margin-left: -10px;\n    margin-top: -10px;\n    border: 2px solid #f3f3f3;\n    border-top: 2px solid #1890ff;\n    border-radius: 50%;\n    animation: spin 1s linear infinite;\n  }\n  \n  @keyframes spin {\n    0% { transform: rotate(0deg); }\n    100% { transform: rotate(360deg); }\n  }\n  \n  /* Error States - Mobile */\n  .mobile-error {\n    color: #ff4d4f;\n    font-size: 11px;\n    padding: 4px 8px;\n    background: #fff2f0;\n    border: 1px solid #ffccc7;\n    border-radius: 4px;\n    margin-top: 4px;\n  }\n  \n  /* Success States - Mobile */\n  .mobile-success {\n    color: #52c41a;\n    font-size: 11px;\n    padding: 4px 8px;\n    background: #f6ffed;\n    border: 1px solid #b7eb8f;\n    border-radius: 4px;\n    margin-top: 4px;\n  }\n  \n  /* Warning States - Mobile */\n  .mobile-warning {\n    color: #fa8c16;\n    font-size: 11px;\n    padding: 4px 8px;\n    background: #fff7e6;\n    border: 1px solid #ffd591;\n    border-radius: 4px;\n    margin-top: 4px;\n  }\n}\n\n/* Tablet Landscape - 768px to 1024px */\n@media (min-width: 481px) and (max-width: 1024px) {\n  .admin-dashboard {\n    padding: 16px;\n  }\n  \n  .kpi-card {\n    height: 120px;\n  }\n  \n  .chart-card {\n    height: 300px;\n  }\n  \n  .table-card .ant-table {\n    font-size: 13px;\n  }\n  \n  .dashboard-header {\n    padding: 20px;\n  }\n  \n  .dashboard-title h2 {\n    font-size: 24px;\n  }\n  \n  .ant-layout-sider {\n    width: 200px !important;\n  }\n  \n  .ant-layout-content {\n    margin-left: 200px !important;\n  }\n}\n\n/* Large Tablets and Small Laptops - 1025px to 1366px */\n@media (min-width: 1025px) and (max-width: 1366px) {\n  .admin-dashboard {\n    padding: 20px;\n  }\n  \n  .kpi-card {\n    height: 130px;\n  }\n  \n  .chart-card {\n    height: 350px;\n  }\n  \n  .dashboard-header {\n    padding: 24px;\n  }\n}\n\n/* Touch Device Optimizations */\n@media (hover: none) and (pointer: coarse) {\n  .ant-btn {\n    min-height: 44px;\n    padding: 8px 16px;\n  }\n  \n  .ant-input {\n    min-height: 44px;\n    padding: 8px 12px;\n  }\n  \n  .ant-select-selector {\n    min-height: 44px;\n    padding: 8px 12px;\n  }\n  \n  .ant-menu-item {\n    min-height: 44px;\n    line-height: 44px;\n  }\n  \n  .ant-tabs-tab {\n    min-height: 44px;\n    padding: 8px 16px;\n  }\n  \n  .kpi-card {\n    min-height: 120px;\n  }\n  \n  .ant-card {\n    border-radius: 12px;\n  }\n  \n  .ant-btn {\n    border-radius: 8px;\n  }\n}\n\n/* High DPI Displays */\n@media only screen and (-webkit-min-device-pixel-ratio: 2),\n       only screen and (min--moz-device-pixel-ratio: 2),\n       only screen and (-o-min-device-pixel-ratio: 2/1),\n       only screen and (min-device-pixel-ratio: 2),\n       only screen and (min-resolution: 192dpi),\n       only screen and (min-resolution: 2dppx) {\n  .kpi-icon {\n    image-rendering: -webkit-optimize-contrast;\n    image-rendering: crisp-edges;\n  }\n  \n  .ant-avatar {\n    image-rendering: -webkit-optimize-contrast;\n    image-rendering: crisp-edges;\n  }\n}\n\n/* Landscape Orientation */\n@media (orientation: landscape) and (max-height: 600px) {\n  .dashboard-header {\n    padding: 12px 16px;\n  }\n  \n  .dashboard-title h2 {\n    font-size: 18px;\n  }\n  \n  .kpi-card {\n    height: 80px;\n  }\n  \n  .chart-card {\n    height: 200px;\n  }\n  \n  .ant-layout-header {\n    height: 40px;\n    line-height: 40px;\n  }\n  \n  .ant-menu-item {\n    height: 32px;\n    line-height: 32px;\n  }\n}\n\n/* Dark Mode Mobile */\n@media (prefers-color-scheme: dark) and (max-width: 480px) {\n  .admin-dashboard {\n    background: #000;\n    color: #fff;\n  }\n  \n  .ant-card {\n    background: #1f1f1f;\n    border-color: #434343;\n  }\n  \n  .kpi-card {\n    background: #1f1f1f;\n    border-color: #434343;\n  }\n  \n  .ant-table {\n    background: #1f1f1f;\n    color: #fff;\n  }\n  \n  .ant-table-thead > tr > th {\n    background: #262626;\n    border-color: #434343;\n    color: #fff;\n  }\n  \n  .ant-table-tbody > tr > td {\n    border-color: #434343;\n    color: #fff;\n  }\n  \n  .ant-input {\n    background: #262626;\n    border-color: #434343;\n    color: #fff;\n  }\n  \n  .ant-select-selector {\n    background: #262626;\n    border-color: #434343;\n    color: #fff;\n  }\n  \n  .ant-btn {\n    background: #262626;\n    border-color: #434343;\n    color: #fff;\n  }\n  \n  .ant-btn-primary {\n    background: #1890ff;\n    border-color: #1890ff;\n    color: #fff;\n  }\n}\n\n/* Reduced Motion */\n@media (prefers-reduced-motion: reduce) {\n  .kpi-card,\n  .ant-card,\n  .ant-btn,\n  .ant-table-tbody > tr,\n  .ant-list-item {\n    transition: none !important;\n    animation: none !important;\n  }\n  \n  .ant-spin-dot {\n    animation: none !important;\n  }\n  \n  .mobile-loading::after {\n    animation: none !important;\n  }\n}\n\n/* High Contrast */\n@media (prefers-contrast: high) {\n  .kpi-card {\n    border: 2px solid #000;\n  }\n  \n  .ant-btn {\n    border: 2px solid #000;\n  }\n  \n  .ant-input {\n    border: 2px solid #000;\n  }\n  \n  .ant-select-selector {\n    border: 2px solid #000;\n  }\n  \n  .ant-table {\n    border: 2px solid #000;\n  }\n  \n  .ant-table-thead > tr > th {\n    border: 1px solid #000;\n  }\n  \n  .ant-table-tbody > tr > td {\n    border: 1px solid #000;\n  }\n}\n\n/* Print Styles for Mobile */\n@media print {\n  .mobile-hide,\n  .ant-btn,\n  .ant-modal,\n  .ant-drawer,\n  .ant-back-top,\n  .dashboard-actions {\n    display: none !important;\n  }\n  \n  .admin-dashboard {\n    padding: 0;\n    background: white;\n    color: black;\n  }\n  \n  .kpi-card,\n  .ant-card {\n    break-inside: avoid;\n    box-shadow: none;\n    border: 1px solid #ddd;\n    margin-bottom: 16px;\n  }\n  \n  .chart-card {\n    height: auto;\n  }\n  \n  .dashboard-header {\n    border-bottom: 2px solid #000;\n    padding-bottom: 16px;\n    margin-bottom: 16px;\n  }\n  \n  .dashboard-title h2 {\n    color: #000;\n    font-size: 18px;\n  }\n  \n  .ant-table {\n    font-size: 10px;\n  }\n  \n  .ant-table-thead > tr > th {\n    background: #f0f0f0;\n    border: 1px solid #ddd;\n    padding: 4px;\n  }\n  \n  .ant-table-tbody > tr > td {\n    border: 1px solid #ddd;\n    padding: 4px;\n  }\n}\n\n/* Accessibility Improvements */\n@media (prefers-reduced-motion: no-preference) {\n  .kpi-card {\n    animation: fadeInUp 0.6s ease-out;\n  }\n  \n  @keyframes fadeInUp {\n    from {\n      opacity: 0;\n      transform: translateY(20px);\n    }\n    to {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n}\n\n/* Focus Improvements for Mobile */\n@media (max-width: 480px) {\n  .ant-btn:focus,\n  .ant-input:focus,\n  .ant-select-selector:focus {\n    outline: 3px solid #1890ff;\n    outline-offset: 2px;\n  }\n  \n  .ant-menu-item:focus {\n    outline: 2px solid #1890ff;\n    outline-offset: 2px;\n  }\n  \n  .kpi-card:focus-within {\n    outline: 2px solid #1890ff;\n    outline-offset: 2px;\n  }\n}

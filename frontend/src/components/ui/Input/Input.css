@@ -1,0 +1,483 @@
+/* Enhanced Input Styles - Vietnamese POS System 2025 */
+
+/* Base Input Container */
+.enhanced-input-container {
+  position: relative;
+  margin-bottom: var(--spacing-md);
+}
+
+.enhanced-input-container:last-child {
+  margin-bottom: 0;
+}
+
+/* Base Input Styles */
+.enhanced-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  transition: all var(--animation-normal);
+  font-family: var(--font-family);
+  outline: none;
+}
+
+.enhanced-input::placeholder {
+  color: var(--color-text-disabled);
+  opacity: 1;
+}
+
+.enhanced-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.enhanced-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--color-bg-quaternary);
+}
+
+/* Input Variants */
+.enhanced-input-filled {
+  background: var(--color-bg-secondary);
+  border: 1px solid transparent;
+}
+
+.enhanced-input-filled:focus {
+  background: var(--color-bg-primary);
+  border-color: var(--color-primary);
+}
+
+.enhanced-input-outlined {
+  border: 2px solid var(--color-border-primary);
+  background: transparent;
+}
+
+.enhanced-input-outlined:focus {
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+
+.enhanced-input-borderless {
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid var(--color-border-primary);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.enhanced-input-borderless:focus {
+  border-bottom-color: var(--color-primary);
+  box-shadow: none;
+}
+
+.enhanced-input-vietnamese {
+  border: 1px solid var(--color-dragon-gold, #d4af37);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(220, 20, 60, 0.02) 100%);
+}
+
+.enhanced-input-vietnamese:focus {
+  border-color: var(--color-dragon-gold, #d4af37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Rounded Corners */
+.enhanced-input-rounded {
+  border-radius: var(--border-radius-full);
+}
+
+/* Glowing Effect */
+.enhanced-input-glowing {
+  box-shadow: 0 0 10px rgba(24, 144, 255, 0.3);
+}
+
+.enhanced-input-glowing.enhanced-input-vietnamese {
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* Animated Input */
+@keyframes input-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(24, 144, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(24, 144, 255, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(24, 144, 255, 0.5);
+  }
+}
+
+.enhanced-input-animated:focus {
+  animation: input-glow 2s ease-in-out infinite;
+}
+
+/* Full Width */
+.enhanced-input-full-width {
+  width: 100%;
+  display: block;
+}
+
+/* Compact Size */
+.enhanced-input-compact {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  min-height: 32px;
+}
+
+/* Shadow Levels */
+.enhanced-input-shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.enhanced-input-shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.enhanced-input-shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.enhanced-input-shadow-sm:focus,
+.enhanced-input-shadow-md:focus,
+.enhanced-input-shadow-lg:focus {
+  box-shadow: var(--shadow-lg), 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+/* Currency Mode */
+.enhanced-input-currency {
+  text-align: right;
+  font-family: monospace;
+  font-weight: var(--font-weight-medium);
+}
+
+.enhanced-input-currency::before {
+  content: '₫';
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+/* Phone Mode */
+.enhanced-input-phone {
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Floating Label */
+.enhanced-input-container-floating {
+  position: relative;
+  margin-top: var(--spacing-lg);
+}
+
+.enhanced-input-floating-label-text {
+  position: absolute;
+  left: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  transition: all var(--animation-normal);
+  pointer-events: none;
+  background: var(--color-bg-primary);
+  padding: 0 var(--spacing-xs);
+  z-index: 1;
+}
+
+.enhanced-input-container-floating.enhanced-input-container-focused .enhanced-input-floating-label-text,
+.enhanced-input-container-floating .enhanced-input:not(:placeholder-shown) + .enhanced-input-floating-label-text {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+.enhanced-input-container-floating.enhanced-input-container-error .enhanced-input-floating-label-text {
+  color: var(--color-error);
+}
+
+.enhanced-input-container-floating.enhanced-input-container-success .enhanced-input-floating-label-text {
+  color: var(--color-success);
+}
+
+/* Regular Label */
+.enhanced-input-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.enhanced-input-label::after {
+  content: attr(data-required);
+  color: var(--color-error);
+  margin-left: var(--spacing-xs);
+}
+
+/* Helper Text */
+.enhanced-input-helper-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+  line-height: var(--line-height-normal);
+}
+
+/* Error Text */
+.enhanced-input-error-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  margin-top: var(--spacing-xs);
+  line-height: var(--line-height-normal);
+}
+
+/* Success Text */
+.enhanced-input-success-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  margin-top: var(--spacing-xs);
+  line-height: var(--line-height-normal);
+}
+
+/* Error State */
+.enhanced-input-error {
+  border-color: var(--color-error);
+  background: rgba(255, 77, 79, 0.05);
+}
+
+.enhanced-input-error:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+}
+
+/* Success State */
+.enhanced-input-success {
+  border-color: var(--color-success);
+  background: rgba(82, 196, 26, 0.05);
+}
+
+.enhanced-input-success:focus {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.1);
+}
+
+/* Password Input */
+.enhanced-input-password-icon {
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color var(--animation-fast);
+}
+
+.enhanced-input-password-icon:hover {
+  color: var(--color-primary);
+}
+
+/* Focus State */
+.enhanced-input-focused {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.enhanced-input-focused.enhanced-input-vietnamese {
+  border-color: var(--color-dragon-gold, #d4af37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Input Group Styles */
+.enhanced-input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.enhanced-input-group .enhanced-input {
+  border-radius: 0;
+  border-right: none;
+}
+
+.enhanced-input-group .enhanced-input:first-child {
+  border-top-left-radius: var(--border-radius-md);
+  border-bottom-left-radius: var(--border-radius-md);
+}
+
+.enhanced-input-group .enhanced-input:last-child {
+  border-top-right-radius: var(--border-radius-md);
+  border-bottom-right-radius: var(--border-radius-md);
+  border-right: 1px solid var(--color-border-primary);
+}
+
+.enhanced-input-group .enhanced-input:focus {
+  z-index: 1;
+  border-right: 1px solid var(--color-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .enhanced-input {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 44px;
+  }
+  
+  .enhanced-input-compact {
+    min-height: 36px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .enhanced-input-floating-label-text {
+    font-size: var(--font-size-md);
+  }
+  
+  .enhanced-input-container-floating.enhanced-input-container-focused .enhanced-input-floating-label-text,
+  .enhanced-input-container-floating .enhanced-input:not(:placeholder-shown) + .enhanced-input-floating-label-text {
+    font-size: var(--font-size-sm);
+  }
+  
+  .enhanced-input-glowing {
+    box-shadow: none;
+  }
+  
+  .enhanced-input-animated:focus {
+    animation: none;
+  }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .enhanced-input-floating-label-text {
+  background: var(--color-bg-primary);
+}
+
+[data-theme="dark"] .enhanced-input-filled {
+  background: var(--color-bg-tertiary);
+}
+
+[data-theme="dark"] .enhanced-input-vietnamese {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(220, 20, 60, 0.04) 100%);
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .enhanced-input {
+    border-width: 2px;
+    font-weight: var(--font-weight-medium);
+  }
+  
+  .enhanced-input-outlined {
+    border-width: 3px;
+  }
+  
+  .enhanced-input:focus {
+    border-width: 2px;
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .enhanced-input {
+    transition: none;
+  }
+  
+  .enhanced-input-floating-label-text {
+    transition: none;
+  }
+  
+  .enhanced-input-animated:focus {
+    animation: none;
+  }
+  
+  .enhanced-input-password-icon {
+    transition: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .enhanced-input {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+  }
+  
+  .enhanced-input-helper-text,
+  .enhanced-input-error-text,
+  .enhanced-input-success-text {
+    color: black !important;
+  }
+  
+  .enhanced-input-password-icon {
+    display: none;
+  }
+}
+
+/* Vietnamese Input Enhancements */
+.enhanced-input-vietnamese {
+  font-family: var(--font-family), 'Times New Roman', serif;
+  position: relative;
+}
+
+.enhanced-input-vietnamese::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #d4af37 0%, #dc143c 50%, #d4af37 100%);
+  opacity: 0;
+  transition: opacity var(--animation-normal);
+}
+
+.enhanced-input-vietnamese:focus::after {
+  opacity: 1;
+}
+
+/* Currency Input with VND symbol */
+.enhanced-input-currency-container {
+  position: relative;
+}
+
+.enhanced-input-currency-container::after {
+  content: '₫';
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.enhanced-input-currency {
+  padding-right: calc(var(--spacing-md) + 20px);
+}
+
+/* Phone Input with Vietnamese format */
+.enhanced-input-phone-container {
+  position: relative;
+}
+
+.enhanced-input-phone-container::before {
+  content: '+84';
+  position: absolute;
+  left: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.enhanced-input-phone {
+  padding-left: calc(var(--spacing-md) + 30px);
+}

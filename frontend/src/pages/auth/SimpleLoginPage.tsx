@@ -24,11 +24,29 @@ const SimpleLoginPage: React.FC = () => {
     setLoading(true);
     
     try {
-      // Simple authentication - in production this would call an API
-      if (values.email === 'admin@khoaugment.com' && values.password === 'admin123') {
-        // Save auth status to localStorage
+      // Enhanced authentication with multiple demo accounts
+      const validUsers = [
+        { email: 'admin@khoaugment.com', password: 'admin123', role: 'admin' },
+        { email: 'cashier@khoaugment.com', password: 'cashier123', role: 'cashier' },
+        { email: 'manager@khoaugment.com', password: 'manager123', role: 'manager' },
+        { email: 'demo@khoaugment.com', password: 'demo123', role: 'demo' }
+      ];
+      
+      const user = validUsers.find(u => u.email === values.email && u.password === values.password);
+      
+      if (user) {
+        // Save auth status and user info to localStorage
         localStorage.setItem('auth', 'true');
-        message.success('Đăng nhập thành công!');
+        localStorage.setItem('user', JSON.stringify({
+          email: user.email,
+          role: user.role,
+          name: user.role === 'admin' ? 'Quản trị viên' : 
+                user.role === 'cashier' ? 'Thu ngân' :
+                user.role === 'manager' ? 'Quản lý' : 'Demo User'
+        }));
+        
+        message.success(`Đăng nhập thành công! Chào mừng ${user.role === 'admin' ? 'Quản trị viên' : user.role === 'cashier' ? 'Thu ngân' : user.role === 'manager' ? 'Quản lý' : 'Demo User'}`);
+        
         setTimeout(() => {
           navigate('/dashboard');
         }, 1000);
@@ -121,10 +139,20 @@ const SimpleLoginPage: React.FC = () => {
           <Text strong style={{ color: '#1890ff', display: 'block', marginBottom: '0.5rem' }}>
             Thông tin đăng nhập demo:
           </Text>
-          <Text style={{ fontSize: '0.9rem', color: '#666' }}>
-            Email: admin@khoaugment.com<br />
-            Mật khẩu: admin123
-          </Text>
+          <div style={{ fontSize: '0.85rem', color: '#666' }}>
+            <div style={{ marginBottom: '0.5rem' }}>
+              <strong>Admin:</strong> admin@khoaugment.com / admin123
+            </div>
+            <div style={{ marginBottom: '0.5rem' }}>
+              <strong>Thu ngân:</strong> cashier@khoaugment.com / cashier123
+            </div>
+            <div style={{ marginBottom: '0.5rem' }}>
+              <strong>Quản lý:</strong> manager@khoaugment.com / manager123
+            </div>
+            <div>
+              <strong>Demo:</strong> demo@khoaugment.com / demo123
+            </div>
+          </div>
         </div>
       </Card>
     </div>

@@ -1,0 +1,450 @@
+/* Enhanced Card Styles - Vietnamese POS System 2025 */
+
+/* Base Card Styles */
+.enhanced-card {
+  position: relative;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--animation-normal);
+  overflow: hidden;
+}
+
+.enhanced-card .ant-card-body {
+  padding: var(--spacing-lg);
+}
+
+.enhanced-card .ant-card-head {
+  border-bottom: 1px solid var(--color-border-secondary);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* Card Variants */
+.enhanced-card-default {
+  box-shadow: var(--shadow-sm);
+}
+
+.enhanced-card-elevated {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.enhanced-card-elevated:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+.enhanced-card-bordered {
+  border: 2px solid var(--color-border-primary);
+  box-shadow: none;
+}
+
+.enhanced-card-flat {
+  box-shadow: none;
+  border: 1px solid var(--color-border-light);
+}
+
+.enhanced-card-gradient {
+  background: var(--gradient-primary);
+  border: none;
+  color: var(--color-text-white);
+}
+
+.enhanced-card-vietnamese {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(220, 20, 60, 0.05) 100%);
+  border: 1px solid var(--color-dragon-gold, #d4af37);
+  position: relative;
+}
+
+.enhanced-card-vietnamese::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d4af37 0%, #dc143c 50%, #d4af37 100%);
+}
+
+/* Shadow Levels */
+.enhanced-card-shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.enhanced-card-shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.enhanced-card-shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.enhanced-card-shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Rounded Corners */
+.enhanced-card-rounded {
+  border-radius: var(--border-radius-xl);
+}
+
+/* Animations */
+@keyframes card-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enhanced-card-animated {
+  animation: card-fade-in 0.6s ease-out;
+}
+
+/* Glowing Effect */
+.enhanced-card-glowing {
+  box-shadow: 0 0 20px rgba(24, 144, 255, 0.3);
+}
+
+.enhanced-card-glowing.enhanced-card-vietnamese {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+/* Interactive Cards */
+.enhanced-card-interactive {
+  cursor: pointer;
+  transition: all var(--animation-fast);
+}
+
+.enhanced-card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.enhanced-card-interactive:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
+}
+
+/* Gradient Variants */
+.enhanced-card-gradient-primary {
+  background: var(--gradient-primary);
+  border: none;
+  color: var(--color-text-white);
+}
+
+.enhanced-card-gradient-success {
+  background: var(--gradient-success);
+  border: none;
+  color: var(--color-text-white);
+}
+
+.enhanced-card-gradient-warning {
+  background: var(--gradient-warning);
+  border: none;
+  color: var(--color-text-white);
+}
+
+.enhanced-card-gradient-error {
+  background: var(--gradient-error);
+  border: none;
+  color: var(--color-text-white);
+}
+
+.enhanced-card-gradient-info {
+  background: var(--gradient-info);
+  border: none;
+  color: var(--color-text-white);
+}
+
+.enhanced-card-gradient-vietnamese {
+  background: linear-gradient(135deg, #d4af37 0%, #dc143c 100%);
+  border: none;
+  color: var(--color-text-white);
+}
+
+/* Header Gradient */
+.enhanced-card-header-gradient .ant-card-head {
+  background: var(--gradient-primary);
+  color: var(--color-text-white);
+  border-bottom: none;
+}
+
+.enhanced-card-header-gradient.enhanced-card-vietnamese .ant-card-head {
+  background: linear-gradient(135deg, #d4af37 0%, #dc143c 100%);
+}
+
+/* Compact Size */
+.enhanced-card-compact .ant-card-body {
+  padding: var(--spacing-md);
+}
+
+.enhanced-card-compact .ant-card-head {
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: auto;
+}
+
+/* Full Height */
+.enhanced-card-full-height {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.enhanced-card-full-height .ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading State */
+.enhanced-card-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.enhanced-card-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.enhanced-card-loading-icon {
+  font-size: 24px;
+  color: var(--color-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Special Effects for Vietnamese Style */
+.enhanced-card-vietnamese {
+  position: relative;
+  overflow: visible;
+}
+
+.enhanced-card-vietnamese::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #d4af37, #dc143c, #d4af37, #dc143c);
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: var(--border-radius-lg);
+  opacity: 0;
+  transition: opacity var(--animation-normal);
+  animation: gradient-shift 3s ease infinite;
+}
+
+.enhanced-card-vietnamese:hover::after {
+  opacity: 0.6;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Card Actions */
+.enhanced-card .ant-card-actions {
+  border-top: 1px solid var(--color-border-secondary);
+  background: var(--color-bg-secondary);
+}
+
+.enhanced-card-gradient .ant-card-actions {
+  background: rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Meta Information */
+.enhanced-card .ant-card-meta-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.enhanced-card .ant-card-meta-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.enhanced-card-gradient .ant-card-meta-title,
+.enhanced-card-gradient .ant-card-meta-description {
+  color: var(--color-text-white);
+}
+
+/* Cover Image */
+.enhanced-card .ant-card-cover {
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  overflow: hidden;
+}
+
+.enhanced-card .ant-card-cover img {
+  transition: transform var(--animation-normal);
+}
+
+.enhanced-card-interactive .ant-card-cover img:hover {
+  transform: scale(1.05);
+}
+
+/* Extra Content */
+.enhanced-card .ant-card-head-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.enhanced-card .ant-card-extra {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.enhanced-card-gradient .ant-card-extra {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .enhanced-card .ant-card-body {
+    padding: var(--spacing-md);
+  }
+  
+  .enhanced-card .ant-card-head {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .enhanced-card-compact .ant-card-body {
+    padding: var(--spacing-sm);
+  }
+  
+  .enhanced-card-elevated {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .enhanced-card-elevated:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .enhanced-card-glowing {
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .enhanced-card-interactive:hover {
+    transform: none;
+  }
+}
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .enhanced-card-loading-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .enhanced-card .ant-card-actions {
+  background: var(--color-bg-tertiary);
+  border-top-color: var(--color-border-primary);
+}
+
+[data-theme="dark"] .enhanced-card-vietnamese {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(220, 20, 60, 0.08) 100%);
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .enhanced-card {
+    border-width: 2px;
+  }
+  
+  .enhanced-card-gradient {
+    background: var(--color-primary) !important;
+  }
+  
+  .enhanced-card-vietnamese {
+    border-color: #d4af37;
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .enhanced-card {
+    transition: none;
+    animation: none;
+  }
+  
+  .enhanced-card-animated {
+    animation: none;
+  }
+  
+  .enhanced-card-interactive:hover {
+    transform: none;
+  }
+  
+  .enhanced-card-vietnamese::after {
+    animation: none;
+  }
+  
+  .enhanced-card .ant-card-cover img {
+    transition: none;
+  }
+  
+  .enhanced-card-loading-icon {
+    animation: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .enhanced-card {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    transform: none !important;
+    break-inside: avoid;
+    margin-bottom: 16px;
+  }
+  
+  .enhanced-card-gradient {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .enhanced-card .ant-card-actions {
+    display: none;
+  }
+  
+  .enhanced-card-loading-overlay {
+    display: none;
+  }
+}

@@ -1,0 +1,454 @@
+/* Enhanced Button Styles - Vietnamese POS System 2025 */
+
+/* Base Button Styles */
+.enhanced-button {
+  position: relative;
+  overflow: hidden;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.02em;
+  transition: all var(--animation-normal);
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.enhanced-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity var(--animation-fast);
+  pointer-events: none;
+}
+
+.enhanced-button:hover::before {
+  opacity: 1;
+}
+
+.enhanced-button:active {
+  transform: translateY(1px);
+}
+
+/* Button Variants */
+.enhanced-button-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-white);
+}
+
+.enhanced-button-secondary {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border-primary);
+  color: var(--color-text-primary);
+}
+
+.enhanced-button-success {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-text-white);
+}
+
+.enhanced-button-warning {
+  background: var(--color-warning);
+  border-color: var(--color-warning);
+  color: var(--color-text-white);
+}
+
+.enhanced-button-error {
+  background: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--color-text-white);
+}
+
+.enhanced-button-ghost {
+  background: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.enhanced-button-ghost:hover {
+  background: var(--color-primary);
+  color: var(--color-text-white);
+}
+
+.enhanced-button-vietnamese {
+  background: var(--color-dragon-gold, #d4af37);
+  border-color: var(--color-dragon-gold, #d4af37);
+  color: var(--color-text-white);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Gradient Styles */
+.enhanced-button-gradient.enhanced-button-primary {
+  background: var(--gradient-primary);
+  border: none;
+}
+
+.enhanced-button-gradient.enhanced-button-success {
+  background: var(--gradient-success);
+  border: none;
+}
+
+.enhanced-button-gradient.enhanced-button-warning {
+  background: var(--gradient-warning);
+  border: none;
+}
+
+.enhanced-button-gradient.enhanced-button-error {
+  background: var(--gradient-error);
+  border: none;
+}
+
+.enhanced-button-gradient.enhanced-button-info {
+  background: var(--gradient-info);
+  border: none;
+}
+
+/* Glow Effect */
+.enhanced-button-glow {
+  box-shadow: 0 0 20px rgba(24, 144, 255, 0.3);
+}
+
+.enhanced-button-glow.enhanced-button-success {
+  box-shadow: 0 0 20px rgba(82, 196, 26, 0.3);
+}
+
+.enhanced-button-glow.enhanced-button-warning {
+  box-shadow: 0 0 20px rgba(250, 140, 22, 0.3);
+}
+
+.enhanced-button-glow.enhanced-button-error {
+  box-shadow: 0 0 20px rgba(255, 77, 79, 0.3);
+}
+
+.enhanced-button-glow.enhanced-button-vietnamese {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+/* Pulse Animation */
+@keyframes button-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.enhanced-button-pulse {
+  animation: button-pulse 2s infinite;
+}
+
+.enhanced-button-pulse:hover {
+  animation: none;
+}
+
+/* Elevated Style */
+.enhanced-button-elevated {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.enhanced-button-elevated:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+.enhanced-button-elevated:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Full Width */
+.enhanced-button-full-width {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Compact Size */
+.enhanced-button-compact {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  min-height: 28px;
+}
+
+/* Rounded Style */
+.enhanced-button-rounded {
+  border-radius: var(--border-radius-full);
+}
+
+/* Shadow Levels */
+.enhanced-button-shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.enhanced-button-shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.enhanced-button-shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.enhanced-button-shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Animation Durations */
+.enhanced-button-animation-fast {
+  transition-duration: var(--animation-fast);
+}
+
+.enhanced-button-animation-normal {
+  transition-duration: var(--animation-normal);
+}
+
+.enhanced-button-animation-slow {
+  transition-duration: var(--animation-slow);
+}
+
+/* Vietnamese Style Enhancements */
+.enhanced-button-vietnamese {
+  position: relative;
+  background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+  border: 1px solid #b8941f;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.enhanced-button-vietnamese::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(220, 20, 60, 0.1) 100%);
+  opacity: 0;
+  transition: opacity var(--animation-normal);
+  pointer-events: none;
+}
+
+.enhanced-button-vietnamese:hover::after {
+  opacity: 1;
+}
+
+.enhanced-button-vietnamese:hover {
+  background: linear-gradient(135deg, #e6c757 0%, #d4af37 100%);
+  border-color: #d4af37;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+/* Disabled State */
+.enhanced-button:disabled,
+.enhanced-button.ant-btn-loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  animation: none;
+}
+
+.enhanced-button:disabled::before,
+.enhanced-button.ant-btn-loading::before {
+  display: none;
+}
+
+/* Focus States */
+.enhanced-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.enhanced-button-vietnamese:focus {
+  outline-color: var(--color-dragon-gold, #d4af37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Loading State Enhancements */
+.enhanced-button.ant-btn-loading {
+  position: relative;
+}
+
+.enhanced-button.ant-btn-loading .anticon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Size Variants */
+.enhanced-button.ant-btn-sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  height: 28px;
+}
+
+.enhanced-button.ant-btn-lg {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-lg);
+  height: 48px;
+}
+
+/* Icon Buttons */
+.enhanced-button.ant-btn-icon-only {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.enhanced-button.ant-btn-icon-only.ant-btn-sm {
+  width: 28px;
+  height: 28px;
+}
+
+.enhanced-button.ant-btn-icon-only.ant-btn-lg {
+  width: 48px;
+  height: 48px;
+}
+
+/* Button Group Styles */
+.enhanced-button-group .enhanced-button {
+  border-radius: 0;
+}
+
+.enhanced-button-group .enhanced-button:first-child {
+  border-top-left-radius: var(--border-radius-md);
+  border-bottom-left-radius: var(--border-radius-md);
+}
+
+.enhanced-button-group .enhanced-button:last-child {
+  border-top-right-radius: var(--border-radius-md);
+  border-bottom-right-radius: var(--border-radius-md);
+}
+
+.enhanced-button-group .enhanced-button + .enhanced-button {
+  border-left: none;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .enhanced-button {
+    min-height: 44px;
+    font-size: var(--font-size-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .enhanced-button-compact {
+    min-height: 36px;
+    font-size: var(--font-size-sm);
+  }
+  
+  .enhanced-button.ant-btn-sm {
+    min-height: 36px;
+  }
+  
+  .enhanced-button.ant-btn-lg {
+    min-height: 52px;
+  }
+  
+  .enhanced-button-glow {
+    box-shadow: none;
+  }
+  
+  .enhanced-button-elevated {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .enhanced-button-elevated:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .enhanced-button {
+    border-width: 2px;
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .enhanced-button-gradient {
+    background: var(--color-primary) !important;
+  }
+  
+  .enhanced-button-vietnamese {
+    background: #d4af37 !important;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .enhanced-button {
+    transition: none;
+    animation: none;
+  }
+  
+  .enhanced-button-pulse {
+    animation: none;
+  }
+  
+  .enhanced-button:hover {
+    transform: none;
+  }
+  
+  .enhanced-button-elevated:hover {
+    transform: none;
+  }
+}
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .enhanced-button-secondary {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border-primary);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .enhanced-button-ghost {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .enhanced-button:focus {
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.2);
+}
+
+/* Print Styles */
+@media print {
+  .enhanced-button {
+    background: transparent !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
