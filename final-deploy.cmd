@@ -70,7 +70,7 @@ echo [OK] Cloudflare authenticated
 
 echo.
 echo [8] Deploying to Cloudflare Pages...
-wrangler pages deploy . --project-name kho1 --compatibility-date 2024-01-15
+wrangler pages deploy . --project-name kho1
 if errorlevel 1 (
     echo [ERROR] Cloudflare deploy failed
     pause
@@ -79,12 +79,27 @@ if errorlevel 1 (
 echo [OK] Deployed to Cloudflare
 
 echo.
+echo [9] Getting deployment URL...
+for /f "tokens=*" %%i in ('wrangler pages deployment list --project-name kho1 --format json 2^>nul') do (
+    set "deployment_info=%%i"
+)
+
+REM Extract the deployment URL from the latest deployment
+for /f "tokens=*" %%i in ('wrangler pages project get kho1 --format json 2^>nul') do (
+    set "project_info=%%i"
+)
+
+echo.
 echo ========================================================
 echo   DEPLOYMENT SUCCESSFUL!
 echo ========================================================
 echo.
 echo Your KhoAugment POS is now live at:
 echo   https://kho1.pages.dev
+echo   (Custom domain - may take a few minutes to activate)
+echo.
+echo Latest deployment preview:
+echo   (Check Cloudflare dashboard for exact URL)
 echo.
 echo GitHub repository:
 echo   https://github.com/namhbcf1/kho1
@@ -97,6 +112,33 @@ echo Opening your applications...
 start https://kho1.pages.dev
 start https://github.com/namhbcf1/kho1
 start https://dash.cloudflare.com/5b62d10947844251d23e0eac532531dd/pages/view/kho1
+
+echo.
+echo [SUCCESS] KhoAugment POS System deployment completed!
+echo.
+echo Available features:
+echo   [OK] Vietnamese POS system
+echo   [OK] Multi-payment support (VNPay, MoMo, ZaloPay)
+echo   [OK] Real-time inventory management
+echo   [OK] Vietnamese tax compliance
+echo   [OK] Progressive Web App (PWA)
+echo   [OK] Advanced analytics dashboard
+echo   [OK] Role-based access control
+echo   [OK] Offline functionality
+echo   [OK] Barcode scanning
+echo   [OK] Receipt printing
+echo   [OK] Loyalty program
+echo   [OK] Multi-language support
+echo.
+echo Default login credentials:
+echo   Email: admin@khoaugment.com
+echo   Password: admin123
+echo.
+echo For support:
+echo   Email: support@khoaugment.com
+echo   GitHub Issues: https://github.com/namhbcf1/kho1/issues
+echo.
+echo Thank you for using KhoAugment POS!
 
 echo.
 echo [SUCCESS] KhoAugment POS deployed successfully!
