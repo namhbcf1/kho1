@@ -4,7 +4,7 @@ import {
   Statistic, Progress, Table, Tag, Space, Grid, Tooltip, Alert
 } from 'antd';
 import { 
-  DownloadOutlined, TrendingUpOutlined, ShoppingCartOutlined,
+  DownloadOutlined, RiseOutlined, ShoppingCartOutlined,
   UserOutlined, ProductOutlined, DollarCircleOutlined,
   PercentageOutlined, ClockCircleOutlined, CalendarOutlined
 } from '@ant-design/icons';
@@ -228,7 +228,7 @@ export default function ReportsPage() {
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <TrendingUpOutlined style={{ color: '#52c41a' }} />
+                <RiseOutlined style={{ color: '#52c41a' }} />
                 {' +' + stats.revenueGrowth}% so với tháng trước
               </Text>
             </div>
@@ -248,7 +248,7 @@ export default function ReportsPage() {
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <TrendingUpOutlined style={{ color: '#52c41a' }} />
+                <RiseOutlined style={{ color: '#52c41a' }} />
                 {' +' + stats.orderGrowth}% so với tháng trước
               </Text>
             </div>
@@ -287,7 +287,7 @@ export default function ReportsPage() {
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <TrendingUpOutlined style={{ color: '#52c41a' }} />
+                <RiseOutlined style={{ color: '#52c41a' }} />
                 {' +' + stats.customerGrowth}% so với tháng trước
               </Text>
             </div>

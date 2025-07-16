@@ -15,7 +15,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined
 } from '@ant-design/icons';
-import { routes } from '../../routes';
+import { routes } from '../../routes/index';
 import './MainLayout.css';
 
 const { Header, Sider, Content, Footer } = Layout;
