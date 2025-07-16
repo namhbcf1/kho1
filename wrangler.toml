@@ -1,60 +1,45 @@
-# Cloudflare Workers configuration for Vietnamese POS System
-name = "vietnamese-pos-system"
-main = "src/index.ts"
+# Cloudflare Workers and Pages configuration for KhoAugment POS
+name = "kho1-api"
+main = "backend/src/index.ts"
 compatibility_date = "2024-07-14"
 compatibility_flags = ["nodejs_compat"]
 
-# Environment variables
+# Environment variables for Workers
 [env.production.vars]
 ENVIRONMENT = "production"
-API_BASE_URL = "https://vietnamese-pos-system.your-domain.workers.dev"
-DATABASE_URL = "your-d1-database-url"
-
-[env.staging.vars]
-ENVIRONMENT = "staging"
-API_BASE_URL = "https://vietnamese-pos-system-staging.your-domain.workers.dev"
+API_BASE_URL = "https://kho1-api.bangachieu2.workers.dev"
+CORS_ORIGIN = "https://kho1.pages.dev"
 
 # D1 Database bindings
 [[env.production.d1_databases]]
 binding = "DB"
-database_name = "vietnamese-pos-db"
-database_id = "your-database-id"
-
-[[env.staging.d1_databases]]
-binding = "DB"
-database_name = "vietnamese-pos-db-staging"
-database_id = "your-staging-database-id"
+database_name = "kho1-production"
+database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
 
 # KV Storage bindings for caching
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "your-kv-namespace-id"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 
-[[env.staging.kv_namespaces]]
-binding = "CACHE"
-id = "your-staging-kv-namespace-id"
-
-# R2 Storage for images and files
-[[env.production.r2_buckets]]
-binding = "STORAGE"
-bucket_name = "vietnamese-pos-storage"
-
-[[env.staging.r2_buckets]]
-binding = "STORAGE"
-bucket_name = "vietnamese-pos-storage-staging"
-
-# Routes for custom domain
-[[env.production.routes]]
-pattern = "pos.your-domain.com/*"
-zone_name = "your-domain.com"
-
-# Build configuration
-[build]
-command = "npm run build"
-cwd = "."
+# R2 Storage for files (uncomment when needed)
+# [[env.production.r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "kho1-storage"
 
 # Pages configuration
-pages_build_output_dir = "frontend/dist"
+[site]
+bucket = "./frontend/dist"
+entry-point = "backend/src/index.ts"
+
+# Pages build configuration
+[build]
+command = "cd frontend && npm install && npm run build"
+upload.format = "directory"
+output_directory = "frontend/dist"
+
+# Add Cloudflare Pages specific configuration
+[pages_build_output_dir]
+value = "frontend/dist"
 
 # Node.js compatibility
 node_compat = true

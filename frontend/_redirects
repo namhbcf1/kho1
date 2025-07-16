@@ -1,7 +1,7 @@
 # Vietnamese POS Frontend Redirects
 
 # API proxy to backend worker (must be first)
-/api/*  https://kho1-api.your-username.workers.dev/api/:splat  200
+/api/*  https://kho1-api.bangachieu2.workers.dev/api/:splat  200
 
 # Legacy routes redirects
 /admin      /staff  301
