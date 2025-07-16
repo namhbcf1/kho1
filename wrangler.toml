@@ -1,4 +1,4 @@
-# Cloudflare Workers and Pages configuration for KhoAugment POS
+# Cloudflare Workers configuration for KhoAugment POS API
 name = "kho1-api"
 main = "backend/src/index.ts"
 compatibility_date = "2024-07-14"
@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 # Environment variables for Workers
 [env.production.vars]
 ENVIRONMENT = "production"
-API_BASE_URL = "https://kho1-api.bangachieu2.workers.dev"
+API_BASE_URL = "https://kho1-api-production.bangachieu2.workers.dev"
 CORS_ORIGIN = "https://kho1.pages.dev"
 
 # D1 Database bindings
@@ -25,21 +25,6 @@ id = "46b31b2c6ca449aaa3114d0ebb4fe645"
 # [[env.production.r2_buckets]]
 # binding = "STORAGE"
 # bucket_name = "kho1-storage"
-
-# Pages configuration
-[site]
-bucket = "./frontend/dist"
-entry-point = "backend/src/index.ts"
-
-# Pages build configuration
-[build]
-command = "cd frontend && npm install && npm run build"
-upload.format = "directory"
-output_directory = "frontend/dist"
-
-# Add Cloudflare Pages specific configuration
-[pages_build_output_dir]
-value = "frontend/dist"
 
 # Node.js compatibility
 node_compat = true

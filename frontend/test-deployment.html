@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Deployment</title>
+</head>
+<body>
+    <h1>Test Page Working</h1>
+    <div id="test-content">
+        <p>JavaScript test:</p>
+        <div id="js-result">Loading...</div>
+    </div>
+    
+    <script>
+        document.getElementById('js-result').innerHTML = 'JavaScript is working! Date: ' + new Date().toLocaleString();
+        console.log('Test page loaded successfully');
+    </script>
+</body>
+</html>
