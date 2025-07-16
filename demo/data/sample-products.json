@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "Cà phê đen",
+    "price": 25000,
+    "category": "beverages",
+    "description": "Cà phê đen truyền thống",
+    "barcode": "8934567890123",
+    "stock": 100,
+    "image": "/demo/assets/coffee.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Cà phê sữa",
+    "price": 30000,
+    "category": "beverages",
+    "description": "Cà phê sữa đặc",
+    "barcode": "8934567890124",
+    "stock": 80,
+    "image": "/demo/assets/coffee-milk.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Bánh mì thịt",
+    "price": 15000,
+    "category": "food",
+    "description": "Bánh mì thịt nguội",
+    "barcode": "8934567890125",
+    "stock": 50,
+    "image": "/demo/assets/banh-mi.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Nước cam",
+    "price": 20000,
+    "category": "beverages",
+    "description": "Nước cam tươi",
+    "barcode": "8934567890126",
+    "stock": 60,
+    "image": "/demo/assets/orange-juice.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Bánh ngọt",
+    "price": 12000,
+    "category": "dessert",
+    "description": "Bánh ngọt tự làm",
+    "barcode": "8934567890127",
+    "stock": 30,
+    "image": "/demo/assets/cake.jpg"
+  }
+]

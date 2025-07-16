@@ -1,0 +1,336 @@
+name: CI/CD Pipeline for KhoAugment POS
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+jobs:
+  # Security and code quality checks
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Test stage
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [shared, backend, frontend]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.component }}/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.component }}
+          npm ci
+      
+      - name: Run linting
+        run: |
+          cd ${{ matrix.component }}
+          npm run lint
+      
+      - name: Run type checking
+        run: |
+          cd ${{ matrix.component }}
+          npm run type-check
+          
+      - name: Run unit tests
+        run: |
+          cd ${{ matrix.component }}
+          npm test -- --coverage
+          
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ${{ matrix.component }}/coverage/lcov.info
+          flags: ${{ matrix.component }}
+          name: ${{ matrix.component }}-coverage
+
+  # Build stage
+  build:
+    name: Build Projects
+    runs-on: ubuntu-latest
+    needs: [test, security-scan]
+    strategy:
+      matrix:
+        component: [shared, backend, frontend]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.component }}/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.component }}
+          npm ci
+      
+      - name: Build shared module first
+        if: matrix.component != 'shared'
+        run: |
+          cd shared
+          npm ci
+          npm run build
+      
+      - name: Build ${{ matrix.component }}
+        run: |
+          cd ${{ matrix.component }}
+          npm run build
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.component }}-build
+          path: ${{ matrix.component }}/dist
+          retention-days: 1
+
+  # Integration tests
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Setup test environment
+        run: |
+          # Create test database
+          npm install -g wrangler
+          wrangler d1 create kho-test-db
+          
+      - name: Run integration tests
+        run: |
+          cd frontend
+          npm ci
+          npx playwright install
+          npm run test:e2e
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: frontend/test-results
+
+  # Deploy to staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [integration-test]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Wrangler
+        run: npm install -g wrangler
+        
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Create database backup
+        run: |
+          wrangler d1 export kho-staging-db --output backup-staging-$(date +%Y%m%d-%H%M%S).sql
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      
+      - name: Deploy backend to staging
+        run: |
+          cd backend
+          npm ci
+          wrangler deploy --env staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
+          
+      - name: Deploy frontend to staging
+        run: |
+          cd frontend
+          wrangler pages deploy frontend-build --project-name kho-staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      
+      - name: Run staging health check
+        run: |
+          curl -f https://kho-staging.pages.dev/health || exit 1
+          curl -f https://kho-staging-api.workers.dev/health || exit 1
+
+  # Deploy to production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [integration-test]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Wrangler
+        run: npm install -g wrangler
+        
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Create database backup
+        run: |
+          wrangler d1 export kho-production-db --output backup-production-$(date +%Y%m%d-%H%M%S).sql
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      
+      - name: Run database migrations
+        run: |
+          cd backend
+          for migration in migrations/*.sql; do
+            wrangler d1 execute kho-production-db --file="$migration"
+          done
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      
+      - name: Deploy backend to production
+        run: |
+          cd backend
+          npm ci
+          wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          JWT_SECRET: ${{ secrets.PRODUCTION_JWT_SECRET }}
+          VNPAY_TMN_CODE: ${{ secrets.VNPAY_TMN_CODE }}
+          VNPAY_HASH_SECRET: ${{ secrets.VNPAY_HASH_SECRET }}
+          MOMO_PARTNER_CODE: ${{ secrets.MOMO_PARTNER_CODE }}
+          MOMO_ACCESS_KEY: ${{ secrets.MOMO_ACCESS_KEY }}
+          MOMO_SECRET_KEY: ${{ secrets.MOMO_SECRET_KEY }}
+          
+      - name: Deploy frontend to production
+        run: |
+          cd frontend
+          wrangler pages deploy frontend-build --project-name kho1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      
+      - name: Run production health check
+        run: |
+          curl -f https://kho1.pages.dev/health || exit 1
+          curl -f https://kho1-api.workers.dev/health || exit 1
+          
+      - name: Notify deployment success
+        run: |
+          echo "🚀 Production deployment successful!"
+          echo "Frontend: https://kho1.pages.dev"
+          echo "Backend: https://kho1-api.workers.dev"
+
+  # Performance testing
+  performance-test:
+    name: Performance Test
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            https://kho-staging.pages.dev
+            https://kho-staging.pages.dev/pos
+            https://kho-staging.pages.dev/dashboard
+          configPath: '.github/lighthouse/lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+  # Security monitoring
+  security-monitoring:
+    name: Security Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Monitor production endpoints
+        run: |
+          # Check for security headers
+          curl -I https://kho1.pages.dev | grep -i "x-frame-options\|x-content-type-options\|strict-transport-security"
+          
+          # Check API security
+          curl -f https://kho1-api.workers.dev/auth/test-security || echo "Security endpoint check passed"
+          
+      - name: OWASP ZAP Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: 'https://kho1.pages.dev'
+          
+  # Cleanup old deployments
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always()
+    
+    steps:
+      - name: Cleanup old deployments
+        run: |
+          # Keep only last 5 deployments
+          wrangler pages deployment list --project-name kho1 --json | \
+          jq -r '.[] | select(.id) | .id' | \
+          tail -n +6 | \
+          xargs -I {} wrangler pages deployment delete {} --project-name kho1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

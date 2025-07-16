@@ -1,0 +1,58 @@
+{
+  "auth": {
+    "login": {
+      "success": {
+        "token": "mock-jwt-token-123",
+        "user": {
+          "id": 1,
+          "email": "demo@example.com",
+          "role": "admin",
+          "name": "Demo User"
+        }
+      },
+      "error": {
+        "message": "Invalid credentials",
+        "code": "AUTH_FAILED"
+      }
+    }
+  },
+  "products": {
+    "list": [
+      {
+        "id": 1,
+        "name": "Cà phê đen",
+        "price": 25000,
+        "category": "beverages",
+        "barcode": "8934567890123"
+      },
+      {
+        "id": 2,
+        "name": "Bánh mì",
+        "price": 15000,
+        "category": "food",
+        "barcode": "8934567890124"
+      }
+    ]
+  },
+  "orders": {
+    "create": {
+      "id": 1001,
+      "total": 40000,
+      "status": "completed",
+      "items": [
+        {"productId": 1, "quantity": 1, "price": 25000},
+        {"productId": 2, "quantity": 1, "price": 15000}
+      ]
+    }
+  },
+  "customers": {
+    "list": [
+      {
+        "id": 1,
+        "name": "Nguyễn Văn A",
+        "phone": "0901234567",
+        "address": "123 Nguyễn Huệ, Q1, TP.HCM"
+      }
+    ]
+  }
+}

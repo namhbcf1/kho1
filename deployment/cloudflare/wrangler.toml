@@ -1,0 +1,34 @@
+# Cloudflare Workers configuration for KhoAugment POS API
+name = "kho1-api"
+main = "backend/src/index.ts"
+compatibility_date = "2024-07-14"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables for Workers
+[env.production.vars]
+ENVIRONMENT = "production"
+API_BASE_URL = "https://kho1-api-production.bangachieu2.workers.dev"
+CORS_ORIGIN = "https://kho1.pages.dev"
+
+# D1 Database bindings
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "kho1-production"
+database_id = "39657891-9d7b-4a02-8b43-9921eb8c7d8e"
+
+# KV Storage bindings for caching
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "46b31b2c6ca449aaa3114d0ebb4fe645"
+
+# R2 Storage for files (uncomment when needed)
+# [[env.production.r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "kho1-storage"
+
+# Node.js compatibility
+node_compat = true
+
+# Limits
+[limits]
+cpu_ms = 50000

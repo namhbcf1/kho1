@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "description": "Vietnamese POS Frontend SPA Routes Configuration",
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/api/*",
+    "/assets/*",
+    "/icons/*",
+    "*.js",
+    "*.css",
+    "*.json",
+    "*.webmanifest",
+    "*.html",
+    "*.png",
+    "*.svg",
+    "*.ico"
+  ]
+}
