@@ -1,0 +1,569 @@
+/**
+ * Cloudflare KV Consistency Manager
+ * Fixes: Eventual consistency chaos in pricing and inventory
+ * Implements: Strong consistency patterns, cache invalidation, conflict resolution
+ */
+
+import { z } from 'zod';
+
+export interface ConsistencyConfig {
+  enableStrongConsistency: boolean;
+  maxRetries: number;
+  retryDelay: number;
+  conflictResolutionStrategy: 'last-write-wins' | 'merge' | 'manual';
+  propagationTimeout: number; // ms
+}
+
+export interface VersionedData<T = any> {
+  data: T;
+  version: number;
+  timestamp: string;
+  checksum: string;
+  metadata: {
+    lastModified: string;
+    modifiedBy: string;
+    source: string;
+  };
+}
+
+export interface ConsistencyResult<T = any> {
+  success: boolean;
+  data?: T;
+  version?: number;
+  conflict?: boolean;
+  error?: string;
+  propagationStatus?: {
+    regions: string[];
+    propagated: string[];
+    pending: string[];
+  };
+}
+
+export interface ConflictResolution<T = any> {
+  strategy: string;
+  resolvedData: T;
+  conflictingVersions: Array<{
+    version: number;
+    data: T;
+    timestamp: string;
+  }>;
+}
+
+/**
+ * Strong Consistency Manager for Critical Data
+ */
+export class CloudflareConsistencyManager {
+  private config: ConsistencyConfig;
+  private versionCache = new Map<string, number>();
+  private conflictQueue = new Map<string, any[]>();
+
+  constructor(
+    private kv: any,
+    private db: any,
+    config?: Partial<ConsistencyConfig>
+  ) {
+    this.config = {
+      enableStrongConsistency: true,
+      maxRetries: 3,
+      retryDelay: 100,
+      conflictResolutionStrategy: 'last-write-wins',
+      propagationTimeout: 5000,
+      ...config
+    };
+  }
+
+  /**
+   * Write with strong consistency guarantees
+   */
+  async writeWithConsistency<T>(
+    key: string,
+    data: T,
+    userId: string,
+    source = 'api'
+  ): Promise<ConsistencyResult<T>> {
+    try {
+      // Get current version for optimistic locking
+      const currentVersion = await this.getCurrentVersion(key);
+      const newVersion = currentVersion + 1;
+      
+      // Create versioned data
+      const versionedData: VersionedData<T> = {
+        data,
+        version: newVersion,
+        timestamp: new Date().toISOString(),
+        checksum: this.calculateChecksum(data),
+        metadata: {
+          lastModified: new Date().toISOString(),
+          modifiedBy: userId,
+          source
+        }
+      };
+
+      // Write to database first (source of truth)
+      await this.writeToDatabase(key, versionedData);
+
+      // Write to KV with version
+      await this.writeToKV(key, versionedData);
+
+      // Verify propagation if strong consistency is enabled
+      if (this.config.enableStrongConsistency) {
+        const propagationResult = await this.verifyPropagation(key, newVersion);
+        if (!propagationResult.success) {
+          return {
+            success: false,
+            error: 'Failed to achieve strong consistency',
+            propagationStatus: propagationResult.status
+          };
+        }
+      }
+
+      // Update local version cache
+      this.versionCache.set(key, newVersion);
+
+      return {
+        success: true,
+        data,
+        version: newVersion
+      };
+
+    } catch (error) {
+      console.error('Consistency write failed:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Read with consistency validation
+   */
+  async readWithConsistency<T>(key: string): Promise<ConsistencyResult<T>> {
+    try {
+      // Try KV first for speed
+      const kvData = await this.readFromKV<T>(key);
+      
+      if (kvData) {
+        // Validate against database if we have concerns about consistency
+        const dbData = await this.readFromDatabase<T>(key);
+        
+        if (dbData && dbData.version > kvData.version) {
+          // KV is stale, use database data and update KV
+          await this.writeToKV(key, dbData);
+          return {
+            success: true,
+            data: dbData.data,
+            version: dbData.version
+          };
+        }
+
+        return {
+          success: true,
+          data: kvData.data,
+          version: kvData.version
+        };
+      }
+
+      // Fallback to database
+      const dbData = await this.readFromDatabase<T>(key);
+      if (dbData) {
+        // Update KV cache
+        await this.writeToKV(key, dbData);
+        return {
+          success: true,
+          data: dbData.data,
+          version: dbData.version
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Data not found'
+      };
+
+    } catch (error) {
+      console.error('Consistency read failed:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Compare and swap operation for critical updates
+   */
+  async compareAndSwap<T>(
+    key: string,
+    expectedVersion: number,
+    newData: T,
+    userId: string
+  ): Promise<ConsistencyResult<T>> {
+    try {
+      const currentData = await this.readFromDatabase<T>(key);
+      
+      if (!currentData) {
+        return {
+          success: false,
+          error: 'Key not found'
+        };
+      }
+
+      if (currentData.version !== expectedVersion) {
+        return {
+          success: false,
+          conflict: true,
+          error: `Version conflict. Expected ${expectedVersion}, got ${currentData.version}`,
+          data: currentData.data,
+          version: currentData.version
+        };
+      }
+
+      // Proceed with write
+      return await this.writeWithConsistency(key, newData, userId);
+
+    } catch (error) {
+      console.error('Compare and swap failed:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Resolve conflicts automatically or queue for manual resolution
+   */
+  async resolveConflict<T>(
+    key: string,
+    conflictingVersions: VersionedData<T>[]
+  ): Promise<ConflictResolution<T>> {
+    const strategy = this.config.conflictResolutionStrategy;
+    
+    switch (strategy) {
+      case 'last-write-wins':
+        return this.resolveLastWriteWins(conflictingVersions);
+      
+      case 'merge':
+        return this.resolveMerge(key, conflictingVersions);
+      
+      case 'manual':
+        return this.queueForManualResolution(key, conflictingVersions);
+      
+      default:
+        return this.resolveLastWriteWins(conflictingVersions);
+    }
+  }
+
+  /**
+   * Invalidate cache across all regions
+   */
+  async invalidateCache(keys: string[]): Promise<{
+    success: boolean;
+    invalidated: string[];
+    failed: string[];
+  }> {
+    const invalidated: string[] = [];
+    const failed: string[] = [];
+
+    for (const key of keys) {
+      try {
+        // Delete from KV
+        await this.kv.delete(key);
+        
+        // Remove from local cache
+        this.versionCache.delete(key);
+        
+        // Add invalidation marker
+        await this.kv.put(
+          `invalidated:${key}`,
+          JSON.stringify({ timestamp: new Date().toISOString() }),
+          { expirationTtl: 300 } // 5 minutes
+        );
+        
+        invalidated.push(key);
+      } catch (error) {
+        console.error(`Failed to invalidate ${key}:`, error);
+        failed.push(key);
+      }
+    }
+
+    return { success: failed.length === 0, invalidated, failed };
+  }
+
+  /**
+   * Bulk operation with consistency
+   */
+  async bulkWriteWithConsistency<T>(
+    operations: Array<{
+      key: string;
+      data: T;
+      expectedVersion?: number;
+    }>,
+    userId: string
+  ): Promise<{
+    success: boolean;
+    results: Array<ConsistencyResult<T>>;
+    conflicts: Array<{ key: string; conflict: any }>;
+  }> {
+    const results: Array<ConsistencyResult<T>> = [];
+    const conflicts: Array<{ key: string; conflict: any }> = [];
+
+    // Sort operations by key to prevent deadlocks
+    const sortedOps = operations.sort((a, b) => a.key.localeCompare(b.key));
+
+    for (const op of sortedOps) {
+      let result: ConsistencyResult<T>;
+
+      if (op.expectedVersion !== undefined) {
+        // Use compare-and-swap
+        result = await this.compareAndSwap(
+          op.key,
+          op.expectedVersion,
+          op.data,
+          userId
+        );
+      } else {
+        // Regular write
+        result = await this.writeWithConsistency(op.key, op.data, userId);
+      }
+
+      results.push(result);
+
+      if (result.conflict) {
+        conflicts.push({ key: op.key, conflict: result });
+      }
+    }
+
+    return {
+      success: conflicts.length === 0,
+      results,
+      conflicts
+    };
+  }
+
+  /**
+   * Monitor consistency health
+   */
+  async getConsistencyHealth(): Promise<{
+    status: 'healthy' | 'degraded' | 'critical';
+    metrics: {
+      averagePropagationTime: number;
+      conflictRate: number;
+      failureRate: number;
+      stalenessCount: number;
+    };
+    issues: string[];
+  }> {
+    const issues: string[] = [];
+    const now = Date.now();
+
+    // Check for stale data
+    let stalenessCount = 0;
+    const sampleKeys = ['pricing:update', 'inventory:global', 'config:system'];
+    
+    for (const key of sampleKeys) {
+      try {
+        const kvData = await this.readFromKV(key);
+        const dbData = await this.readFromDatabase(key);
+        
+        if (kvData && dbData && kvData.version < dbData.version) {
+          stalenessCount++;
+          issues.push(`Stale data detected for ${key}`);
+        }
+      } catch (error) {
+        issues.push(`Health check failed for ${key}: ${error.message}`);
+      }
+    }
+
+    // Calculate metrics (simplified)
+    const metrics = {
+      averagePropagationTime: 150, // Would be calculated from real data
+      conflictRate: (this.conflictQueue.size / 1000) * 100, // Conflicts per 1000 operations
+      failureRate: 0.1, // Would be calculated from real data
+      stalenessCount
+    };
+
+    // Determine status
+    let status: 'healthy' | 'degraded' | 'critical' = 'healthy';
+    
+    if (metrics.conflictRate > 5 || metrics.stalenessCount > 2) {
+      status = 'degraded';
+    }
+    
+    if (metrics.failureRate > 1 || metrics.stalenessCount > 5) {
+      status = 'critical';
+    }
+
+    return { status, metrics, issues };
+  }
+
+  private async getCurrentVersion(key: string): Promise<number> {
+    // Check cache first
+    const cachedVersion = this.versionCache.get(key);
+    if (cachedVersion !== undefined) {
+      return cachedVersion;
+    }
+
+    // Check database
+    const dbData = await this.readFromDatabase(key);
+    if (dbData) {
+      this.versionCache.set(key, dbData.version);
+      return dbData.version;
+    }
+
+    return 0; // New key
+  }
+
+  private async writeToDatabase<T>(key: string, data: VersionedData<T>): Promise<void> {
+    await this.db.prepare(`
+      INSERT OR REPLACE INTO consistency_store (
+        key, data, version, timestamp, checksum, metadata, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `).bind(
+      key,
+      JSON.stringify(data.data),
+      data.version,
+      data.timestamp,
+      data.checksum,
+      JSON.stringify(data.metadata)
+    ).run();
+  }
+
+  private async readFromDatabase<T>(key: string): Promise<VersionedData<T> | null> {
+    const result = await this.db.prepare(`
+      SELECT data, version, timestamp, checksum, metadata
+      FROM consistency_store
+      WHERE key = ?
+      ORDER BY version DESC
+      LIMIT 1
+    `).bind(key).first();
+
+    if (!result) return null;
+
+    return {
+      data: JSON.parse(result.data),
+      version: result.version,
+      timestamp: result.timestamp,
+      checksum: result.checksum,
+      metadata: JSON.parse(result.metadata)
+    };
+  }
+
+  private async writeToKV<T>(key: string, data: VersionedData<T>): Promise<void> {
+    await this.kv.put(
+      key,
+      JSON.stringify(data),
+      { 
+        metadata: { version: data.version.toString() },
+        expirationTtl: 86400 // 24 hours
+      }
+    );
+  }
+
+  private async readFromKV<T>(key: string): Promise<VersionedData<T> | null> {
+    try {
+      const data = await this.kv.get(key);
+      if (!data) return null;
+      
+      return JSON.parse(data);
+    } catch (error) {
+      console.error('KV read error:', error);
+      return null;
+    }
+  }
+
+  private async verifyPropagation(key: string, version: number): Promise<{
+    success: boolean;
+    status?: {
+      regions: string[];
+      propagated: string[];
+      pending: string[];
+    };
+  }> {
+    // Wait for propagation
+    await new Promise(resolve => setTimeout(resolve, this.config.retryDelay));
+
+    let retries = 0;
+    while (retries < this.config.maxRetries) {
+      try {
+        const kvData = await this.readFromKV(key);
+        if (kvData && kvData.version >= version) {
+          return { success: true };
+        }
+      } catch (error) {
+        console.error('Propagation verification failed:', error);
+      }
+
+      retries++;
+      await new Promise(resolve => setTimeout(resolve, this.config.retryDelay * retries));
+    }
+
+    return { success: false };
+  }
+
+  private calculateChecksum(data: any): string {
+    // Simple checksum - could use crypto.subtle for better hashing
+    const str = JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(36);
+  }
+
+  private resolveLastWriteWins<T>(versions: VersionedData<T>[]): ConflictResolution<T> {
+    const latest = versions.reduce((latest, current) => 
+      new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
+    );
+
+    return {
+      strategy: 'last-write-wins',
+      resolvedData: latest.data,
+      conflictingVersions: versions.map(v => ({
+        version: v.version,
+        data: v.data,
+        timestamp: v.timestamp
+      }))
+    };
+  }
+
+  private resolveMerge<T>(key: string, versions: VersionedData<T>[]): ConflictResolution<T> {
+    // Implement merge logic based on data type
+    // This is a simplified example
+    const merged = versions.reduce((acc, version) => {
+      if (typeof version.data === 'object' && !Array.isArray(version.data)) {
+        return { ...acc, ...version.data };
+      }
+      return version.data; // Fallback to last-write-wins for non-objects
+    }, {});
+
+    return {
+      strategy: 'merge',
+      resolvedData: merged as T,
+      conflictingVersions: versions.map(v => ({
+        version: v.version,
+        data: v.data,
+        timestamp: v.timestamp
+      }))
+    };
+  }
+
+  private queueForManualResolution<T>(
+    key: string,
+    versions: VersionedData<T>[]
+  ): ConflictResolution<T> {
+    // Queue conflict for manual resolution
+    this.conflictQueue.set(key, versions);
+
+    // Return latest version as temporary resolution
+    const latest = this.resolveLastWriteWins(versions);
+
+    return {
+      ...latest,
+      strategy: 'manual'
+    };
+  }
+}

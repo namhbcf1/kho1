@@ -1,14 +1,21 @@
-# KhoAugment POS - Deployment Guide
+# 🚀 KhoAugment POS Deployment Guide
 
-## Overview
-This guide covers deploying the Vietnamese POS system built with React (frontend) and Cloudflare Workers (backend) with D1 database.
+Hướng dẫn chi tiết để upload và deploy KhoAugment POS lên GitHub và Cloudflare.
 
-## Prerequisites
+## 📋 Yêu cầu trước khi bắt đầu
 
-### Required Accounts
-- [Cloudflare Account](https://cloudflare.com) (Free tier available)
-- [Node.js](https://nodejs.org) v18+ installed
-- Git installed
+### Phần mềm cần thiết:
+- **Node.js 18+** - [Download tại đây](https://nodejs.org/)
+- **Git** - [Download tại đây](https://git-scm.com/)
+- **Tài khoản GitHub** - [Đăng ký tại đây](https://github.com/)
+- **Tài khoản Cloudflare** - [Đăng ký tại đây](https://cloudflare.com/)
+
+### Cloudflare Services cần kích hoạt:
+- **Cloudflare Workers** (Free tier có sẵn)
+- **Cloudflare Pages** (Free tier có sẵn) 
+- **Cloudflare D1** (Free tier có sẵn)
+- **Cloudflare R2** (Free tier có sẵn)
+- **Cloudflare KV** (Free tier có sẵn)
 
 ### Required Tools
 ```bash

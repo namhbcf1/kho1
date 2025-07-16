@@ -1,67 +1,239 @@
-name: Deploy KhoAugment POS
+# GitHub Actions Workflow for KhoAugment POS Deployment
+# Automated CI/CD pipeline for Cloudflare deployment
+
+name: Deploy to Cloudflare
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, staging, development]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '8'
 
 jobs:
-  deploy:
+  # Code Quality and Security Checks
+  quality-check:
+    name: Quality & Security Check
     runs-on: ubuntu-latest
-    name: Deploy to Cloudflare
-    
-    env:
-      NODE_VERSION: '20'
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Install dependencies
         run: |
-          npm ci
-          npm run install:frontend
-          npm run install:backend
-      
-      - name: Check security and quality
+          cd frontend && pnpm install --frozen-lockfile
+          cd ../backend && npm install
+
+      - name: Run ESLint
         run: |
-          cd frontend && npm run lint
-          cd ../backend && npm run lint
-          cd .. && npm run build
-      
-      - name: Install Wrangler
-        run: npm install -g wrangler
-      
-      - name: Deploy backend to Cloudflare Workers
+          cd frontend && pnpm lint
+          
+      - name: Run TypeScript check
         run: |
-          cd backend
-          wrangler deploy --env production
-      
-      - name: Deploy frontend to Cloudflare Pages
+          cd frontend && pnpm type-check
+          cd ../backend && npm run type-check
+
+      - name: Security audit
+        run: |
+          cd frontend && pnpm audit --audit-level high
+          cd ../backend && npm audit --audit-level high
+
+  # Unit and Integration Tests
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: [quality-check]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd frontend && pnpm install --frozen-lockfile
+          cd ../backend && npm install
+
+      - name: Run backend tests
+        run: |
+          cd backend && npm run test:unit
+          cd backend && npm run test:integration
+
+      - name: Run frontend tests
+        run: |
+          cd frontend && pnpm test:unit
+          cd frontend && pnpm test:integration
+
+      - name: Run E2E tests
+        run: |
+          cd backend && npm run test:e2e
+
+  # Build Application
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [quality-check, test]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install frontend dependencies
+        run: cd frontend && pnpm install --frozen-lockfile
+
+      - name: Install backend dependencies
+        run: cd backend && npm install
+
+      - name: Build frontend
         run: |
           cd frontend
-          npm run build
-          wrangler pages deploy dist --project-name=kho1 --env production
-      
-      - name: Run post-deployment checks
+          pnpm build
+
+      - name: Build backend
         run: |
-          echo "Checking API endpoint..."
-          curl -s -o /dev/null -w "%{http_code}" https://kho1-api.bangachieu2.workers.dev/health || true
-          echo "Checking frontend..."
-          curl -s -o /dev/null -w "%{http_code}" https://kho1.pages.dev || true
-      
+          cd backend
+          npm run build
+
+      - name: Upload frontend build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/dist/
+          retention-days: 1
+
+      - name: Upload backend build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: |
+            backend/dist/
+            backend/package.json
+            backend/package-lock.json
+          retention-days: 1
+
+  # Deploy to Cloudflare
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/development' || github.event_name == 'workflow_dispatch'
+    
+    environment: 
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/staging' && 'staging' || github.ref == 'refs/heads/development' && 'development' || github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download frontend build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/dist/
+
+      - name: Download backend build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+          path: backend/
+          
+      - name: Deploy Frontend to Cloudflare Pages
+        id: deploy-frontend
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: khoaugment-pos-frontend
+          directory: frontend/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
+
+      - name: Deploy Backend to Cloudflare Workers
+        id: deploy-backend
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          workingDirectory: backend/
+          environment: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/staging' && 'staging' || 'development' }}
+
+      - name: Run health checks
+        run: |
+          sleep 30
+          
+          ENV_NAME=${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/staging' && 'staging' || 'development' }}
+          
+          if [ "$ENV_NAME" = "production" ]; then
+            HEALTH_URL="https://pos.khoaugment.com/api/health"
+          else
+            HEALTH_URL="https://$ENV_NAME.pos.khoaugment.com/api/health"
+          fi
+          
+          # Health check with retry
+          for i in {1..10}; do
+            if curl -f $HEALTH_URL; then
+              echo "Health check passed"
+              break
+            else
+              echo "Health check failed, attempt $i/10"
+              sleep 10
+            fi
+          done
+
       - name: Notify deployment success
         if: success()
         run: |
-          echo "🚀 Deployment completed successfully!"
-          echo "Frontend: https://kho1.pages.dev"
-          echo "API: https://kho1-api.bangachieu2.workers.dev"
+          echo "🚀 KhoAugment POS deployment completed successfully!"
+          echo "Environment: ${{ github.ref_name }}"
+          echo "Frontend: ${{ steps.deploy-frontend.outputs.url }}"
+          echo "Backend: ${{ steps.deploy-backend.outputs.url }}"
