@@ -4,15 +4,24 @@ import { ConfigProvider } from 'antd';
 import viVN from 'antd/locale/vi_VN';
 
 // Import layout
-import MainLayout from './layouts/MainLayout';
+import SimpleLayout from './layouts/SimpleLayout';
 
 // Import comprehensive dashboard components
-import DashboardPage from './pages/DashboardPage.modern';
 import ModernDashboard from './pages/dashboard/ModernDashboard';
 import ModernPOSPage from './pages/pos/ModernPOSPage';
 import SimpleLoginPage from './pages/auth/SimpleLoginPage';
 
 import './App.css';
+
+// Simple auth check function
+const isAuthenticated = () => {
+  return localStorage.getItem('auth') === 'true';
+};
+
+// Protected Route component
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return isAuthenticated() ? <>{children}</> : <Navigate to="/auth/login" replace />;
+};
 
 function App() {
   return (
@@ -24,7 +33,11 @@ function App() {
           <Route path="/auth/login" element={<SimpleLoginPage />} />
           
           {/* Main Application Routes */}
-          <Route path="/" element={<MainLayout />}>
+          <Route path="/" element={
+            <ProtectedRoute>
+              <SimpleLayout />
+            </ProtectedRoute>
+          }>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<ModernDashboard />} />
             <Route path="pos" element={<ModernPOSPage />} />

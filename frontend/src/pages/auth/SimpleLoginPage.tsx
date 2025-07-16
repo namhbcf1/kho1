@@ -26,6 +26,8 @@ const SimpleLoginPage: React.FC = () => {
     try {
       // Simple authentication - in production this would call an API
       if (values.email === 'admin@khoaugment.com' && values.password === 'admin123') {
+        // Save auth status to localStorage
+        localStorage.setItem('auth', 'true');
         message.success('Đăng nhập thành công!');
         setTimeout(() => {
           navigate('/dashboard');
