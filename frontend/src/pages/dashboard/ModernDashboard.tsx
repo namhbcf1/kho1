@@ -5,8 +5,8 @@ import {
   DollarOutlined,
   ShoppingCartOutlined,
   UserOutlined,
-  TrendingUpOutlined,
-  TrendingDownOutlined,
+  RiseOutlined,
+  FallOutlined,
   CalendarOutlined,
   FilterOutlined,
   DownloadOutlined,
@@ -20,10 +20,10 @@ import {
   ExclamationCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Line, Column, Pie } from '@ant-design/plots';
+// import { Line, Column, Pie } from '@ant-design/plots';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants/routes';
-import '../../styles/modern-theme.css';
+// import '../../styles/modern-theme.css';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -228,13 +228,13 @@ const ModernDashboard: React.FC = () => {
             type="text"
             icon={<EyeOutlined />}
             size="small"
-            onClick={() => navigate(`${ROUTES.ORDERS.ROOT}/${record.id}`)}
+            onClick={() => navigate(`${ROUTES.ORDERS}/${record.id}`)}
           />
           <Button
             type="text"
             icon={<EditOutlined />}
             size="small"
-            onClick={() => navigate(`${ROUTES.ORDERS.ROOT}/${record.id}/edit`)}
+            onClick={() => navigate(`${ROUTES.ORDERS}/${record.id}/edit`)}
           />
           <Button
             type="text"
@@ -440,7 +440,7 @@ const ModernDashboard: React.FC = () => {
               title={<span className="vietnamese-text">Đơn hàng trung bình</span>}
               value={dashboardData.averageOrder}
               formatter={(value) => formatVND(Number(value))}
-              prefix={<TrendingUpOutlined />}
+              prefix={<RiseOutlined />}
               valueStyle={{ 
                 color: '#cf1322',
                 fontFamily: 'var(--font-family-mono)',
@@ -474,27 +474,13 @@ const ModernDashboard: React.FC = () => {
               </Button>
             }
           >
-            <Line
-              data={salesData}
-              xField="date"
-              yField="revenue"
-              point={{
-                size: 5,
-                shape: 'diamond',
-                style: {
-                  fill: 'white',
-                  stroke: '#1890ff',
-                  lineWidth: 2,
-                },
-              }}
-              tooltip={{
-                formatter: (datum) => ({
-                  name: 'Doanh thu',
-                  value: formatVND(datum.revenue),
-                }),
-              }}
-              {...chartConfig}
-            />
+            <div className="chart-placeholder" style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '8px' }}>
+              <div className="text-center">
+                <RiseOutlined style={{ fontSize: 48, color: '#1890ff', marginBottom: 16 }} />
+                <div className="text-lg font-semibold">Biểu đồ doanh thu</div>
+                <div className="text-sm text-gray-500">Doanh thu tăng trưởng {dashboardData.revenueGrowth}%</div>
+              </div>
+            </div>
           </Card>
         </Col>
         
@@ -503,23 +489,23 @@ const ModernDashboard: React.FC = () => {
             className="modern-card"
             title={<span className="vietnamese-text">Top danh mục</span>}
           >
-            <Pie
-              data={productData}
-              angleField="revenue"
-              colorField="category"
-              radius={0.8}
-              label={{
-                type: 'outer',
-                content: '{name}\n{percentage}',
-              }}
-              tooltip={{
-                formatter: (datum) => ({
-                  name: datum.category,
-                  value: formatVND(datum.revenue),
-                }),
-              }}
-              {...chartConfig}
-            />
+            <div className="chart-placeholder" style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '8px' }}>
+              <div className="text-center">
+                <div className="grid grid-cols-2 gap-4">
+                  {productData.map((item, index) => (
+                    <div key={item.category} className="text-center">
+                      <div className="text-lg font-semibold">{item.category}</div>
+                      <div className="text-sm text-gray-500">{formatVND(item.revenue)}</div>
+                      <Progress 
+                        percent={Math.round((item.revenue / Math.max(...productData.map(p => p.revenue))) * 100)} 
+                        strokeColor={['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1'][index % 5]}
+                        size="small"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </Card>
         </Col>
       </Row>
@@ -531,7 +517,7 @@ const ModernDashboard: React.FC = () => {
         extra={
           <Button
             type="primary"
-            onClick={() => navigate(ROUTES.ORDERS.ROOT)}
+            onClick={() => navigate(ROUTES.ORDERS)}
             className="vietnamese-text"
           >
             Xem tất cả

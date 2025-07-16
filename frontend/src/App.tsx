@@ -6,8 +6,10 @@ import viVN from 'antd/locale/vi_VN';
 // Import layout
 import MainLayout from './layouts/MainLayout';
 
-// Import pages that exist and work
+// Import comprehensive dashboard components
 import DashboardPage from './pages/DashboardPage.modern';
+import ModernDashboard from './pages/dashboard/ModernDashboard';
+import ModernPOSPage from './pages/pos/ModernPOSPage';
 
 import './App.css';
 
@@ -19,7 +21,8 @@ function App() {
           {/* Main Application Routes */}
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="dashboard" element={<ModernDashboard />} />
+            <Route path="pos" element={<ModernPOSPage />} />
           </Route>
         </Routes>
       </Router>
