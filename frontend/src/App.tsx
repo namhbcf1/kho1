@@ -10,6 +10,7 @@ import MainLayout from './layouts/MainLayout';
 import DashboardPage from './pages/DashboardPage.modern';
 import ModernDashboard from './pages/dashboard/ModernDashboard';
 import ModernPOSPage from './pages/pos/ModernPOSPage';
+import SimpleLoginPage from './pages/auth/SimpleLoginPage';
 
 import './App.css';
 
@@ -18,6 +19,10 @@ function App() {
     <ConfigProvider locale={viVN}>
       <Router>
         <Routes>
+          {/* Authentication Routes */}
+          <Route path="/login" element={<SimpleLoginPage />} />
+          <Route path="/auth/login" element={<SimpleLoginPage />} />
+          
           {/* Main Application Routes */}
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
