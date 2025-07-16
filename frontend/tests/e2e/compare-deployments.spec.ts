@@ -6,7 +6,7 @@ test.describe('Compare Deployments', () => {
     console.log('🔍 Comparing deployments...');
     
     const originalUrl = 'https://kho1.pages.dev';
-    const newUrl = 'https://767897ef.khoaugment-frontend.pages.dev';
+    const newUrl = 'https://kho1.pages.dev';
     
     // Test original first
     console.log('\n📊 Testing ORIGINAL deployment...');
@@ -33,7 +33,7 @@ test.describe('Compare Deployments', () => {
       const emailInput = page.locator('input[type="email"], input[placeholder*="admin"]').first();
       const passwordInput = page.locator('input[type="password"]').first();
       
-      await emailInput.fill('admin@khoaugment.com');
+      await emailInput.fill('admin@kho1.com');
       await passwordInput.fill('123456');
       
       const submitButton = page.locator('button[type="submit"]').first();
@@ -77,7 +77,7 @@ test.describe('Compare Deployments', () => {
       const emailInput = page.locator('input[type="email"], input[placeholder*="admin"]').first();
       const passwordInput = page.locator('input[type="password"]').first();
       
-      await emailInput.fill('admin@khoaugment.com');
+      await emailInput.fill('admin@kho1.com');
       await passwordInput.fill('123456');
       
       const submitButton = page.locator('button[type="submit"]').first();

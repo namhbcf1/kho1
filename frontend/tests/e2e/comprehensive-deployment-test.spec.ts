@@ -4,13 +4,13 @@ import { test, expect } from '@playwright/test';
 test.describe('Comprehensive Deployment Test', () => {
   const urls = [
     'https://kho1.pages.dev',
-    'https://4fc16181.khoaugment-frontend.pages.dev'
+    'https://kho1.pages.dev'
   ];
 
   const testAccounts = [
-    { email: 'admin@khoaugment.com', password: '123456', role: 'Admin' },
-    { email: 'manager@khoaugment.com', password: '123456', role: 'Manager' },
-    { email: 'cashier@khoaugment.com', password: '123456', role: 'Cashier' }
+    { email: 'admin@kho1.com', password: '123456', role: 'Admin' },
+    { email: 'manager@kho1.com', password: '123456', role: 'Manager' },
+    { email: 'cashier@kho1.com', password: '123456', role: 'Cashier' }
   ];
 
   for (const baseUrl of urls) {

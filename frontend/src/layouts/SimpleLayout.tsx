@@ -1,79 +1,82 @@
 import {
+    ApiOutlined,
+    AuditOutlined,
+    BankOutlined,
     BarChartOutlined,
     BarcodeOutlined,
     BellOutlined,
+    BgColorsOutlined,
+    BookOutlined,
+    CalendarOutlined,
+    ClockCircleOutlined,
+    CloudOutlined,
+    CloudUploadOutlined,
     CreditCardOutlined,
-    CustomerServiceOutlined,
+    CrownOutlined,
     DashboardOutlined,
     DatabaseOutlined,
+    DesktopOutlined,
+    EyeOutlined,
     FileTextOutlined,
-    GlobalOutlined,
+    FundOutlined,
+    GiftOutlined,
+    HeartOutlined,
+    HistoryOutlined,
+    LineChartOutlined,
     LogoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    PieChartOutlined,
+    RocketOutlined,
+    SafetyOutlined,
     SettingOutlined,
     ShopOutlined,
     ShoppingCartOutlined,
-    TeamOutlined,
-    UserOutlined,
-    WarningOutlined,
-    ClockCircleOutlined,
-    CrownOutlined,
-    SafetyOutlined,
-    CloudOutlined,
-    RocketOutlined,
-    TrophyOutlined,
-    HeartOutlined,
-    BookOutlined,
-    ThunderboltOutlined,
-    BugOutlined,
-    ApiOutlined,
-    EyeOutlined,
-    LineChartOutlined,
-    BarChartOutlined,
-    PieChartOutlined,
-    FundOutlined,
     StockOutlined,
-    WalletOutlined,
-    BankOutlined,
-    GiftOutlined,
-    TagsOutlined,
-    CalendarOutlined,
-    MailOutlined,
-    PhoneOutlined,
-    PrinterOutlined,
-    ScanOutlined,
-    QrcodeOutlined,
-    WifiOutlined,
-    SecurityScanOutlined,
-    KeyOutlined,
-    AuditOutlined,
-    HistoryOutlined,
-    CloudUploadOutlined,
-    DesktopOutlined,
-    ExclamationCircleOutlined,
     SyncOutlined,
-    LoadingOutlined,
-    CheckCircleOutlined
+    TagsOutlined,
+    TeamOutlined,
+    ThunderboltOutlined,
+    TrophyOutlined,
+    UserOutlined,
+    WalletOutlined,
+    WarningOutlined
 } from '@ant-design/icons';
-import { Avatar, Badge, Button, Dropdown, Layout, Menu, notification, Space, theme, Typography, Tooltip, Switch, Divider, Progress, Statistic, Card, Row, Col, Alert, Tag, List, Modal, Form, Input, Select, DatePicker, TimePicker, Slider, Rate, Checkbox, Radio, Upload, Transfer, Tree, Cascader, AutoComplete, Mentions, ConfigProvider, Affix, BackTop, Drawer, Tabs, Collapse, Steps, Timeline, Calendar, Popover, Empty, Skeleton, Spin, Result, Breadcrumb, Anchor, PageHeader } from 'antd';
-import React, { useState, useEffect, useCallback } from 'react';
+import {
+    Avatar, Badge,
+    Breadcrumb,
+    Button,
+    Descriptions,
+    Divider,
+    Drawer,
+    Dropdown, Layout, Menu,
+    Modal,
+    notification, Space,
+    Switch,
+    theme,
+    Tooltip,
+    Typography
+} from 'antd';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import dayjs from 'dayjs';
 
 // Import missing icon
-import { QuestionCircleOutlined } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
 const { useToken } = theme;
 
-const SimpleLayout: React.FC = () => {
+interface SimpleLayoutProps {
+  themeMode?: string;
+  setThemeMode?: (mode: string) => void;
+}
+
+const SimpleLayout: React.FC<SimpleLayoutProps> = ({ themeMode = 'light', setThemeMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [blueTheme, setBlueTheme] = useState(false);
   const [systemHealth, setSystemHealth] = useState({ status: 'healthy', uptime: '99.9%', load: 67 });
   const [realTimeStats, setRealTimeStats] = useState({ users: 127, orders: 45, revenue: 2450000 });
   const [profileModalVisible, setProfileModalVisible] = useState(false);
@@ -205,6 +208,10 @@ const SimpleLayout: React.FC = () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       setDarkMode(true);
+    } else if (savedTheme === 'blue') {
+      setBlueTheme(true);
+      // Apply blue theme class to body
+      document.body.classList.add('blue-theme');
     }
 
     // Simulate real-time updates
@@ -221,7 +228,11 @@ const SimpleLayout: React.FC = () => {
       }));
     }, 10000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Clean up blue theme
+      document.body.classList.remove('blue-theme');
+    };
   }, []);
 
   const handleLogout = () => {
@@ -238,580 +249,344 @@ const SimpleLayout: React.FC = () => {
           description: 'Bạn đã đăng xuất khỏi hệ thống an toàn.',
           duration: 3
         });
-        // Redirect to login
-        navigate('/auth/login');
+        // Redirect to login page
+        navigate('/login');
       }
     });
   };
 
   const handleThemeToggle = (checked: boolean) => {
     setDarkMode(checked);
-    localStorage.setItem('theme', checked ? 'dark' : 'light');
-    notification.info({
-      message: 'Thay đổi giao diện',
-      description: `Đã chuyển sang chế độ ${checked ? 'tối' : 'sáng'}`,
-      duration: 2
-    });
+    setBlueTheme(false);
+    
+    if (checked) {
+      setThemeMode?.('dark');
+      document.body.classList.remove('blue-theme');
+    } else {
+      setThemeMode?.('light');
+      document.body.classList.remove('blue-theme');
+    }
   };
 
-  const handleMenuClick = useCallback((key: string) => {
-    navigate(key);
-  }, [navigate]);
+  const handleBlueThemeToggle = (checked: boolean) => {
+    setBlueTheme(checked);
+    setDarkMode(false);
+    
+    if (checked) {
+      setThemeMode?.('blue');
+      document.body.classList.add('blue-theme');
+    } else {
+      setThemeMode?.('light');
+      document.body.classList.remove('blue-theme');
+    }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'order': return <ShoppingCartOutlined />;
-      case 'inventory': return <WarningOutlined />;
-      case 'payment': return <CreditCardOutlined />;
-      case 'customer': return <UserOutlined />;
-      case 'system': return <SettingOutlined />;
-      case 'error': return <ExclamationCircleOutlined />;
+      case 'order': return <ShoppingCartOutlined style={{ color: '#1890ff' }} />;
+      case 'inventory': return <DatabaseOutlined style={{ color: '#52c41a' }} />;
+      case 'payment': return <CreditCardOutlined style={{ color: '#722ed1' }} />;
+      case 'customer': return <UserOutlined style={{ color: '#faad14' }} />;
+      case 'system': return <SettingOutlined style={{ color: '#13c2c2' }} />;
+      case 'error': return <WarningOutlined style={{ color: '#f5222d' }} />;
       default: return <BellOutlined />;
     }
   };
 
   const getNotificationColor = (type: string, priority: string) => {
-    if (priority === 'high') return '#ff4d4f';
-    if (priority === 'medium') return '#fa8c16';
+    if (priority === 'high') return '#f5222d';
+    if (priority === 'medium') return '#faad14';
+    if (priority === 'low') return '#52c41a';
+    
     switch (type) {
-      case 'order': return '#52c41a';
-      case 'payment': return '#1890ff';
-      case 'customer': return '#722ed1';
+      case 'order': return '#1890ff';
+      case 'inventory': return '#52c41a';
+      case 'payment': return '#722ed1';
+      case 'customer': return '#faad14';
       case 'system': return '#13c2c2';
-      case 'error': return '#ff4d4f';
-      default: return '#8c8c8c';
+      case 'error': return '#f5222d';
+      default: return '#d9d9d9';
     }
   };
-
+  
+  // Format Vietnamese currency
+  const formatVND = (amount: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(amount);
+  };
+  
   const notificationMenu = (
-    <div style={{ width: 400, maxHeight: 500, overflowY: 'auto' }}>
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography.Title level={5} style={{ margin: 0 }}>Thông báo</Typography.Title>
-        <Space>
-          <Tag color="blue">{notifications.filter(n => !n.read).length} mới</Tag>
-          <Button type="link" size="small" onClick={() => notification.info({ message: 'Đánh dấu tất cả đã đọc' })}>Đánh dấu đã đọc</Button>
-        </Space>
-      </div>
-      <List
-        itemLayout="horizontal"
-        dataSource={notifications}
-        renderItem={(item) => (
-          <List.Item
-            style={{ 
-              padding: '12px 16px',
-              backgroundColor: item.read ? 'transparent' : '#f6f8ff',
-              borderLeft: `3px solid ${getNotificationColor(item.type, item.priority)}`,
-              cursor: 'pointer'
-            }}
-            onClick={() => {
-              notification.info({ message: 'Xem chi tiết thông báo', description: item.title });
-            }}
-          >
-            <List.Item.Meta
-              avatar={
-                <Avatar 
-                  style={{ backgroundColor: getNotificationColor(item.type, item.priority) }}
-                  icon={getNotificationIcon(item.type)}
-                  size="small"
-                />
-              }
-              title={
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: item.read ? 'normal' : 'bold', fontSize: '14px' }}>{item.title}</span>
-                  <span style={{ fontSize: '11px', color: '#8c8c8c' }}>{item.time}</span>
+    <Menu
+      items={notifications.map(notification => ({
+        key: notification.id,
+        label: (
+          <div style={{ padding: '0 8px' }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              borderLeft: `3px solid ${getNotificationColor(notification.type, notification.priority)}`,
+              paddingLeft: '8px',
+              opacity: notification.read ? 0.6 : 1
+            }}>
+              <Avatar 
+                icon={getNotificationIcon(notification.type)} 
+                style={{ 
+                  backgroundColor: notification.read ? '#f0f0f0' : 'white',
+                  marginRight: '12px'
+                }} 
+              />
+              <div>
+                <div style={{ fontWeight: notification.read ? 'normal' : 'bold' }}>{notification.title}</div>
+                <div style={{ fontSize: '12px' }}>{notification.message}</div>
+                <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>
+                  <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                  {notification.time}
                 </div>
-              }
-              description={
-                <div>
-                  <span style={{ fontSize: '12px', color: '#666' }}>{item.message}</span>
-                  <div style={{ marginTop: 4 }}>
-                    <Tag size="small" color={item.priority === 'high' ? 'red' : item.priority === 'medium' ? 'orange' : 'default'}>
-                      {item.priority === 'high' ? 'Quan trọng' : item.priority === 'medium' ? 'Trung bình' : 'Thấp'}
-                    </Tag>
-                  </div>
-                </div>
-              }
-            />
-          </List.Item>
-        )}
-      />
-      <div style={{ padding: '8px 16px', borderTop: '1px solid #f0f0f0', textAlign: 'center' }}>
-        <Button type="link" block onClick={() => navigate('/notifications')}>Xem tất cả thông báo</Button>
-      </div>
-    </div>
+              </div>
+            </div>
+          </div>
+        )
+      }))}
+      style={{ width: '360px' }}
+    />
   );
 
-  return (
-    <ConfigProvider
-      theme={{
-        algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: {
-          colorPrimary: '#1890ff',
-          borderRadius: 8,
-          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  const userMenu = (
+    <Menu
+      items={[
+        {
+          key: 'profile',
+          label: 'Thông tin tài khoản',
+          icon: <UserOutlined />,
+          onClick: () => setProfileModalVisible(true)
+        },
+        {
+          key: 'settings',
+          label: 'Cài đặt',
+          icon: <SettingOutlined />,
+          onClick: () => setSettingsDrawerVisible(true)
+        },
+        {
+          key: 'divider',
+          type: 'divider'
+        },
+        {
+          key: 'logout',
+          label: 'Đăng xuất',
+          icon: <LogoutOutlined />,
+          danger: true,
+          onClick: handleLogout
         }
-      }}
-    >
-      <Layout style={{ minHeight: '100vh' }}>
+      ]}
+    />
+  );
+
+  const layoutClass = `${darkMode ? 'dark-mode' : ''} ${blueTheme ? 'blue-theme' : ''}`;
+
+  return (
+    <Layout className={layoutClass} style={{ minHeight: '100vh' }}>
       <Sider 
         trigger={null} 
         collapsible 
         collapsed={collapsed}
+        width={260}
         style={{
           boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
-          overflow: 'auto',
-          height: '100vh',
+          overflowY: 'auto',
           position: 'fixed',
           left: 0,
           top: 0,
           bottom: 0,
-          zIndex: 10
+          zIndex: 1000
         }}
       >
         <div style={{ 
-          height: '64px', 
-          padding: '16px', 
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: 'center',
-          background: `linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryDark || '#096dd9'} 100%)`,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          padding: collapsed ? '16px 0' : '16px 24px',
+          height: '64px',
+          borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <ShopOutlined style={{ fontSize: '24px', color: 'white' }} />
-          </motion.div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 'auto', opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Title level={4} style={{ color: 'white', margin: '0 0 0 8px', whiteSpace: 'nowrap' }}>
-                  KhoAugment
-                </Title>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-        
-        {/* System Health Indicator */}
-        <div style={{ padding: '8px 16px', borderBottom: '1px solid #303030' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ 
-                width: 8, 
-                height: 8, 
-                borderRadius: '50%', 
-                backgroundColor: systemHealth.status === 'healthy' ? '#52c41a' : '#ff4d4f',
-                marginRight: 8
-              }}></div>
-              {!collapsed && (
-                <span style={{ color: 'white', fontSize: '11px' }}>
-                  {systemHealth.status === 'healthy' ? 'Hoạt động tốt' : 'Có vấn đề'}
-                </span>
-              )}
-            </div>
-            {!collapsed && (
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>
-                {systemHealth.uptime}
-              </span>
-            )}
-          </div>
-          {!collapsed && (
-            <div style={{ marginTop: 4 }}>
-              <Progress 
-                percent={systemHealth.load} 
-                size="small" 
-                showInfo={false}
-                strokeColor={systemHealth.load > 80 ? '#ff4d4f' : '#52c41a'}
-              />
-            </div>
+          {collapsed ? (
+            <ShopOutlined style={{ fontSize: '24px', color: '#fff' }} />
+          ) : (
+            <Space>
+              <ShopOutlined style={{ fontSize: '24px', color: '#fff' }} />
+              <Title level={4} style={{ margin: 0, color: '#fff' }}>KhoAugment POS</Title>
+            </Space>
           )}
         </div>
         <Menu
           theme="dark"
           mode="inline"
+          defaultOpenKeys={['dashboard']}
           selectedKeys={[location.pathname]}
-          style={{ border: 'none', background: 'transparent' }}
-        >
-          {menuItems.map(item => (
-            item.children ? (
-              <Menu.SubMenu
-                key={item.key}
-                icon={item.icon}
-                title={item.label}
-                style={{ 
-                  borderRadius: collapsed ? 0 : '8px',
-                  margin: collapsed ? 0 : '4px 8px',
-                  overflow: 'hidden'
-                }}
-              >
-                {item.children.map(child => (
-                  <Menu.Item
-                    key={child.key}
-                    icon={child.icon}
-                    onClick={() => handleMenuClick(child.key)}
-                    style={{ 
-                      borderRadius: '6px',
-                      margin: '2px 4px',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    {child.label}
-                  </Menu.Item>
-                ))}
-              </Menu.SubMenu>
-            ) : (
-              <Menu.Item
-                key={item.key}
-                icon={item.icon}
-                onClick={() => handleMenuClick(item.key)}
-                style={{ 
-                  borderRadius: collapsed ? 0 : '8px',
-                  margin: collapsed ? 0 : '4px 8px',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                {item.label}
-              </Menu.Item>
-            )
-          ))}
-        </Menu>
-        
-        {/* Real-time Stats */}
-        {!collapsed && (
-          <div style={{ padding: '16px', borderTop: '1px solid #303030', marginTop: 'auto' }}>
-            <div style={{ marginBottom: 8 }}>
-              <Row gutter={8}>
-                <Col span={12}>
-                  <Statistic
-                    title="Users"
-                    value={realTimeStats.users}
-                    valueStyle={{ color: '#52c41a', fontSize: '14px' }}
-                    prefix={<UserOutlined />}
-                  />
-                </Col>
-                <Col span={12}>
-                  <Statistic
-                    title="Orders"
-                    value={realTimeStats.orders}
-                    valueStyle={{ color: '#1890ff', fontSize: '14px' }}
-                    prefix={<ShoppingCartOutlined />}
-                  />
-                </Col>
-              </Row>
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>
-                Doanh thu: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(realTimeStats.revenue)}
-              </span>
-            </div>
+          onClick={({ key }) => navigate(key as string)}
+          items={menuItems}
+          style={{ padding: '8px 0', marginTop: '8px' }}
+        />
+
+        <div style={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          width: '100%', 
+          padding: '16px', 
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <Tooltip title="Chế độ ban đêm">
+              <Switch
+                checked={darkMode}
+                onChange={handleThemeToggle}
+                checkedChildren="🌙"
+                unCheckedChildren="☀️"
+                size="small"
+              />
+            </Tooltip>
+            <Tooltip title="Giao diện màu xanh">
+              <Switch
+                checked={blueTheme}
+                onChange={handleBlueThemeToggle}
+                checkedChildren={<BgColorsOutlined />}
+                unCheckedChildren={<BgColorsOutlined />}
+                size="small"
+              />
+            </Tooltip>
           </div>
-        )}
+          {!collapsed && (
+            <Text style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)' }}>
+              {/* Footer information */}
+              KhoAugment POS v1.0.0
+            </Text>
+          )}
+        </div>
       </Sider>
-      <Layout style={{ marginLeft: collapsed ? 80 : 200, transition: 'all 0.2s' }}>
+
+      <Layout style={{ 
+        marginLeft: collapsed ? 80 : 260,
+        transition: 'margin-left 0.2s'
+      }}>
         <Header style={{ 
-          padding: '0 16px', 
-          background: 'white', 
-          display: 'flex', 
+          padding: '0 24px', 
+          background: '#fff', 
+          boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
           position: 'sticky',
           top: 0,
-          zIndex: 9,
+          zIndex: 999,
+          height: '64px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
-              style={{ fontSize: '16px', width: 64, height: 64 }}
+              style={{
+                fontSize: '16px',
+                width: 64,
+                height: 64,
+              }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <Title level={4} style={{ margin: 0, color: token.colorPrimary }}>
-                KhoAugment POS System
-              </Title>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <GlobalOutlined style={{ fontSize: 16, color: token.colorPrimary }} />
-                <Text style={{ fontSize: '14px' }}>Tiếng Việt</Text>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <WifiOutlined style={{ fontSize: 16, color: '#52c41a' }} />
-                <Text style={{ fontSize: '12px', color: '#52c41a' }}>Online</Text>
-              </div>
-            </div>
-            
-            {/* Real-time indicators */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <Tooltip title="Người dùng đang online">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <div style={{ width: 8, height: 8, backgroundColor: '#52c41a', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
-                  <span style={{ fontSize: '12px', color: '#52c41a' }}>{realTimeStats.users}</span>
-                </div>
-              </Tooltip>
-              <Tooltip title="Đơn hàng đang xử lý">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <SyncOutlined spin style={{ fontSize: 12, color: '#1890ff' }} />
-                  <span style={{ fontSize: '12px', color: '#1890ff' }}>{realTimeStats.orders}</span>
-                </div>
-              </Tooltip>
-            </div>
+            <Breadcrumb style={{ marginLeft: '16px' }}>
+              <Breadcrumb.Item>Trang chủ</Breadcrumb.Item>
+              <Breadcrumb.Item>{location.pathname.split('/')[1]}</Breadcrumb.Item>
+              {location.pathname.split('/')[2] && (
+                <Breadcrumb.Item>{location.pathname.split('/')[2]}</Breadcrumb.Item>
+              )}
+            </Breadcrumb>
           </div>
           <Space size="large">
-            <Dropdown overlay={notificationMenu} placement="bottomRight" arrow trigger={['click']} overlayStyle={{ padding: 0 }}>
-              <Badge count={2} overflowCount={99}>
-                <Button 
-                  type="text" 
-                  icon={<BellOutlined style={{ fontSize: '18px' }}/>}
-                  style={{ height: 40, width: 40 }}
-                />
+            <Dropdown overlay={notificationMenu} placement="bottomRight" arrow trigger={['click']}>
+              <Badge count={notifications.filter(n => !n.read).length}>
+                <Button type="text" icon={<BellOutlined />} size="large" />
               </Badge>
             </Dropdown>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Tooltip title="Chuyển chế độ tối/sáng">
-                <Switch
-                  checked={darkMode}
-                  onChange={handleThemeToggle}
-                  size="small"
-                  checkedChildren={<span style={{ fontSize: '10px' }}>🌙</span>}
-                  unCheckedChildren={<span style={{ fontSize: '10px' }}>☀️</span>}
-                />
-              </Tooltip>
-              
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: '1',
-                      icon: <UserOutlined />,
-                      label: 'Thông tin cá nhân',
-                      onClick: () => setProfileModalVisible(true)
-                    },
-                    {
-                      key: '2',
-                      icon: <SettingOutlined />,
-                      label: 'Cài đặt',
-                      onClick: () => setSettingsDrawerVisible(true)
-                    },
-                    {
-                      key: '3',
-                      icon: <CustomerServiceOutlined />,
-                      label: 'Hỗ trợ',
-                      onClick: () => navigate('/help')
-                    },
-                    {
-                      key: '4',
-                      icon: <QuestionCircleOutlined />,
-                      label: 'Hướng dẫn',
-                      onClick: () => navigate('/guide')
-                    },
-                    {
-                      type: 'divider',
-                    },
-                    {
-                      key: '5',
-                      icon: <LogoutOutlined />,
-                      label: 'Đăng xuất',
-                      onClick: handleLogout
-                    },
-                  ]
-                }}
-              >
-                <Space style={{ cursor: 'pointer' }}>
-                  <Avatar 
-                    style={{ backgroundColor: token.colorPrimary }} 
-                    icon={<UserOutlined />}
-                    size="small"
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 500 }}>
-                      {currentUser?.name || 'Admin'}
-                    </span>
-                    <span style={{ fontSize: '11px', color: '#8c8c8c' }}>
-                      {currentUser?.role || 'admin'}
-                    </span>
-                  </div>
-                </Space>
-              </Dropdown>
-            </div>
+            <Dropdown overlay={userMenu} placement="bottomRight" arrow trigger={['click']}>
+              <Button type="text" icon={<UserOutlined />} size="large" />
+            </Dropdown>
           </Space>
         </Header>
-        <Content style={{ 
-          margin: '24px 16px', 
-          padding: 0, 
-          background: 'transparent',
-          minHeight: 280 
-        }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ height: '100%' }}
-          >
-            <Outlet />
-          </motion.div>
+        <Content style={{ padding: '16px', position: 'relative' }}>
+          <Outlet />
         </Content>
-        
-        {/* Profile Modal */}
-        <Modal
-          title="Thông tin cá nhân"
-          open={profileModalVisible}
-          onCancel={() => setProfileModalVisible(false)}
-          footer={null}
-          width={500}
-        >
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Avatar size={80} style={{ backgroundColor: token.colorPrimary }} icon={<UserOutlined />} />
-            <Title level={4} style={{ margin: '16px 0 8px' }}>
-              {currentUser?.name || 'Admin'}
-            </Title>
-            <Text type="secondary">{currentUser?.email || 'admin@khoaugment.com'}</Text>
-          </div>
-          
-          <Descriptions bordered size="small">
-            <Descriptions.Item label="Vai trò" span={3}>
-              <Tag color="blue">{currentUser?.role || 'admin'}</Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label="Email" span={3}>
-              {currentUser?.email || 'admin@khoaugment.com'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Đăng nhập cuối">
-              {dayjs().format('DD/MM/YYYY HH:mm')}
-            </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái">
-              <Badge status="success" text="Đang hoạt động" />
-            </Descriptions.Item>
-          </Descriptions>
-          
-          <div style={{ marginTop: 24, textAlign: 'center' }}>
-            <Space>
-              <Button type="primary" onClick={() => navigate('/profile/edit')}>Chỉnh sửa thông tin</Button>
-              <Button onClick={() => navigate('/profile/security')}>Bảo mật</Button>
-            </Space>
-          </div>
-        </Modal>
-        
-        {/* Settings Drawer */}
-        <Drawer
-          title="Cài đặt hệ thống"
-          placement="right"
-          onClose={() => setSettingsDrawerVisible(false)}
-          open={settingsDrawerVisible}
-          width={400}
-        >
-          <Collapse defaultActiveKey={['1']} ghost>
-            <Panel header="Giao diện" key="1">
-              <Form layout="vertical">
-                <Form.Item label="Chế độ hiển thị">
-                  <Radio.Group defaultValue="light">
-                    <Radio value="light">Sáng</Radio>
-                    <Radio value="dark">Tối</Radio>
-                    <Radio value="auto">Tự động</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <Form.Item label="Ngôn ngữ">
-                  <Select defaultValue="vi" style={{ width: '100%' }}>
-                    <Select.Option value="vi">Tiếng Việt</Select.Option>
-                    <Select.Option value="en">English</Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label="Kích thước font">
-                  <Slider defaultValue={14} min={12} max={18} marks={{ 12: '12px', 14: '14px', 16: '16px', 18: '18px' }} />
-                </Form.Item>
-              </Form>
-            </Panel>
-            
-            <Panel header="Thông báo" key="2">
-              <Form layout="vertical">
-                <Form.Item label="Thông báo desktop">
-                  <Switch defaultChecked />
-                </Form.Item>
-                <Form.Item label="Âm thanh thông báo">
-                  <Switch />
-                </Form.Item>
-                <Form.Item label="Thông báo email">
-                  <Switch defaultChecked />
-                </Form.Item>
-                <Form.Item label="Tần suất kiểm tra">
-                  <Select defaultValue="5" style={{ width: '100%' }}>
-                    <Select.Option value="1">1 phút</Select.Option>
-                    <Select.Option value="5">5 phút</Select.Option>
-                    <Select.Option value="10">10 phút</Select.Option>
-                    <Select.Option value="30">30 phút</Select.Option>
-                  </Select>
-                </Form.Item>
-              </Form>
-            </Panel>
-            
-            <Panel header="Hệ thống" key="3">
-              <Form layout="vertical">
-                <Form.Item label="Tự động sao lưu">
-                  <Switch defaultChecked />
-                </Form.Item>
-                <Form.Item label="Tự động cập nhật">
-                  <Switch />
-                </Form.Item>
-                <Form.Item label="Chế độ bảo trì">
-                  <Switch />
-                </Form.Item>
-                <Form.Item label="Log level">
-                  <Select defaultValue="info" style={{ width: '100%' }}>
-                    <Select.Option value="error">Error</Select.Option>
-                    <Select.Option value="warn">Warning</Select.Option>
-                    <Select.Option value="info">Info</Select.Option>
-                    <Select.Option value="debug">Debug</Select.Option>
-                  </Select>
-                </Form.Item>
-              </Form>
-            </Panel>
-          </Collapse>
-          
-          <div style={{ marginTop: 24, textAlign: 'center' }}>
-            <Space>
-              <Button type="primary" onClick={() => notification.success({ message: 'Cài đặt đã được lưu' })}>
-                Lưu cài đặt
-              </Button>
-              <Button onClick={() => setSettingsDrawerVisible(false)}>Hủy</Button>
-            </Space>
-          </div>
-        </Drawer>
-        
-        {/* Back to Top */}
-        <BackTop />
-        
-        {/* System Status */}
-        <div style={{ 
-          position: 'fixed', 
-          bottom: 16, 
-          right: 16, 
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 8
-        }}>
-          <Tooltip title={`Tải hệ thống: ${systemHealth.load}%`}>
-            <Card size="small" style={{ width: 120, textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: '#666' }}>System Load</div>
-              <Progress 
-                percent={systemHealth.load} 
-                size="small" 
-                format={() => `${systemHealth.load}%`}
-                strokeColor={systemHealth.load > 80 ? '#ff4d4f' : '#52c41a'}
-              />
-            </Card>
-          </Tooltip>
-        </div>
-        </Layout>
       </Layout>
-    </ConfigProvider>
+
+      {/* Profile Modal */}
+      <Modal 
+        title="Thông tin tài khoản" 
+        open={profileModalVisible} 
+        footer={null}
+        onCancel={() => setProfileModalVisible(false)}
+      >
+        <div style={{ textAlign: 'center', padding: '16px 0' }}>
+          <Avatar size={80} icon={<UserOutlined />} />
+          <div style={{ marginTop: '16px' }}>
+            <Title level={4} style={{ margin: 0 }}>Nguyễn Văn Admin</Title>
+            <Text type="secondary">admin@khoaugment.com</Text>
+          </div>
+        </div>
+        <Divider />
+        <Descriptions column={1}>
+          <Descriptions.Item label="Chức vụ">Quản trị viên</Descriptions.Item>
+          <Descriptions.Item label="Điện thoại">0901234567</Descriptions.Item>
+          <Descriptions.Item label="Đăng nhập cuối">16/07/2024, 08:30</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button type="default" onClick={() => setProfileModalVisible(false)}>Đóng</Button>
+          <Button type="primary">Cập nhật thông tin</Button>
+        </Space>
+      </Modal>
+
+      {/* Settings Drawer */}
+      <Drawer 
+        title="Cài đặt hệ thống" 
+        placement="right"
+        width={360}
+        onClose={() => setSettingsDrawerVisible(false)} 
+        open={settingsDrawerVisible}
+      >
+        <div>
+          <Title level={5}>Giao diện</Title>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <Text>Chế độ tối</Text>
+              <Switch checked={darkMode} onChange={handleThemeToggle} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text>Giao diện màu xanh</Text>
+              <Switch checked={blueTheme} onChange={handleBlueThemeToggle} />
+            </div>
+          </div>
+          
+          <Divider />
+          <Title level={5}>Thông báo</Title>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <Text>Thông báo đơn hàng</Text>
+              <Switch defaultChecked />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <Text>Thông báo hệ thống</Text>
+              <Switch defaultChecked />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text>Âm thanh</Text>
+              <Switch defaultChecked />
+            </div>
+          </div>
+        </div>
+      </Drawer>
+    </Layout>
   );
 };
 

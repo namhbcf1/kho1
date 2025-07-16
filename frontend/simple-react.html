@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kho1 POS - Simple React Test</title>
+    
+    <!-- React via CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.0/dist/antd.min.css">
+    
+    <!-- Ant Design JS -->
+    <script src="https://cdn.jsdelivr.net/npm/antd@5.12.0/dist/antd.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+        }
+        
+        .pos-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pos-header {
+            background: #001529;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .pos-content {
+            flex: 1;
+            padding: 24px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e8e8e8;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #1890ff;
+        }
+        
+        .currency {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        
+        .status-online {
+            color: #52c41a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #52c41a;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Vietnamese currency formatter
+        const formatVND = (amount) => {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0
+            }).format(amount);
+        };
+        
+        const App = () => {
+            const [stats, setStats] = useState({
+                users: 127,
+                orders: 45,
+                revenue: 2450000,
+                products: 1250
+            });
+            
+            const [currentTime, setCurrentTime] = useState(new Date());
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCurrentTime(new Date());
+                    // Simulate real-time updates
+                    setStats(prev => ({
+                        ...prev,
+                        users: Math.max(prev.users + Math.floor(Math.random() * 10) - 5, 50),
+                        orders: Math.max(prev.orders + Math.floor(Math.random() * 3) - 1, 0)
+                    }));
+                }, 5000);
+                
+                return () => clearInterval(timer);
+            }, []);
+            
+            const features = [
+                {
+                    icon: '🛒',
+                    title: 'POS Terminal',
+                    description: 'Bán hàng tại quầy với giao diện thân thiện',
+                    status: 'Sẵn sàng',
+                    color: '#52c41a'
+                },
+                {
+                    icon: '📊',
+                    title: 'Dashboard',
+                    description: 'Báo cáo doanh thu và phân tích kinh doanh',
+                    status: 'Hoạt động',
+                    color: '#1890ff'
+                },
+                {
+                    icon: '📦',
+                    title: 'Quản lý Sản phẩm',
+                    description: 'Thêm, sửa, xóa sản phẩm và quản lý kho',
+                    status: 'Sẵn sàng',
+                    color: '#722ed1'
+                },
+                {
+                    icon: '👥',
+                    title: 'Khách hàng',
+                    description: 'CRM và chương trình khách hàng thân thiết',
+                    status: 'Sẵn sàng',
+                    color: '#fa8c16'
+                },
+                {
+                    icon: '💳',
+                    title: 'Thanh toán',
+                    description: 'VNPay, MoMo, ZaloPay và thanh toán tiền mặt',
+                    status: 'Tích hợp',
+                    color: '#13c2c2'
+                },
+                {
+                    icon: '📋',
+                    title: 'Đơn hàng',
+                    description: 'Xử lý và theo dõi đơn hàng',
+                    status: 'Hoạt động',
+                    color: '#eb2f96'
+                }
+            ];
+            
+            return (
+                <div className="pos-container">
+                    <div className="pos-header">
+                        <div>
+                            <h1 style={{ margin: 0, fontSize: '24px' }}>
+                                🏪 Kho1 POS System
+                            </h1>
+                            <p style={{ margin: 0, opacity: 0.8, fontSize: '14px' }}>
+                                Hệ thống bán hàng thông minh cho Việt Nam
+                            </p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <div className="status-online">
+                                <div className="status-dot"></div>
+                                Online
+                            </div>
+                            <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                                {currentTime.toLocaleString('vi-VN')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="pos-content">
+                        <div style={{ 
+                            background: 'white', 
+                            padding: '24px', 
+                            borderRadius: '8px',
+                            marginBottom: '24px',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                            gap: '24px'
+                        }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#52c41a' }}>
+                                    {stats.users}
+                                </div>
+                                <div style={{ color: '#666' }}>Người dùng online</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#1890ff' }}>
+                                    {stats.orders}
+                                </div>
+                                <div style={{ color: '#666' }}>Đơn hàng hôm nay</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div className="currency" style={{ fontSize: '32px', fontWeight: 'bold' }}>
+                                    {formatVND(stats.revenue)}
+                                </div>
+                                <div style={{ color: '#666' }}>Doanh thu hôm nay</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#722ed1' }}>
+                                    {stats.products}
+                                </div>
+                                <div style={{ color: '#666' }}>Sản phẩm trong kho</div>
+                            </div>
+                        </div>
+                        
+                        <h2 style={{ marginBottom: '16px', color: '#262626' }}>
+                            🚀 Tính năng hệ thống
+                        </h2>
+                        
+                        <div className="feature-grid">
+                            {features.map((feature, index) => (
+                                <div key={index} className="feature-card">
+                                    <div className="feature-icon">
+                                        {feature.icon}
+                                    </div>
+                                    <h3 style={{ 
+                                        margin: '0 0 12px 0', 
+                                        color: feature.color,
+                                        fontSize: '18px'
+                                    }}>
+                                        {feature.title}
+                                    </h3>
+                                    <p style={{ 
+                                        margin: '0 0 16px 0', 
+                                        color: '#666',
+                                        lineHeight: '1.5'
+                                    }}>
+                                        {feature.description}
+                                    </p>
+                                    <div style={{
+                                        display: 'inline-block',
+                                        padding: '4px 12px',
+                                        background: feature.color,
+                                        color: 'white',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                        fontWeight: '500'
+                                    }}>
+                                        {feature.status}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div style={{
+                            background: 'white',
+                            padding: '24px',
+                            borderRadius: '8px',
+                            marginTop: '24px',
+                            textAlign: 'center'
+                        }}>
+                            <h3 style={{ color: '#52c41a', marginBottom: '16px' }}>
+                                ✅ React đã hoạt động thành công!
+                            </h3>
+                            <p style={{ color: '#666', marginBottom: '16px' }}>
+                                Hệ thống POS đã sẵn sàng để triển khai đầy đủ các tính năng.
+                            </p>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: '16px',
+                                flexWrap: 'wrap'
+                            }}>
+                                <div style={{
+                                    padding: '8px 16px',
+                                    background: '#e6f7ff',
+                                    border: '1px solid #91d5ff',
+                                    borderRadius: '6px',
+                                    fontSize: '14px'
+                                }}>
+                                    React 18 ✓
+                                </div>
+                                <div style={{
+                                    padding: '8px 16px',
+                                    background: '#f6ffed',
+                                    border: '1px solid #b7eb8f',
+                                    borderRadius: '6px',
+                                    fontSize: '14px'
+                                }}>
+                                    Ant Design ✓
+                                </div>
+                                <div style={{
+                                    padding: '8px 16px',
+                                    background: '#fff2e6',
+                                    border: '1px solid #ffd591',
+                                    borderRadius: '6px',
+                                    fontSize: '14px'
+                                }}>
+                                    Vietnamese Localization ✓
+                                </div>
+                                <div style={{
+                                    padding: '8px 16px',
+                                    background: '#f9f0ff',
+                                    border: '1px solid #d3adf7',
+                                    borderRadius: '6px',
+                                    fontSize: '14px'
+                                }}>
+                                    Cloudflare Pages ✓
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        console.log('🚀 Starting Simple React POS...');
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        console.log('✅ Simple React POS loaded successfully!');
+    </script>
+</body>
+</html>

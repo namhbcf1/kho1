@@ -6,7 +6,25 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   base: '/',
   plugins: [
-    react()
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['_redirects', '_headers', 'manifest.json', 'offline.html', 'sw.js', 'icons/*.png'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        runtimeCaching: [{
+          urlPattern: /^https:\/\/kho1-api\.bangachieu2\.workers\.dev\/.*/i,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'api-cache',
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 // 24 hours
+            }
+          }
+        }]
+      }
+    })
   ],
   resolve: {
     alias: {

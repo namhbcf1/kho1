@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Card, Typography, message, notification } from 'antd';
 import { 
   UserOutlined, 
   LockOutlined, 
   LoginOutlined,
-  ShopOutlined
+  ShopOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,6 +21,28 @@ const SimpleLoginPage: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    
+    if (savedUser && isAuthenticated === 'true') {
+      try {
+        const user = JSON.parse(savedUser);
+        if (user && user.email) {
+          notification.info({
+            message: 'Đã đăng nhập',
+            description: `Chào mừng trở lại, ${user.name}!`
+          });
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('isAuthenticated');
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (values: LoginFormData) => {
     setLoading(true);

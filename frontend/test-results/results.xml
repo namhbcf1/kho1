@@ -1,17 +1,384 @@
-<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="10.387794">
-<testsuite name="quick-test-latest.spec.ts" timestamp="2025-07-15T07:35:26.857Z" hostname="chromium" tests="1" failures="0" skipped="0" time="9.03" errors="0">
-<testcase name="Quick Test Latest › Test latest deployment" classname="quick-test-latest.spec.ts" time="9.03">
+<testsuites id="" name="" tests="8" failures="8" skipped="0" errors="0" time="39.80508100000001">
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="chromium" tests="1" failures="1" skipped="0" time="35.967" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="35.967">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [chromium] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment ─
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\error-context.md
+]]>
+</failure>
 <system-out>
-<![CDATA[🎯 Testing latest deployment...
+<![CDATA[🎯 Testing final deployment...
 📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
 📝 Login forms: [33m1[39m
-📝 Input elements: [33m3[39m
-❌ JavaScript errors: [33m0[39m
-✅ No JavaScript errors!
+📝 Input elements: [33m2[39m
 ✅ Login form found! Testing login...
-💾 Auth user: NOT FOUND
-❌ Login failed
-✅ Latest deployment test completed
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="firefox" tests="1" failures="1" skipped="0" time="30.453" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="30.453">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [firefox] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment ──
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="webkit" tests="1" failures="1" skipped="0" time="30.724" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="30.724">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [webkit] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment ───
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="Mobile Chrome" tests="1" failures="1" skipped="0" time="34.58" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="34.58">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="Mobile Safari" tests="1" failures="1" skipped="0" time="30.707" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="30.707">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [Mobile Safari] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="Microsoft Edge" tests="1" failures="1" skipped="0" time="35.911" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="35.911">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [Microsoft Edge] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="Google Chrome" tests="1" failures="1" skipped="0" time="36.273" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="36.273">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [Google Chrome] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="final-deployment-test.spec.ts" timestamp="2025-07-16T15:58:52.929Z" hostname="iPad" tests="1" failures="1" skipped="0" time="35.891" errors="0">
+<testcase name="Final Deployment Test › Test working deployment" classname="final-deployment-test.spec.ts" time="35.891">
+<failure message="final-deployment-test.spec.ts:5:3 Test working deployment" type="FAILURE">
+<![CDATA[  [iPad] › final-deployment-test.spec.ts:5:3 › Final Deployment Test › Test working deployment ─────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[type="email"], input[placeholder*="admin"]').first()
+
+
+      39 |       const passwordInput = page.locator('input[type="password"]').first();
+      40 |       
+    > 41 |       await emailInput.fill('admin@kho1.com');
+         |                        ^
+      42 |       await passwordInput.fill('123456');
+      43 |       
+      44 |       const submitButton = page.locator('button[type="submit"]').first();
+        at C:\Users\ADMIN\Downloads\kho1\frontend\tests\e2e\final-deployment-test.spec.ts:41:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[🎯 Testing final deployment...
+📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh
+📝 Login forms: [33m1[39m
+📝 Input elements: [33m2[39m
+✅ Login form found! Testing login...
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\test-failed-1.png]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\video.webm]]
+
+[[ATTACHMENT|final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\error-context.md]]
 ]]>
 </system-out>
 </testcase>

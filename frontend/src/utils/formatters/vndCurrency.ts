@@ -2,12 +2,22 @@
 export const formatVND = (amount: number): string => {
   if (isNaN(amount)) return '0 ₫';
   
+  // Vietnamese number formatting uses dot as thousand separator
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
+};
+
+export const formatVNDWithDots = (amount: number): string => {
+  if (isNaN(amount)) return '0₫';
+  
+  // Explicitly format with dots as thousand separators
+  const formatted = Math.abs(amount).toLocaleString('vi-VN');
+  const sign = amount < 0 ? '-' : '';
+  return `${sign}${formatted}₫`;
 };
 
 export const formatVNDCompact = (amount: number): string => {
@@ -37,8 +47,18 @@ export const formatVNDInput = (value: string): string => {
   
   if (!numericValue) return '';
   
-  // Format with thousand separators
+  // Format with thousand separators (dots in Vietnamese)
   return new Intl.NumberFormat('vi-VN').format(parseInt(numericValue));
+};
+
+export const formatVNDInputWithDots = (value: string): string => {
+  // Remove non-numeric characters
+  const numericValue = value.replace(/[^\d]/g, '');
+  
+  if (!numericValue) return '';
+  
+  // Manually format with dots as thousand separators
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
 export const validateVNDAmount = (amount: number): boolean => {

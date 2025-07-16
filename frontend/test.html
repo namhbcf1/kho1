@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Test</title>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script>
+        console.log('🔍 Basic JavaScript test');
+        
+        // Test if document is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+        
+        function init() {
+            console.log('📄 DOM loaded');
+            
+            const root = document.getElementById('root');
+            if (root) {
+                console.log('✅ Root element found');
+                root.innerHTML = `
+                    <div style="padding: 50px; text-align: center; font-family: Arial, sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+                        <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h1 style="color: #1890ff;">✅ JavaScript Works!</h1>
+                            <p style="color: #666;">This means Cloudflare Pages can execute JavaScript.</p>
+                            <p style="color: #999; font-size: 14px;">The issue might be with React or module loading.</p>
+                        </div>
+                    </div>
+                `;
+                console.log('✅ Content rendered');
+            } else {
+                console.error('❌ Root element not found');
+            }
+        }
+    </script>
+</body>
+</html>

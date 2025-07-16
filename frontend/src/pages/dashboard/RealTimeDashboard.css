@@ -1,0 +1,393 @@
+/* Real-Time Dashboard Styles */
+.real-time-dashboard {
+  padding: 0;
+  background: transparent;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 16px;
+}
+
+/* Metric Cards */
+.metric-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1890ff, #52c41a);
+}
+
+.metric-trend {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Activity Cards */
+.activity-card,
+.alerts-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.activity-card .ant-card-body,
+.alerts-card .ant-card-body {
+  padding: 16px;
+}
+
+/* Order Items */
+.order-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.order-item:hover {
+  background-color: #f8f9fa;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-amount {
+  font-weight: 600;
+  color: #3f8600;
+  text-align: right;
+}
+
+/* Stock Items */
+.stock-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stock-item:last-child {
+  border-bottom: none;
+}
+
+.stock-progress {
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+/* Recent Updates */
+.recent-updates {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recent-updates .ant-list-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.recent-updates .ant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Connection Status */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.connection-status.connected {
+  color: #52c41a;
+}
+
+.connection-status.connecting {
+  color: #faad14;
+}
+
+.connection-status.disconnected {
+  color: #ff4d4f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .real-time-dashboard {
+    padding: 8px;
+  }
+  
+  .dashboard-header {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .metric-card {
+    margin-bottom: 12px;
+  }
+  
+  .metric-card .ant-statistic-title {
+    font-size: 12px;
+  }
+  
+  .metric-card .ant-statistic-content {
+    font-size: 18px;
+  }
+  
+  .order-item,
+  .stock-item {
+    padding: 8px 0;
+  }
+  
+  .recent-updates {
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header .ant-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .metric-card .ant-statistic-title {
+    font-size: 11px;
+  }
+  
+  .metric-card .ant-statistic-content {
+    font-size: 16px;
+  }
+  
+  .order-amount {
+    font-size: 12px;
+  }
+  
+  .stock-progress {
+    min-width: 50px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .real-time-dashboard {
+    background: #141414;
+    color: #fff;
+  }
+  
+  .dashboard-header {
+    background: #1f1f1f;
+    border: 1px solid #303030;
+  }
+  
+  .metric-card {
+    background: #1f1f1f;
+    border: 1px solid #303030;
+  }
+  
+  .metric-card:hover {
+    background: #262626;
+  }
+  
+  .activity-card,
+  .alerts-card,
+  .recent-updates {
+    background: #1f1f1f;
+    border: 1px solid #303030;
+  }
+  
+  .order-item:hover {
+    background-color: #262626;
+  }
+  
+  .metric-trend {
+    border-top: 1px solid #303030;
+  }
+}
+
+/* Animation Classes */
+.metric-card.updating {
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.new-order-highlight {
+  animation: highlight 3s ease-in-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: #e6f7ff;
+  }
+  50% {
+    background-color: #bae7ff;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Error States */
+.error-card {
+  border: 1px solid #ff4d4f;
+  background: #fff2f0;
+}
+
+.error-card .ant-card-head {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+/* Success States */
+.success-highlight {
+  border-left: 4px solid #52c41a;
+  background: #f6ffed;
+}
+
+/* Warning States */
+.warning-highlight {
+  border-left: 4px solid #faad14;
+  background: #fffbe6;
+}
+
+/* Vietnamese-specific styles */
+.vnd-currency {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.vnd-large {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.vnd-medium {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.vnd-small {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Accessibility */
+.real-time-dashboard :focus {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.real-time-dashboard button:focus {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.metric-card[tabindex="0"]:focus {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .real-time-dashboard {
+    color: #000;
+    background: #fff;
+  }
+  
+  .dashboard-header {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  
+  .metric-card {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+    margin-bottom: 16px;
+  }
+  
+  .activity-card,
+  .alerts-card {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  
+  .recent-updates {
+    display: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .real-time-dashboard {
+    background: #fff;
+    color: #000;
+  }
+  
+  .metric-card {
+    border: 2px solid #000;
+  }
+  
+  .order-item:hover {
+    background-color: #f0f0f0;
+    border: 1px solid #000;
+  }
+}

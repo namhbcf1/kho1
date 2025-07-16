@@ -5,7 +5,7 @@ test.describe('Quick New Deployment Test', () => {
   test('Test new deployment URL', async ({ page }) => {
     console.log('🚀 Testing new deployment...');
     
-    const newUrl = 'https://be6cf43f.khoaugment-frontend.pages.dev';
+    const newUrl = 'https://kho1.pages.dev';
     
     // Navigate to login
     await page.goto(`${newUrl}/login`, { waitUntil: 'networkidle', timeout: 30000 });

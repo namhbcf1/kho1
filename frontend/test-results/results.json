@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 8
     },
     "preserveOutput": "always",
     "reporter": [
@@ -43,7 +43,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "chromium",
         "name": "chromium",
@@ -63,7 +63,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "firefox",
         "name": "firefox",
@@ -83,7 +83,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "webkit",
         "name": "webkit",
@@ -103,7 +103,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -123,7 +123,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -143,7 +143,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "Microsoft Edge",
         "name": "Microsoft Edge",
@@ -163,7 +163,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "Google Chrome",
         "name": "Google Chrome",
@@ -183,7 +183,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 8
         },
         "id": "iPad",
         "name": "iPad",
@@ -203,26 +203,26 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.54.1",
-    "workers": 1,
+    "workers": 8,
     "webServer": null
   },
   "suites": [
     {
-      "title": "quick-test-latest.spec.ts",
-      "file": "quick-test-latest.spec.ts",
+      "title": "final-deployment-test.spec.ts",
+      "file": "final-deployment-test.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Quick Test Latest",
-          "file": "quick-test-latest.spec.ts",
+          "title": "Final Deployment Test",
+          "file": "final-deployment-test.spec.ts",
           "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "Test latest deployment",
-              "ok": true,
+              "title": "Test working deployment",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -235,12 +235,28 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9030,
-                      "errors": [],
+                      "status": "timedOut",
+                      "duration": 35967,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
                       "stdout": [
                         {
-                          "text": "🎯 Testing latest deployment...\n"
+                          "text": "🎯 Testing final deployment...\n"
                         },
                         {
                           "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
@@ -249,39 +265,614 @@
                           "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
                         },
                         {
-                          "text": "📝 Input elements: \u001b[33m3\u001b[39m\n"
-                        },
-                        {
-                          "text": "❌ JavaScript errors: \u001b[33m0\u001b[39m\n"
-                        },
-                        {
-                          "text": "✅ No JavaScript errors!\n"
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
                         },
                         {
                           "text": "✅ Login form found! Testing login...\n"
-                        },
-                        {
-                          "text": "💾 Auth user: NOT FOUND\n"
-                        },
-                        {
-                          "text": "❌ Login failed\n"
-                        },
-                        {
-                          "text": "✅ Latest deployment test completed\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-15T07:35:27.641Z",
+                      "startTime": "2025-07-16T15:58:54.930Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-chromium\\error-context.md"
+                        }
+                      ]
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "caef50accef24ad3c50a-3d506e0f0dafb526c1d9",
-              "file": "quick-test-latest.spec.ts",
+              "id": "4441596752eab17451cd-23247f760a89f3ad7b4e",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "timedOut",
+                      "duration": 30453,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.912Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-firefox\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-947e580fb98a57244aab",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "timedOut",
+                      "duration": 30724,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.902Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-webkit\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-59a1ca5c7a3b9587985a",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "timedOut",
+                      "duration": 34580,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.905Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Chrome\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-2cab8b6830da747095da",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "timedOut",
+                      "duration": 30707,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.959Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Mobile-Safari\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-a4cd24239525f7275ad1",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Microsoft Edge",
+                  "projectName": "Microsoft Edge",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "timedOut",
+                      "duration": 35911,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.935Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Microsoft-Edge\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-1e316bd6138c88d067cb",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Google Chrome",
+                  "projectName": "Google Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 6,
+                      "status": "timedOut",
+                      "duration": 36273,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.977Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-Google-Chrome\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-4bb7b2bc04477b791770",
+              "file": "final-deployment-test.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test working deployment",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "iPad",
+                  "projectName": "iPad",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 7,
+                      "status": "timedOut",
+                      "duration": 35891,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts",
+                            "column": 24,
+                            "line": 41
+                          },
+                          "message": "Error: locator.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[placeholder*=\"admin\"]').first()\u001b[22m\n\n\n  39 |       const passwordInput = page.locator('input[type=\"password\"]').first();\n  40 |       \n> 41 |       await emailInput.fill('admin@kho1.com');\n     |                        ^\n  42 |       await passwordInput.fill('123456');\n  43 |       \n  44 |       const submitButton = page.locator('button[type=\"submit\"]').first();\n    at C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\tests\\e2e\\final-deployment-test.spec.ts:41:24"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🎯 Testing final deployment...\n"
+                        },
+                        {
+                          "text": "📄 Page title: KhoAugment POS - Hệ thống bán hàng thông minh\n"
+                        },
+                        {
+                          "text": "📝 Login forms: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "📝 Input elements: \u001b[33m2\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form found! Testing login...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-16T15:58:54.930Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\ADMIN\\Downloads\\kho1\\frontend\\test-results\\final-deployment-test-Fina-113c8-est-Test-working-deployment-iPad\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4441596752eab17451cd-5b96e6606db87af62693",
+              "file": "final-deployment-test.spec.ts",
               "line": 5,
               "column": 3
             }
@@ -292,11 +883,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-07-15T07:35:26.622Z",
-    "duration": 10387.794,
-    "expected": 1,
+    "startTime": "2025-07-16T15:58:52.611Z",
+    "duration": 39805.081000000006,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 8,
     "flaky": 0
   }
 }

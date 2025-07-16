@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kho1 POS - Hệ thống bán hàng thông minh</title>
+    
+    <!-- Meta tags for SEO and PWA -->
+    <meta name="description" content="Hệ thống Point of Sale (POS) tối ưu cho Cloudflare với hỗ trợ tiếng Việt, tích hợp VNPay, MoMo, ZaloPay">
+    <meta name="keywords" content="POS, Point of Sale, bán hàng, quản lý cửa hàng, Việt Nam, VNPay, MoMo, ZaloPay">
+    <meta name="theme-color" content="#1890ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Kho1 POS">
+    
+    <!-- React via CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.0/dist/antd.min.css">
+    
+    <!-- Ant Design JS -->
+    <script src="https://cdn.jsdelivr.net/npm/antd@5.12.0/dist/antd.min.js"></script>
+    
+    <!-- Day.js for date handling -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/locale/vi.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f0f2f5;
+        }
+        
+        .ant-layout {
+            min-height: 100vh;
+        }
+        
+        .pos-header {
+            background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .pos-sider {
+            background: #001529;
+            overflow: auto;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .pos-content {
+            margin-left: 200px;
+            min-height: calc(100vh - 64px);
+            background: #f0f2f5;
+        }
+        
+        .pos-sider-collapsed {
+            width: 80px;
+        }
+        
+        .pos-content-collapsed {
+            margin-left: 80px;
+        }
+        
+        .logo {
+            height: 64px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e8e8e8;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .currency {
+            color: #52c41a;
+        }
+        
+        .status-online {
+            color: #52c41a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #52c41a;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 32px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .cart-summary {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #e8e8e8;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .payment-method {
+            padding: 12px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover {
+            border-color: #1890ff;
+        }
+        
+        .payment-method.selected {
+            border-color: #1890ff;
+            background: #e6f7ff;
+        }
+        
+        @media (max-width: 768px) {
+            .pos-sider {
+                width: 0;
+                overflow: hidden;
+            }
+            
+            .pos-content {
+                margin-left: 0;
+            }
+            
+            .pos-content-collapsed {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { Layout, Menu, Button, Card, Badge, Avatar, Space, Typography, Row, Col, 
+                InputNumber, Divider, Modal, Form, Input, Select, DatePicker, notification } = antd;
+        const { Header, Sider, Content } = Layout;
+        const { Title, Text } = Typography;
+        
+        // Initialize Vietnamese locale for dayjs
+        dayjs.locale('vi');
+        
+        // Demo data
+        const sampleProducts = [
+            { id: 1, name: 'iPhone 15 Pro Max', price: 28990000, emoji: '📱', category: 'Điện thoại', stock: 15 },
+            { id: 2, name: 'MacBook Pro M3', price: 45990000, emoji: '💻', category: 'Laptop', stock: 8 },
+            { id: 3, name: 'AirPods Pro 2', price: 5490000, emoji: '🎧', category: 'Phụ kiện', stock: 25 },
+            { id: 4, name: 'iPad Pro 12.9"', price: 25990000, emoji: '📲', category: 'Máy tính bảng', stock: 12 },
+            { id: 5, name: 'Apple Watch Series 9', price: 8990000, emoji: '⌚', category: 'Đồng hồ thông minh', stock: 20 },
+            { id: 6, name: 'Samsung Galaxy S24', price: 22990000, emoji: '📱', category: 'Điện thoại', stock: 18 },
+            { id: 7, name: 'Dell XPS 13', price: 28990000, emoji: '💻', category: 'Laptop', stock: 6 },
+            { id: 8, name: 'Sony WH-1000XM5', price: 7990000, emoji: '🎧', category: 'Phụ kiện', stock: 30 }
+        ];
+        
+        const demoAccounts = [
+            { email: 'admin@khoaugment.com', password: 'admin123', role: 'admin', name: 'Admin' },
+            { email: 'cashier@khoaugment.com', password: 'cashier123', role: 'cashier', name: 'Thu ngân' },
+            { email: 'manager@khoaugment.com', password: 'manager123', role: 'manager', name: 'Quản lý' },
+            { email: 'demo@khoaugment.com', password: 'demo123', role: 'demo', name: 'Demo User' }
+        ];
+        
+        // Vietnamese currency formatter
+        const formatVND = (amount) => {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0
+            }).format(amount);
+        };
+        
+        // Authentication component
+        const LoginPage = ({ onLogin }) => {
+            const [loading, setLoading] = useState(false);
+            
+            const handleLogin = (values) => {
+                setLoading(true);
+                setTimeout(() => {
+                    const account = demoAccounts.find(acc => 
+                        acc.email === values.email && acc.password === values.password
+                    );
+                    
+                    if (account) {
+                        onLogin(account);
+                        notification.success({
+                            message: 'Đăng nhập thành công',
+                            description: `Chào mừng ${account.name}!`
+                        });
+                    } else {
+                        notification.error({
+                            message: 'Đăng nhập thất bại',
+                            description: 'Email hoặc mật khẩu không đúng'
+                        });
+                    }
+                    setLoading(false);
+                }, 1000);
+            };
+            
+            return (
+                <div style={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                }}>
+                    <Card style={{ width: 400, textAlign: 'center' }}>
+                        <div style={{ marginBottom: 24 }}>
+                            <Title level={2} style={{ color: '#1890ff' }}>
+                                🏪 Kho1 POS
+                            </Title>
+                            <Text type="secondary">Hệ thống bán hàng thông minh</Text>
+                        </div>
+                        
+                        <Form onFinish={handleLogin} layout="vertical">
+                            <Form.Item
+                                name="email"
+                                label="Email"
+                                rules={[{ required: true, message: 'Vui lòng nhập email!' }]}
+                            >
+                                <Input size="large" placeholder="admin@khoaugment.com" />
+                            </Form.Item>
+                            
+                            <Form.Item
+                                name="password"
+                                label="Mật khẩu"
+                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+                            >
+                                <Input.Password size="large" placeholder="admin123" />
+                            </Form.Item>
+                            
+                            <Form.Item>
+                                <Button 
+                                    type="primary" 
+                                    htmlType="submit" 
+                                    size="large" 
+                                    block 
+                                    loading={loading}
+                                >
+                                    Đăng nhập
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                        
+                        <Divider>Tài khoản demo</Divider>
+                        
+                        <div style={{ textAlign: 'left', fontSize: '12px' }}>
+                            <div><strong>Admin:</strong> admin@khoaugment.com / admin123</div>
+                            <div><strong>Thu ngân:</strong> cashier@khoaugment.com / cashier123</div>
+                            <div><strong>Quản lý:</strong> manager@khoaugment.com / manager123</div>
+                            <div><strong>Demo:</strong> demo@khoaugment.com / demo123</div>
+                        </div>
+                    </Card>
+                </div>
+            );
+        };
+        
+        // Dashboard component
+        const Dashboard = () => {
+            const [stats, setStats] = useState({
+                todayRevenue: 12450000,
+                todayOrders: 45,
+                totalCustomers: 1250,
+                productsInStock: 890,
+                onlineUsers: 127
+            });
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setStats(prev => ({
+                        ...prev,
+                        todayRevenue: prev.todayRevenue + Math.floor(Math.random() * 500000),
+                        todayOrders: prev.todayOrders + Math.floor(Math.random() * 3),
+                        onlineUsers: Math.max(prev.onlineUsers + Math.floor(Math.random() * 10) - 5, 50)
+                    }));
+                }, 10000);
+                
+                return () => clearInterval(timer);
+            }, []);
+            
+            const recentOrders = [
+                { id: 'DH001', customer: 'Nguyễn Văn A', amount: 2450000, status: 'Hoàn thành', time: '10:30' },
+                { id: 'DH002', customer: 'Trần Thị B', amount: 1890000, status: 'Đang xử lý', time: '10:25' },
+                { id: 'DH003', customer: 'Lê Văn C', amount: 3200000, status: 'Hoàn thành', time: '10:20' },
+                { id: 'DH004', customer: 'Phạm Thị D', amount: 890000, status: 'Hoàn thành', time: '10:15' }
+            ];
+            
+            return (
+                <div style={{ padding: '24px' }}>
+                    <Title level={2}>📊 Dashboard</Title>
+                    
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value currency">{formatVND(stats.todayRevenue)}</div>
+                            <div className="stat-label">Doanh thu hôm nay</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value" style={{ color: '#1890ff' }}>{stats.todayOrders}</div>
+                            <div className="stat-label">Đơn hàng hôm nay</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value" style={{ color: '#722ed1' }}>{stats.totalCustomers}</div>
+                            <div className="stat-label">Tổng khách hàng</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value" style={{ color: '#fa8c16' }}>{stats.productsInStock}</div>
+                            <div className="stat-label">Sản phẩm trong kho</div>
+                        </div>
+                    </div>
+                    
+                    <Row gutter={24}>
+                        <Col xs={24} lg={16}>
+                            <Card title="📋 Đơn hàng gần đây" style={{ marginBottom: 24 }}>
+                                {recentOrders.map(order => (
+                                    <div key={order.id} style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        padding: '12px 0',
+                                        borderBottom: '1px solid #f0f0f0'
+                                    }}>
+                                        <div>
+                                            <strong>{order.id}</strong> - {order.customer}
+                                            <br />
+                                            <Text type="secondary">{order.time}</Text>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <div className="currency">{formatVND(order.amount)}</div>
+                                            <Badge 
+                                                status={order.status === 'Hoàn thành' ? 'success' : 'processing'} 
+                                                text={order.status} 
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </Card>
+                        </Col>
+                        
+                        <Col xs={24} lg={8}>
+                            <Card title="📊 Thống kê nhanh" style={{ marginBottom: 24 }}>
+                                <div style={{ textAlign: 'center', marginBottom: 16 }}>
+                                    <div className="status-online">
+                                        <div className="status-dot"></div>
+                                        {stats.onlineUsers} người dùng online
+                                    </div>
+                                </div>
+                                
+                                <div style={{ marginBottom: 12 }}>
+                                    <Text>Hiệu suất bán hàng</Text>
+                                    <div style={{ 
+                                        background: '#f0f0f0', 
+                                        height: 8, 
+                                        borderRadius: 4, 
+                                        marginTop: 4 
+                                    }}>
+                                        <div style={{ 
+                                            background: '#52c41a', 
+                                            height: 8, 
+                                            width: '78%', 
+                                            borderRadius: 4 
+                                        }}></div>
+                                    </div>
+                                    <Text type="secondary">78% mục tiêu</Text>
+                                </div>
+                                
+                                <div style={{ marginBottom: 12 }}>
+                                    <Text>Tồn kho</Text>
+                                    <div style={{ 
+                                        background: '#f0f0f0', 
+                                        height: 8, 
+                                        borderRadius: 4, 
+                                        marginTop: 4 
+                                    }}>
+                                        <div style={{ 
+                                            background: '#1890ff', 
+                                            height: 8, 
+                                            width: '65%', 
+                                            borderRadius: 4 
+                                        }}></div>
+                                    </div>
+                                    <Text type="secondary">65% sức chứa</Text>
+                                </div>
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
+            );
+        };
+        
+        // POS Terminal component
+        const POSTerminal = () => {
+            const [cart, setCart] = useState([]);
+            const [selectedPayment, setSelectedPayment] = useState('cash');
+            const [checkoutVisible, setCheckoutVisible] = useState(false);
+            
+            const addToCart = (product) => {
+                const existingItem = cart.find(item => item.id === product.id);
+                if (existingItem) {
+                    setCart(cart.map(item => 
+                        item.id === product.id 
+                            ? { ...item, quantity: item.quantity + 1 }
+                            : item
+                    ));
+                } else {
+                    setCart([...cart, { ...product, quantity: 1 }]);
+                }
+                
+                notification.success({
+                    message: 'Đã thêm vào giỏ hàng',
+                    description: product.name,
+                    duration: 2
+                });
+            };
+            
+            const removeFromCart = (productId) => {
+                setCart(cart.filter(item => item.id !== productId));
+            };
+            
+            const updateQuantity = (productId, quantity) => {
+                if (quantity === 0) {
+                    removeFromCart(productId);
+                } else {
+                    setCart(cart.map(item => 
+                        item.id === productId 
+                            ? { ...item, quantity }
+                            : item
+                    ));
+                }
+            };
+            
+            const subtotal = useMemo(() => 
+                cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), [cart]
+            );
+            
+            const tax = Math.round(subtotal * 0.1); // 10% VAT
+            const total = subtotal + tax;
+            
+            const handleCheckout = () => {
+                if (cart.length === 0) {
+                    notification.warning({
+                        message: 'Giỏ hàng trống',
+                        description: 'Vui lòng thêm sản phẩm vào giỏ hàng'
+                    });
+                    return;
+                }
+                setCheckoutVisible(true);
+            };
+            
+            const processPayment = () => {
+                notification.success({
+                    message: 'Thanh toán thành công',
+                    description: `Đã thanh toán ${formatVND(total)} bằng ${
+                        selectedPayment === 'cash' ? 'Tiền mặt' :
+                        selectedPayment === 'vnpay' ? 'VNPay' :
+                        selectedPayment === 'momo' ? 'MoMo' : 'ZaloPay'
+                    }`,
+                    duration: 5
+                });
+                setCart([]);
+                setCheckoutVisible(false);
+            };
+            
+            return (
+                <div style={{ padding: '24px' }}>
+                    <Title level={2}>🛒 POS Terminal</Title>
+                    
+                    <Row gutter={24}>
+                        <Col xs={24} lg={16}>
+                            <Card title="📦 Sản phẩm" style={{ marginBottom: 24 }}>
+                                <div className="product-grid">
+                                    {sampleProducts.map(product => (
+                                        <div 
+                                            key={product.id} 
+                                            className="product-card"
+                                            onClick={() => addToCart(product)}
+                                        >
+                                            <div className="product-image">
+                                                {product.emoji}
+                                            </div>
+                                            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>
+                                                {product.name}
+                                            </div>
+                                            <div className="currency" style={{ fontSize: '16px' }}>
+                                                {formatVND(product.price)}
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#666', marginTop: 4 }}>
+                                                Còn {product.stock} sản phẩm
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        </Col>
+                        
+                        <Col xs={24} lg={8}>
+                            <Card title="🛒 Giỏ hàng" style={{ marginBottom: 24 }}>
+                                {cart.length === 0 ? (
+                                    <div style={{ textAlign: 'center', color: '#999', padding: '40px 0' }}>
+                                        Giỏ hàng trống
+                                    </div>
+                                ) : (
+                                    <>
+                                        {cart.map(item => (
+                                            <div key={item.id} className="cart-item">
+                                                <div>
+                                                    <div style={{ fontWeight: 'bold' }}>{item.name}</div>
+                                                    <div className="currency">{formatVND(item.price)}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                    <InputNumber
+                                                        min={0}
+                                                        value={item.quantity}
+                                                        onChange={(value) => updateQuantity(item.id, value)}
+                                                        size="small"
+                                                        style={{ width: 60 }}
+                                                    />
+                                                    <Button 
+                                                        size="small" 
+                                                        danger 
+                                                        onClick={() => removeFromCart(item.id)}
+                                                    >
+                                                        ×
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        
+                                        <div className="cart-summary">
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <span>Tạm tính:</span>
+                                                <span className="currency">{formatVND(subtotal)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <span>Thuế VAT (10%):</span>
+                                                <span>{formatVND(tax)}</span>
+                                            </div>
+                                            <div className="total-row">
+                                                <span>Tổng cộng:</span>
+                                                <span className="currency">{formatVND(total)}</span>
+                                            </div>
+                                            
+                                            <Button 
+                                                type="primary" 
+                                                size="large" 
+                                                block 
+                                                style={{ marginTop: 16 }}
+                                                onClick={handleCheckout}
+                                            >
+                                                Thanh toán
+                                            </Button>
+                                        </div>
+                                    </>
+                                )}
+                            </Card>
+                        </Col>
+                    </Row>
+                    
+                    <Modal
+                        title="💳 Thanh toán"
+                        open={checkoutVisible}
+                        onCancel={() => setCheckoutVisible(false)}
+                        footer={[
+                            <Button key="cancel" onClick={() => setCheckoutVisible(false)}>
+                                Hủy
+                            </Button>,
+                            <Button key="pay" type="primary" onClick={processPayment}>
+                                Xác nhận thanh toán
+                            </Button>
+                        ]}
+                    >
+                        <div style={{ marginBottom: 24 }}>
+                            <Title level={4}>Tổng thanh toán: <span className="currency">{formatVND(total)}</span></Title>
+                        </div>
+                        
+                        <div>
+                            <Text strong>Chọn phương thức thanh toán:</Text>
+                            <div className="payment-methods">
+                                <div 
+                                    className={`payment-method ${selectedPayment === 'cash' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedPayment('cash')}
+                                >
+                                    <div style={{ fontSize: '20px' }}>💵</div>
+                                    <div>Tiền mặt</div>
+                                </div>
+                                <div 
+                                    className={`payment-method ${selectedPayment === 'vnpay' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedPayment('vnpay')}
+                                >
+                                    <div style={{ fontSize: '20px' }}>🏦</div>
+                                    <div>VNPay</div>
+                                </div>
+                                <div 
+                                    className={`payment-method ${selectedPayment === 'momo' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedPayment('momo')}
+                                >
+                                    <div style={{ fontSize: '20px' }}>📱</div>
+                                    <div>MoMo</div>
+                                </div>
+                                <div 
+                                    className={`payment-method ${selectedPayment === 'zalopay' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedPayment('zalopay')}
+                                >
+                                    <div style={{ fontSize: '20px' }}>💳</div>
+                                    <div>ZaloPay</div>
+                                </div>
+                            </div>
+                        </div>
+                    </Modal>
+                </div>
+            );
+        };
+        
+        // Products component
+        const Products = () => {
+            const [products, setProducts] = useState(sampleProducts);
+            const [editingProduct, setEditingProduct] = useState(null);
+            const [isModalVisible, setIsModalVisible] = useState(false);
+            
+            const showModal = (product = null) => {
+                setEditingProduct(product);
+                setIsModalVisible(true);
+            };
+            
+            const handleSave = (values) => {
+                if (editingProduct) {
+                    setProducts(products.map(p => 
+                        p.id === editingProduct.id ? { ...p, ...values } : p
+                    ));
+                    notification.success({ message: 'Cập nhật sản phẩm thành công' });
+                } else {
+                    const newProduct = {
+                        id: Date.now(),
+                        ...values,
+                        emoji: values.emoji || '📦'
+                    };
+                    setProducts([...products, newProduct]);
+                    notification.success({ message: 'Thêm sản phẩm thành công' });
+                }
+                setIsModalVisible(false);
+                setEditingProduct(null);
+            };
+            
+            const handleDelete = (id) => {
+                setProducts(products.filter(p => p.id !== id));
+                notification.success({ message: 'Xóa sản phẩm thành công' });
+            };
+            
+            return (
+                <div style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                        <Title level={2}>📦 Quản lý Sản phẩm</Title>
+                        <Button type="primary" onClick={() => showModal()}>
+                            Thêm sản phẩm
+                        </Button>
+                    </div>
+                    
+                    <Row gutter={[16, 16]}>
+                        {products.map(product => (
+                            <Col xs={24} sm={12} lg={8} xl={6} key={product.id}>
+                                <Card
+                                    actions={[
+                                        <Button size="small" onClick={() => showModal(product)}>Sửa</Button>,
+                                        <Button size="small" danger onClick={() => handleDelete(product.id)}>Xóa</Button>
+                                    ]}
+                                >
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ fontSize: '48px', marginBottom: 16 }}>
+                                            {product.emoji}
+                                        </div>
+                                        <Title level={4}>{product.name}</Title>
+                                        <div className="currency" style={{ fontSize: '18px', marginBottom: 8 }}>
+                                            {formatVND(product.price)}
+                                        </div>
+                                        <div style={{ color: '#666' }}>
+                                            Danh mục: {product.category}
+                                        </div>
+                                        <div style={{ color: product.stock > 10 ? '#52c41a' : '#fa8c16' }}>
+                                            Còn lại: {product.stock} sản phẩm
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                    
+                    <Modal
+                        title={editingProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}
+                        open={isModalVisible}
+                        onCancel={() => setIsModalVisible(false)}
+                        footer={null}
+                    >
+                        <Form
+                            initialValues={editingProduct}
+                            onFinish={handleSave}
+                            layout="vertical"
+                        >
+                            <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true }]}>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item name="price" label="Giá" rules={[{ required: true }]}>
+                                <InputNumber min={0} style={{ width: '100%' }} />
+                            </Form.Item>
+                            <Form.Item name="category" label="Danh mục" rules={[{ required: true }]}>
+                                <Select>
+                                    <Select.Option value="Điện thoại">Điện thoại</Select.Option>
+                                    <Select.Option value="Laptop">Laptop</Select.Option>
+                                    <Select.Option value="Phụ kiện">Phụ kiện</Select.Option>
+                                    <Select.Option value="Máy tính bảng">Máy tính bảng</Select.Option>
+                                    <Select.Option value="Đồng hồ thông minh">Đồng hồ thông minh</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item name="stock" label="Số lượng" rules={[{ required: true }]}>
+                                <InputNumber min={0} style={{ width: '100%' }} />
+                            </Form.Item>
+                            <Form.Item name="emoji" label="Emoji">
+                                <Input placeholder="📱" />
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" block>
+                                    {editingProduct ? 'Cập nhật' : 'Thêm'}
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    </Modal>
+                </div>
+            );
+        };
+        
+        // Placeholder components
+        const Orders = () => <div style={{ padding: '24px' }}><Title level={2}>📋 Quản lý Đơn hàng</Title><p>Tính năng đang phát triển...</p></div>;
+        const Customers = () => <div style={{ padding: '24px' }}><Title level={2}>👥 Quản lý Khách hàng</Title><p>Tính năng đang phát triển...</p></div>;
+        const Analytics = () => <div style={{ padding: '24px' }}><Title level={2}>📊 Phân tích</Title><p>Tính năng đang phát triển...</p></div>;
+        const Settings = () => <div style={{ padding: '24px' }}><Title level={2}>⚙️ Cài đặt</Title><p>Tính năng đang phát triển...</p></div>;
+        
+        // Main App component
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [collapsed, setCollapsed] = useState(false);
+            const [currentPage, setCurrentPage] = useState('dashboard');
+            
+            // Check for saved login
+            useEffect(() => {
+                const savedUser = localStorage.getItem('kho1_user');
+                if (savedUser) {
+                    setUser(JSON.parse(savedUser));
+                }
+            }, []);
+            
+            const handleLogin = (userData) => {
+                setUser(userData);
+                localStorage.setItem('kho1_user', JSON.stringify(userData));
+            };
+            
+            const handleLogout = () => {
+                setUser(null);
+                localStorage.removeItem('kho1_user');
+                setCurrentPage('dashboard');
+            };
+            
+            if (!user) {
+                return <LoginPage onLogin={handleLogin} />;
+            }
+            
+            const menuItems = [
+                { key: 'dashboard', icon: '📊', label: 'Dashboard' },
+                { key: 'pos', icon: '🛒', label: 'POS Terminal' },
+                { key: 'products', icon: '📦', label: 'Sản phẩm' },
+                { key: 'orders', icon: '📋', label: 'Đơn hàng' },
+                { key: 'customers', icon: '👥', label: 'Khách hàng' },
+                { key: 'analytics', icon: '📊', label: 'Phân tích' },
+                { key: 'settings', icon: '⚙️', label: 'Cài đặt' }
+            ];
+            
+            const renderContent = () => {
+                switch (currentPage) {
+                    case 'dashboard': return <Dashboard />;
+                    case 'pos': return <POSTerminal />;
+                    case 'products': return <Products />;
+                    case 'orders': return <Orders />;
+                    case 'customers': return <Customers />;
+                    case 'analytics': return <Analytics />;
+                    case 'settings': return <Settings />;
+                    default: return <Dashboard />;
+                }
+            };
+            
+            return (
+                <Layout style={{ minHeight: '100vh' }}>
+                    <Sider 
+                        className={`pos-sider ${collapsed ? 'pos-sider-collapsed' : ''}`}
+                        trigger={null}
+                        collapsible
+                        collapsed={collapsed}
+                        width={200}
+                        collapsedWidth={80}
+                    >
+                        <div className="logo">
+                            {collapsed ? '🏪' : '🏪 Kho1 POS'}
+                        </div>
+                        <Menu
+                            theme="dark"
+                            mode="inline"
+                            selectedKeys={[currentPage]}
+                            onClick={({ key }) => setCurrentPage(key)}
+                        >
+                            {menuItems.map(item => (
+                                <Menu.Item key={item.key} icon={<span>{item.icon}</span>}>
+                                    {item.label}
+                                </Menu.Item>
+                            ))}
+                        </Menu>
+                    </Sider>
+                    
+                    <Layout className={`pos-content ${collapsed ? 'pos-content-collapsed' : ''}`}>
+                        <Header className="pos-header">
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Button
+                                    type="text"
+                                    icon={<span style={{ color: 'white' }}>{collapsed ? '→' : '←'}</span>}
+                                    onClick={() => setCollapsed(!collapsed)}
+                                    style={{ fontSize: '16px', color: 'white' }}
+                                />
+                                <Title level={4} style={{ color: 'white', margin: '0 0 0 16px' }}>
+                                    KhoAugment POS System
+                                </Title>
+                            </div>
+                            
+                            <Space>
+                                <div className="status-online">
+                                    <div className="status-dot"></div>
+                                    <span style={{ color: 'white' }}>Online</span>
+                                </div>
+                                <Avatar style={{ backgroundColor: '#1890ff' }}>
+                                    {user.name.charAt(0)}
+                                </Avatar>
+                                <span style={{ color: 'white' }}>{user.name}</span>
+                                <Button type="text" style={{ color: 'white' }} onClick={handleLogout}>
+                                    Đăng xuất
+                                </Button>
+                            </Space>
+                        </Header>
+                        
+                        <Content style={{ background: '#f0f2f5' }}>
+                            {renderContent()}
+                        </Content>
+                    </Layout>
+                </Layout>
+            );
+        };
+        
+        console.log('🚀 Starting Full POS System...');
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        console.log('✅ Full POS System loaded successfully!');
+    </script>
+</body>
+</html>

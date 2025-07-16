@@ -5,7 +5,7 @@ test.describe('Debug Deployment Test', () => {
   test('Debug deployment issues', async ({ page }) => {
     console.log('🔍 Debugging deployment issues...');
     
-    const newUrl = 'https://1ef1c9ee.khoaugment-frontend.pages.dev';
+    const newUrl = 'https://kho1.pages.dev';
     
     // Listen for console logs and errors
     page.on('console', (msg) => {

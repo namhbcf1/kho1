@@ -1,36 +1,54 @@
-import { ConfigProvider } from 'antd';
+import type { ThemeConfig } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 import viVN from 'antd/locale/vi_VN';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
-// Import layout
-import SimpleLayout from './layouts/SimpleLayout';
+// Import layouts
+import ModernLayout from './layouts/ModernLayout';
 
 // Import comprehensive dashboard components
 import SimpleLoginPage from './pages/auth/SimpleLoginPage';
-import ModernDashboard from './pages/dashboard/ModernDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
+import ModernDashboard from './pages/dashboard/ModernDashboard';
+import RealTimePage from './pages/dashboard/RealTimePage';
+import ReportsPage from './pages/dashboard/ReportsPage';
 import ModernPOSPage from './pages/pos/ModernPOSPage';
 
+// Import inventory pages
+import InventoryExportPage from './pages/inventory/InventoryExportPage';
+import InventoryImportPage from './pages/inventory/InventoryImportPage';
+import InventoryPage from './pages/inventory/InventoryPage';
+
+// Import suppliers page
+import SuppliersPage from './pages/suppliers/SuppliersPage';
+
+// Import customer pages
+import ModernCustomerPage from './pages/customers/ModernCustomerPage';
+
+// Import finance pages
+import ExpensesPage from './pages/finance/ExpensesPage';
+import RevenueReportPage from './pages/finance/RevenueReportPage';
+
 // Import theme system
-import { getTheme, generateCSSVariables, ThemeMode } from './styles/theme';
+import { generateCSSVariables, getTheme, ThemeMode } from './styles/theme';
 
 // Import CSS
-import './styles/global.css';
-import './styles/responsive-mobile.css';
+import './App.css';
 import './pages/dashboard/AdminDashboard.css';
+import './styles/blue-theme.css'; // Import blue theme
+import './styles/global.css';
+import './styles/modern-ui.css'; // Import modern UI styles
+import './styles/responsive-mobile.css';
 
 // Dummy components for pages not yet implemented
 const ProductsPage = () => <div style={{padding: '20px'}}><h2>Quản lý sản phẩm</h2><p>Trang đang được phát triển</p></div>;
 const OrdersPage = () => <div style={{padding: '20px'}}><h2>Quản lý đơn hàng</h2><p>Trang đang được phát triển</p></div>;
-const CustomersPage = () => <div style={{padding: '20px'}}><h2>Quản lý khách hàng</h2><p>Trang đang được phát triển</p></div>;
 const PaymentsPage = () => <div style={{padding: '20px'}}><h2>Thanh toán</h2><p>Trang đang được phát triển</p></div>;
 const StaffPage = () => <div style={{padding: '20px'}}><h2>Quản lý nhân viên</h2><p>Trang đang được phát triển</p></div>;
 const SettingsPage = () => <div style={{padding: '20px'}}><h2>Cài đặt hệ thống</h2><p>Trang đang được phát triển</p></div>;
 const AnalyticsPage = () => <div style={{padding: '20px'}}><h2>Phân tích dữ liệu</h2><p>Trang đang được phát triển</p></div>;
-const InventoryPage = () => <div style={{padding: '20px'}}><h2>Quản lý kho</h2><p>Trang đang được phát triển</p></div>;
-
-import './App.css';
+const CustomersPage = () => <div style={{padding: '20px'}}><h2>Quản lý khách hàng</h2><p>Trang đang được phát triển</p></div>;
 
 // Simple auth check function
 const isAuthenticated = () => {
@@ -43,7 +61,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 function App() {
-  const [themeMode, setThemeMode] = useState<ThemeMode>('light');
+  const [themeMode, setThemeMode] = useState<ThemeMode>('modern');
 
   // Apply theme on mount and when theme changes
   useEffect(() => {
@@ -66,19 +84,26 @@ function App() {
   // Load theme from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as ThemeMode;
-    if (savedTheme && ['light', 'dark', 'vietnamese'].includes(savedTheme)) {
+    if (savedTheme && ['light', 'dark', 'vietnamese', 'blue', 'modern', 'modern-dark'].includes(savedTheme)) {
       setThemeMode(savedTheme);
     }
   }, []);
 
   // Ant Design theme configuration
-  const antdTheme = {
+  const antdTheme: ThemeConfig = {
     token: {
-      colorPrimary: themeMode === 'vietnamese' ? '#d4af37' : '#1890ff',
+      colorPrimary: themeMode === 'vietnamese' ? '#d4af37' : 
+                    themeMode === 'blue' ? '#1890ff' :
+                    themeMode === 'modern' || themeMode === 'modern-dark' ? '#2563eb' : '#1890ff',
       borderRadius: 8,
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif",
     },
-    algorithm: themeMode === 'dark' ? 'darkAlgorithm' : undefined,
+    algorithm: themeMode === 'dark' || themeMode === 'modern-dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+  };
+
+  // Type-safe theme mode setter
+  const handleThemeModeChange = (mode: string) => {
+    setThemeMode(mode as ThemeMode);
   };
 
   return (
@@ -93,24 +118,31 @@ function App() {
             <Route path="/login" element={<SimpleLoginPage />} />
             <Route path="/auth/login" element={<SimpleLoginPage />} />
             
-            {/* Main Application Routes */}
+            {/* Main Application Routes - Using Modern Layout */}
             <Route path="/" element={
               <ProtectedRoute>
-                <SimpleLayout themeMode={themeMode} setThemeMode={setThemeMode} />
+                <ModernLayout themeMode={themeMode} setThemeMode={handleThemeModeChange} />
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<ModernDashboard />} />
               <Route path="dashboard/admin" element={<AdminDashboard />} />
+              <Route path="dashboard/reports" element={<ReportsPage />} />
+              <Route path="dashboard/realtime" element={<RealTimePage />} />
               <Route path="pos" element={<ModernPOSPage />} />
               <Route path="products" element={<ProductsPage />} />
               <Route path="orders" element={<OrdersPage />} />
-              <Route path="customers" element={<CustomersPage />} />
+              <Route path="customers" element={<ModernCustomerPage />} />
               <Route path="payments" element={<PaymentsPage />} />
               <Route path="staff" element={<StaffPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="inventory" element={<InventoryPage />} />
+              <Route path="inventory/import" element={<InventoryImportPage />} />
+              <Route path="inventory/export" element={<InventoryExportPage />} />
+              <Route path="suppliers" element={<SuppliersPage />} />
+              <Route path="finance/revenue" element={<RevenueReportPage />} />
+              <Route path="finance/expenses" element={<ExpensesPage />} />
 
               {/* Product management nested routes */}
               <Route path="products/categories" element={<ProductsPage />} />

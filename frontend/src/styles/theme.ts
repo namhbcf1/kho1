@@ -208,9 +208,41 @@ export const vietnameseTheme = {
   }
 };
 
+// Add blue theme
+export const blueTheme = {
+  ...lightTheme,
+  colors: {
+    ...lightTheme.colors,
+    primary: '#1890ff', // Blue primary
+    primaryHover: '#40a9ff',
+    primaryActive: '#096dd9',
+    secondary: '#13c2c2', // Cyan secondary
+    
+    // Blue theme specific colors
+    navBg: '#001529',
+    headerBg: '#ffffff',
+    menuItemBg: '#001529',
+    menuItemHover: '#1890ff',
+    menuItemActive: '#1890ff',
+    
+    // Gradients
+    gradientPrimary: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
+    gradientSecondary: 'linear-gradient(135deg, #13c2c2 0%, #08979c 100%)',
+    
+    // Chart colors - use array to match the type in lightTheme
+    chartColors: [
+      '#1890ff', '#13c2c2', '#52c41a', '#722ed1', '#fa8c16',
+      '#eb2f96', '#f5222d', '#a0d911', '#fadb14', '#2f54eb'
+    ]
+  }
+};
+
+// Import modern theme
+import { modernDarkTheme, modernTheme } from './modern-theme';
+
 // Export theme types
 export type Theme = typeof lightTheme;
-export type ThemeMode = 'light' | 'dark' | 'vietnamese';
+export type ThemeMode = 'light' | 'dark' | 'vietnamese' | 'blue' | 'modern' | 'modern-dark';
 
 // Theme utilities
 export const getTheme = (mode: ThemeMode): Theme => {
@@ -219,6 +251,12 @@ export const getTheme = (mode: ThemeMode): Theme => {
       return darkTheme;
     case 'vietnamese':
       return vietnameseTheme;
+    case 'blue':
+      return blueTheme;
+    case 'modern':
+      return modernTheme;
+    case 'modern-dark':
+      return modernDarkTheme;
     default:
       return lightTheme;
   }
@@ -230,7 +268,15 @@ export const generateCSSVariables = (theme: Theme) => {
   
   // Colors
   Object.entries(theme.colors).forEach(([key, value]) => {
-    cssVars[`--color-${key}`] = value;
+    // Handle chartColors array specially
+    if (key === 'chartColors' && Array.isArray(value)) {
+      value.forEach((color, index) => {
+        cssVars[`--color-chart-${index}`] = color;
+      });
+      cssVars[`--color-${key}`] = value.join(', ');
+    } else {
+      cssVars[`--color-${key}`] = value as string;
+    }
   });
   
   // Typography
@@ -346,6 +392,9 @@ export default {
   lightTheme,
   darkTheme,
   vietnameseTheme,
+  blueTheme,
+  modernTheme,
+  modernDarkTheme,
   getTheme,
   generateCSSVariables,
   mediaQueries,

@@ -1,4 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Button, Space, Tooltip, Switch } from 'antd';
+import { 
+  ThunderboltOutlined,
+  ReloadOutlined,
+  SettingOutlined 
+} from '@ant-design/icons';
+import RealTimeDashboard from './RealTimeDashboard';
+import RealTimeErrorBoundary from '../../components/common/RealTimeErrorBoundary';
+import RealTimeNotificationSystem from '../../components/notifications/RealTimeNotificationSystem';
 import { Row, Col, Card, Statistic, List, Progress, Typography } from 'antd';
 import { 
   DollarOutlined,
@@ -9,7 +18,7 @@ import {
 
 const { Title } = Typography;
 
-// Mock data - sẽ được thay thế bằng real data sau
+// Legacy mock data for fallback
 const recentOrders = [
   { id: 'ORD001', customer: 'Nguyễn Văn A', total: 250000, time: '10:30 AM' },
   { id: 'ORD002', customer: 'Trần Thị B', total: 180000, time: '11:15 AM' },
@@ -26,7 +35,8 @@ const lowStockItems = [
   { name: 'Mì tôm Hảo Hảo', stock: 15, percentage: 30 }
 ];
 
-export default function Dashboard() {
+// Legacy Dashboard Component
+function LegacyDashboard() {
   return (
     <div className="dashboard-container" style={{ 
       padding: '0',
@@ -39,7 +49,7 @@ export default function Dashboard() {
           fontSize: 'clamp(1.5rem, 4vw, 2rem)'
         }}
       >
-        Dashboard
+        Dashboard (Static)
       </Title>
       
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
@@ -230,6 +240,107 @@ export default function Dashboard() {
           </Card>
         </Col>
       </Row>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const [realTimeEnabled, setRealTimeEnabled] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  
+  // Get WebSocket URL from environment or use default
+  const wsUrl = import.meta.env.VITE_WEBSOCKET_URL || 'wss://kho1.pages.dev/ws';
+  
+  const handleToggleRealTime = () => {
+    setRealTimeEnabled(!realTimeEnabled);
+    setRefreshKey(prev => prev + 1);
+  };
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
+  const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
+    console.error('Dashboard error:', error);
+    console.error('Error info:', errorInfo);
+    
+    // Optional: Send error to monitoring service
+    // errorReportingService.report(error, errorInfo);
+  };
+
+  const handleRetry = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      {/* Header Controls */}
+      <div style={{ 
+        position: 'absolute', 
+        top: 0, 
+        right: 0, 
+        zIndex: 10,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 16,
+        padding: '8px 16px',
+        background: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: '0 0 0 8px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <Space>
+          <Tooltip title={realTimeEnabled ? 'Tắt cập nhật thời gian thực' : 'Bật cập nhật thời gian thực'}>
+            <Switch
+              checked={realTimeEnabled}
+              onChange={handleToggleRealTime}
+              checkedChildren={<ThunderboltOutlined />}
+              unCheckedChildren={<SettingOutlined />}
+            />
+          </Tooltip>
+          
+          <Tooltip title="Làm mới dữ liệu">
+            <Button
+              type="text"
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh}
+              size="small"
+            />
+          </Tooltip>
+          
+          {realTimeEnabled && (
+            <RealTimeNotificationSystem
+              websocketUrl={wsUrl}
+              showBadge={true}
+              enableSound={true}
+              enableDesktop={true}
+              onNotificationClick={(notification) => {
+                console.log('Notification clicked:', notification);
+              }}
+            />
+          )}
+        </Space>
+      </div>
+
+      {/* Main Dashboard Content */}
+      <RealTimeErrorBoundary
+        onError={handleError}
+        onRetry={handleRetry}
+        showNetworkStatus={realTimeEnabled}
+        enableAutoRetry={realTimeEnabled}
+        maxRetries={3}
+        fallback={<LegacyDashboard />}
+      >
+        {realTimeEnabled ? (
+          <RealTimeDashboard
+            key={refreshKey}
+            refreshInterval={30000}
+            enableWebSocket={true}
+            channels={['dashboard', 'inventory', 'orders', 'alerts']}
+          />
+        ) : (
+          <LegacyDashboard />
+        )}
+      </RealTimeErrorBoundary>
     </div>
   );
 }

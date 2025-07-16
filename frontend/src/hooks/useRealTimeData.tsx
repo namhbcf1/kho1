@@ -142,8 +142,8 @@ export function useRealTimeData<T>(config: RealTimeConfig): RealTimeState<T> & {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        if (mountedRef.current) {
-          setState(prev => ({
+        if (isMounted()) {
+          safeSetState_state(prev => ({
             ...prev,
             connected: true,
             error: null,
@@ -157,10 +157,10 @@ export function useRealTimeData<T>(config: RealTimeConfig): RealTimeState<T> & {
       };
 
       ws.onmessage = (event) => {
-        if (mountedRef.current) {
+        if (isMounted()) {
           try {
             const data = JSON.parse(event.data);
-            setState(prev => ({
+            safeSetState_state(prev => ({
               ...prev,
               data: data.data || data,
               lastUpdated: new Date(),
@@ -178,8 +178,8 @@ export function useRealTimeData<T>(config: RealTimeConfig): RealTimeState<T> & {
 
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
-        if (mountedRef.current) {
-          setState(prev => ({
+        if (isMounted()) {
+          safeSetState_state(prev => ({
             ...prev,
             error: 'WebSocket connection error',
           }));
@@ -187,8 +187,8 @@ export function useRealTimeData<T>(config: RealTimeConfig): RealTimeState<T> & {
       };
 
       ws.onclose = (event) => {
-        if (mountedRef.current) {
-          setState(prev => ({
+        if (isMounted()) {
+          safeSetState_state(prev => ({
             ...prev,
             connected: false,
           }));
@@ -200,8 +200,8 @@ export function useRealTimeData<T>(config: RealTimeConfig): RealTimeState<T> & {
           // Auto-reconnect if not a normal closure
           if (event.code !== 1000 && state.reconnectAttempts < retryAttempts) {
             retryTimeoutRef.current = setTimeout(() => {
-              if (mountedRef.current) {
-                setState(prev => ({
+              if (isMounted()) {
+                safeSetState_state(prev => ({
                   ...prev,
                   reconnectAttempts: prev.reconnectAttempts + 1,
                 }));

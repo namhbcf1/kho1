@@ -5,7 +5,7 @@ test.describe('Final Deployment Test', () => {
   test('Test working deployment', async ({ page }) => {
     console.log('🎯 Testing final deployment...');
     
-    const workingUrl = 'https://767897ef.khoaugment-frontend.pages.dev';
+    const workingUrl = 'https://kho1.pages.dev';
     
     // Listen for errors
     page.on('pageerror', (error) => {
@@ -38,7 +38,7 @@ test.describe('Final Deployment Test', () => {
       const emailInput = page.locator('input[type="email"], input[placeholder*="admin"]').first();
       const passwordInput = page.locator('input[type="password"]').first();
       
-      await emailInput.fill('admin@khoaugment.com');
+      await emailInput.fill('admin@kho1.com');
       await passwordInput.fill('123456');
       
       const submitButton = page.locator('button[type="submit"]').first();

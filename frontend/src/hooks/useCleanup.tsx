@@ -1,5 +1,5 @@
 // Comprehensive cleanup hook for useEffect hooks
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export interface CleanupFunction {
   (): void;
@@ -66,8 +66,9 @@ export function useSafeAsync() {
     };
   }, []);
 
-  const safeSetState = useCallback(<T>(setter: (value: T) => void) => {
-    return (value: T) => {
+  // Fix TypeScript generic syntax
+  const safeSetState = useCallback(function<T>(setter: (value: T) => void) {
+    return function(value: T) {
       if (isMountedRef.current) {
         setter(value);
       }
@@ -309,26 +310,31 @@ export function useDashboardCleanup() {
   const { safeSetState, isMounted } = useSafeAsync();
   const abortController = useAbortController();
 
-  const safeAsyncOperation = useCallback(async <T>(
+  // Fix TypeScript generic syntax
+  const safeAsyncOperation = useCallback(function<T>(
     operation: (signal: AbortSignal) => Promise<T>,
     onSuccess?: (result: T) => void,
     onError?: (error: Error) => void
-  ) => {
+  ) {
     if (!isMounted()) return;
 
     const controller = abortController.createController();
     
-    try {
-      const result = await operation(controller.signal);
-      
-      if (!controller.signal.aborted && isMounted()) {
-        onSuccess?.(result);
+    return (async () => {
+      try {
+        const result = await operation(controller.signal);
+        
+        if (!controller.signal.aborted && isMounted()) {
+          onSuccess?.(result);
+        }
+        return result;
+      } catch (error) {
+        if (!controller.signal.aborted && isMounted()) {
+          onError?.(error instanceof Error ? error : new Error(String(error)));
+        }
+        throw error;
       }
-    } catch (error) {
-      if (!controller.signal.aborted && isMounted()) {
-        onError?.(error instanceof Error ? error : new Error(String(error)));
-      }
-    }
+    })();
   }, [isMounted, abortController]);
 
   return {

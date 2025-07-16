@@ -5,7 +5,7 @@ test.describe('Quick Test Latest', () => {
   test('Test latest deployment', async ({ page }) => {
     console.log('🎯 Testing latest deployment...');
     
-    const latestUrl = 'https://79ef9274.khoaugment-frontend.pages.dev';
+    const latestUrl = 'https://kho1.pages.dev';
     
     // Track errors
     const errors = [];

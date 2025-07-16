@@ -1,15 +1,15 @@
 {
-  "name": "khoaugment-pos-frontend",
+  "name": "kho1-frontend",
   "version": "1.0.0",
-  "description": "KhoAugment POS Frontend - Cloudflare Pages",
+  "description": "Kho1 POS Frontend - Cloudflare Pages",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:with-tsc": "tsc && vite build",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name=khoaugment-frontend",
-    "deploy:staging": "npm run build && wrangler pages deploy dist --project-name=khoaugment-frontend --env=staging",
-    "deploy:production": "npm run build && wrangler pages deploy dist --project-name=khoaugment-frontend --env=production",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=kho1",
+    "deploy:staging": "npm run build && wrangler pages deploy dist --project-name=kho1 --env=staging",
+    "deploy:production": "npm run build && wrangler pages deploy dist --project-name=kho1 --env=production",
     "preview": "vite preview",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --fix",
@@ -23,6 +23,7 @@
     "analyze": "vite-bundle-analyzer dist"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.6.0",
     "@ant-design/icons": "^5.2.6",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
