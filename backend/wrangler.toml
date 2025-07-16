@@ -1,5 +1,5 @@
 # Production Cloudflare Workers Configuration for KhoAugment POS API
-name = "kho1-api-production"
+name = "kho1-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
