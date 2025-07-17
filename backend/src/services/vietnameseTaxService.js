@@ -5,6 +5,7 @@ import { z } from 'zod';
 export const TAX_RATES = {
     VAT: {
         STANDARD: 0.10, // 10% standard VAT rate
+        INTERMEDIATE: 0.08, // 8% intermediate VAT rate for semi-essential goods
         REDUCED: 0.05, // 5% reduced VAT rate for essential goods
         ZERO: 0.00, // 0% VAT for exports and specific goods
         EXEMPT: null, // VAT exempt goods
@@ -24,6 +25,7 @@ export const TAX_RATES = {
 // Tax category definitions
 export const TAX_CATEGORIES = {
     ESSENTIAL_GOODS: 'essential_goods', // 5% VAT
+    SEMI_ESSENTIAL_GOODS: 'semi_essential_goods', // 8% VAT
     STANDARD_GOODS: 'standard_goods', // 10% VAT
     EXPORT_GOODS: 'export_goods', // 0% VAT
     EXEMPT_GOODS: 'exempt_goods', // VAT exempt
@@ -36,6 +38,7 @@ const TaxCalculationSchema = z.object({
     amount: z.number().min(0),
     category: z.enum([
         'essential_goods',
+        'semi_essential_goods',
         'standard_goods',
         'export_goods',
         'exempt_goods',
@@ -47,6 +50,7 @@ const TaxCalculationSchema = z.object({
     isExport: z.boolean().default(false),
     customerType: z.enum(['individual', 'business']).default('individual'),
     invoiceType: z.enum(['retail', 'wholesale', 'export']).default('retail'),
+    isTaxInclusive: z.boolean().default(false), // Whether the amount includes tax
 });
 const CustomerTaxInfoSchema = z.object({
     taxCode: z.string().optional(),
@@ -60,8 +64,8 @@ export class VietnameseTaxService {
      */
     static calculateItemTax(params) {
         const validated = TaxCalculationSchema.parse(params);
-        const { amount, category, quantity, isExport, customerType, invoiceType } = validated;
-        const subtotal = amount * quantity;
+        const { amount, category, quantity, isExport, customerType, invoiceType, isTaxInclusive } = validated;
+        let subtotal = amount * quantity;
         let vatRate = 0;
         let exciseRate = 0;
         const taxBreakdown = [];
@@ -78,6 +82,9 @@ export class VietnameseTaxService {
             switch (category) {
                 case TAX_CATEGORIES.ESSENTIAL_GOODS:
                     vatRate = TAX_RATES.VAT.REDUCED;
+                    break;
+                case TAX_CATEGORIES.SEMI_ESSENTIAL_GOODS:
+                    vatRate = TAX_RATES.VAT.INTERMEDIATE;
                     break;
                 case TAX_CATEGORIES.STANDARD_GOODS:
                 case TAX_CATEGORIES.LUXURY:
@@ -111,12 +118,33 @@ export class VietnameseTaxService {
             default:
                 exciseRate = 0;
         }
-        // Calculate amounts
-        const exciseAmount = subtotal * exciseRate;
-        const taxableAmount = subtotal + exciseAmount; // VAT is calculated on subtotal + excise
-        const vatAmount = taxableAmount * vatRate;
-        const totalTax = vatAmount + exciseAmount;
-        const totalAmount = subtotal + totalTax;
+        // Calculate amounts based on tax-inclusive or tax-exclusive pricing
+        let exciseAmount;
+        let vatAmount;
+        let totalTax;
+        let totalAmount;
+        if (isTaxInclusive) {
+            // Amount includes tax, need to extract the tax component
+            totalAmount = subtotal;
+            // Calculate backwards from total amount
+            // Total = Subtotal + (Subtotal * exciseRate) + ((Subtotal + exciseAmount) * vatRate)
+            // Let's solve for subtotal when total is known
+            const totalTaxRate = exciseRate + vatRate + (exciseRate * vatRate);
+            const netSubtotal = totalAmount / (1 + totalTaxRate);
+            subtotal = netSubtotal;
+            exciseAmount = netSubtotal * exciseRate;
+            const taxableAmount = netSubtotal + exciseAmount;
+            vatAmount = taxableAmount * vatRate;
+            totalTax = vatAmount + exciseAmount;
+        }
+        else {
+            // Amount excludes tax, calculate forward
+            exciseAmount = subtotal * exciseRate;
+            const taxableAmount = subtotal + exciseAmount; // VAT is calculated on subtotal + excise
+            vatAmount = taxableAmount * vatRate;
+            totalTax = vatAmount + exciseAmount;
+            totalAmount = subtotal + totalTax;
+        }
         // Add tax breakdown
         if (exciseAmount > 0) {
             taxBreakdown.push({
@@ -342,6 +370,72 @@ export class VietnameseTaxService {
         if (annualSpending >= 1_000_000)
             return 'silver'; // 1M+ VND
         return 'bronze'; // < 1M VND
+    }
+    /**
+     * Convert tax-exclusive amount to tax-inclusive amount
+     */
+    static convertToTaxInclusive(amount, category, isExport = false) {
+        const taxResult = this.calculateItemTax({
+            amount,
+            category: category,
+            quantity: 1,
+            isExport,
+            isTaxInclusive: false,
+        });
+        return taxResult.totalAmount;
+    }
+    /**
+     * Convert tax-inclusive amount to tax-exclusive amount
+     */
+    static convertToTaxExclusive(amount, category, isExport = false) {
+        const taxResult = this.calculateItemTax({
+            amount,
+            category: category,
+            quantity: 1,
+            isExport,
+            isTaxInclusive: true,
+        });
+        return taxResult.subtotal;
+    }
+    /**
+     * Calculate cash rounding for Vietnamese transactions
+     * Vietnamese cash transactions are typically rounded to nearest 500 VND
+     */
+    static applyVietnamCashRounding(amount) {
+        // Round to nearest 500 VND for cash transactions
+        return Math.round(amount / 500) * 500;
+    }
+    /**
+     * Calculate discount with VAT compliance
+     */
+    static calculateDiscountWithVAT(subtotal, discountAmount, discountType, category, isExport = false) {
+        let actualDiscountAmount = 0;
+        let discountDescription = '';
+        if (discountType === 'percentage') {
+            actualDiscountAmount = subtotal * (discountAmount / 100);
+            discountDescription = `Giảm giá ${discountAmount}%`;
+        }
+        else {
+            actualDiscountAmount = Math.min(discountAmount, subtotal);
+            discountDescription = `Giảm giá ${this.formatVND(actualDiscountAmount)}`;
+        }
+        const discountedSubtotal = subtotal - actualDiscountAmount;
+        // Calculate VAT on discounted amount
+        const taxResult = this.calculateItemTax({
+            amount: discountedSubtotal,
+            category: category,
+            quantity: 1,
+            isExport,
+            isTaxInclusive: false,
+        });
+        return {
+            originalSubtotal: subtotal,
+            discountAmount: actualDiscountAmount,
+            discountedSubtotal,
+            vatAmount: taxResult.vatAmount,
+            totalAmount: taxResult.totalAmount,
+            discountDescription,
+        };
     }
 }
 export default VietnameseTaxService;

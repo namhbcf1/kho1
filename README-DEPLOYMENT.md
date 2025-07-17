@@ -1,8 +1,8 @@
-# 🚀 KhoAugment POS - Hướng dẫn Deployment Tự động
+# 🚀 Kho1 POS - Hướng dẫn Deployment Tự động
 
 ## 📋 Tổng quan
 
-KhoAugment POS đã được thiết kế với hệ thống deployment hoàn toàn tự động. Bạn chỉ cần setup một lần, sau đó chỉ việc click chuột là có thể deploy toàn bộ hệ thống lên cloud.
+Kho1 POS đã được thiết kế với hệ thống deployment hoàn toàn tự động. Bạn chỉ cần setup một lần, sau đó chỉ việc click chuột là có thể deploy toàn bộ hệ thống lên cloud.
 
 ## 🎯 3 Cách Deploy
 
@@ -300,12 +300,12 @@ git ls-remote YOUR_REPO_URL
 ## 🎉 After Deployment
 
 ### Instant Access:
-- **Frontend**: https://khoaugment-pos-frontend.pages.dev
-- **Backend API**: https://khoaugment-pos-api.workers.dev
-- **Health Check**: https://khoaugment-pos-api.workers.dev/health
+- **Frontend**: https://kho1.pages.dev
+- **Backend API**: https://kho1-api.workers.dev
+- **Health Check**: https://kho1-api.workers.dev/health
 
 ### Default Credentials:
-- **Email**: admin@khoaugment.com
+- **Email**: admin@kho1.com
 - **Password**: admin123
 
 ### Next Steps:
@@ -317,4 +317,4 @@ git ls-remote YOUR_REPO_URL
 
 ---
 
-**KhoAugment POS - Deployment made simple! 🚀**
+**Kho1 POS - Deployment made simple! 🚀**

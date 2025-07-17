@@ -3,56 +3,34 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-console.log('🚀 Starting application...');
-
-// Add error boundary for debugging
-class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
-  constructor(props: {children: React.ReactNode}) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    console.error('React Error Boundary caught an error:', error);
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error details:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'Arial, sans-serif' }}>
-          <h1 style={{ color: 'red' }}>Something went wrong.</h1>
-          <p>Please check the console for details.</p>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
+// Simple test first
+console.log('🚀 KhoAugment POS Starting...');
 
 const rootElement = document.getElementById('root');
+console.log('Root element:', rootElement);
 
 if (rootElement) {
-  console.log('✅ Root element found, creating React root...');
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  );
-  console.log('✅ App rendered successfully!');
+  try {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+    console.log('✅ KhoAugment POS App rendered successfully!');
+  } catch (error) {
+    console.error('❌ Error rendering app:', error);
+    rootElement.innerHTML = `
+      <div style="padding: 50px; text-align: center; font-family: Arial, sans-serif; background: white;">
+        <h1 style="color: #1890ff;">KhoAugment POS</h1>
+        <p style="color: red;">Lỗi khởi động ứng dụng: ${error}</p>
+        <button onclick="location.reload()" style="padding: 10px 20px; background: #1890ff; color: white; border: none; border-radius: 5px; cursor: pointer;">Thử lại</button>
+      </div>
+    `;
+  }
 } else {
-  console.error('❌ Root element not found');
-  // Fallback - create content directly
+  console.error('❌ Không tìm thấy root element');
   document.body.innerHTML = `
-    <div style="padding: 50px; text-align: center; font-family: Arial, sans-serif;">
-      <h1 style="color: red;">Error: Root element not found</h1>
-      <p>The application could not mount properly.</p>
+    <div style="padding: 50px; text-align: center; font-family: Arial, sans-serif; background: white; min-height: 100vh;">
+      <h1 style="color: #1890ff;">KhoAugment POS</h1>
+      <p style="color: red;">Lỗi: Không tìm thấy root element</p>
+      <button onclick="location.reload()" style="padding: 10px 20px; background: #1890ff; color: white; border: none; border-radius: 5px; cursor: pointer;">Thử lại</button>
     </div>
   `;
 }

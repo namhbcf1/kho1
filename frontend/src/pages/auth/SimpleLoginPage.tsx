@@ -24,8 +24,8 @@ const SimpleLoginPage: React.FC = () => {
 
   // Check if user is already logged in
   useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    const savedUser = localStorage.getItem('user');
+    const isAuthenticated = localStorage.getItem('auth');
     
     if (savedUser && isAuthenticated === 'true') {
       try {
@@ -38,8 +38,8 @@ const SimpleLoginPage: React.FC = () => {
           navigate('/dashboard');
         }
       } catch (error) {
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth');
       }
     }
   }, [navigate]);

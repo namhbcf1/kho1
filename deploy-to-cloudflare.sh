@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Deploy KhoAugment POS to Cloudflare
+# Deploy Kho1 POS to Cloudflare
 # This script deploys both frontend and backend to Cloudflare services
 
 set -e
 
-echo "☁️ Starting Cloudflare deployment for KhoAugment POS..."
+echo "☁️ Starting Cloudflare deployment for Kho1 POS..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -81,7 +81,7 @@ setup_cloudflare_resources() {
     
     # Create D1 Database
     print_status "Creating D1 database..."
-    if wrangler d1 create khoaugment-pos-db-$ENVIRONMENT; then
+    if wrangler d1 create kho1-pos-db-$ENVIRONMENT; then
         print_success "D1 database created successfully."
     else
         print_warning "D1 database might already exist or creation failed."
@@ -102,7 +102,7 @@ setup_cloudflare_resources() {
     # Create R2 Buckets
     print_status "Creating R2 buckets..."
     
-    R2_BUCKETS=("khoaugment-uploads-$ENVIRONMENT" "khoaugment-backups-$ENVIRONMENT")
+    R2_BUCKETS=("kho1-uploads-$ENVIRONMENT" "kho1-backups-$ENVIRONMENT")
     for bucket in "${R2_BUCKETS[@]}"; do
         if wrangler r2 bucket create "$bucket"; then
             print_success "R2 bucket $bucket created successfully."
@@ -135,7 +135,7 @@ deploy_backend() {
     
     # Run database migrations
     print_status "Running database migrations..."
-    if wrangler d1 migrations apply khoaugment-pos-db-$ENVIRONMENT --env $ENVIRONMENT; then
+    if wrangler d1 migrations apply kho1-pos-db-$ENVIRONMENT --env $ENVIRONMENT; then
         print_success "Database migrations completed."
     else
         print_warning "Database migrations failed or no migrations to run."
@@ -147,7 +147,7 @@ deploy_backend() {
         print_success "Backend deployed successfully to Cloudflare Workers."
         
         # Get worker URL
-        WORKER_URL=$(wrangler deployments list --name khoaugment-pos-$ENVIRONMENT --format json | jq -r '.[0].url' 2>/dev/null || echo "")
+        WORKER_URL=$(wrangler deployments list --name kho1-pos-$ENVIRONMENT --format json | jq -r '.[0].url' 2>/dev/null || echo "")
         if [ -n "$WORKER_URL" ]; then
             echo "Worker URL: $WORKER_URL"
         fi
@@ -193,11 +193,11 @@ deploy_frontend() {
     
     # Deploy to Cloudflare Pages
     print_status "Deploying to Cloudflare Pages..."
-    if wrangler pages deploy dist --project-name khoaugment-pos-frontend-$ENVIRONMENT --compatibility-date 2024-01-15; then
+    if wrangler pages deploy dist --project-name kho1-$ENVIRONMENT --compatibility-date 2024-01-15; then
         print_success "Frontend deployed successfully to Cloudflare Pages."
         
         # Get pages URL
-        PAGES_URL="https://khoaugment-pos-frontend-$ENVIRONMENT.pages.dev"
+        PAGES_URL="https://kho1-$ENVIRONMENT.pages.dev"
         echo "Pages URL: $PAGES_URL"
     else
         print_error "Frontend deployment failed."
@@ -245,11 +245,11 @@ display_summary() {
     echo "Frontend: $PAGES_URL"
     echo ""
     print_status "Cloudflare Resources Created:"
-    echo "- D1 Database: khoaugment-pos-db-$ENVIRONMENT"
+    echo "- D1 Database: kho1-pos-db-$ENVIRONMENT"
     echo "- KV Namespaces: CACHE, SESSIONS, SETTINGS, RATE_LIMITS"
-    echo "- R2 Buckets: khoaugment-uploads-$ENVIRONMENT, khoaugment-backups-$ENVIRONMENT"
-    echo "- Worker: khoaugment-pos-$ENVIRONMENT"
-    echo "- Pages: khoaugment-pos-frontend-$ENVIRONMENT"
+    echo "- R2 Buckets: kho1-uploads-$ENVIRONMENT, kho1-backups-$ENVIRONMENT"
+    echo "- Worker: kho1-pos-$ENVIRONMENT"
+    echo "- Pages: kho1-$ENVIRONMENT"
     echo ""
     print_status "Next steps:"
     echo "1. Configure custom domain (optional)"

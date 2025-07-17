@@ -8,4 +8,4 @@
 /reports    /analytics  301
 
 # SPA routing - all non-asset and non-API requests should serve index.html
-/*    /index.html   200
+/*    /index.html   200!

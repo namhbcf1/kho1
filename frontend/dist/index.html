@@ -80,10 +80,10 @@
       "inLanguage": "vi"
     }
     </script>
-    <script type="module" crossorigin src="/assets/index-DdPqLA-m.js"></script>
+    <script type="module" crossorigin src="/assets/index-BcLZf13P.js"></script>
     <link rel="modulepreload" crossorigin href="/js/vendor-CtIF4A3f.js">
-    <link rel="modulepreload" crossorigin href="/js/antd-C6DXFlav.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-B77cKkrW.css">
+    <link rel="modulepreload" crossorigin href="/js/antd-6wMNvNlF.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-KSifl0eV.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
   <body>
     <div id="root"></div>
@@ -106,6 +106,23 @@
         </div>
       </div>
     </noscript>
+    
+    <!-- Debug script -->
+    <script>
+      console.log('🐛 Debug: DOM loaded');
+      console.log('🐛 Root element:', document.getElementById('root'));
+      
+      // Add timeout to check if React loads
+      setTimeout(() => {
+        const root = document.getElementById('root');
+        if (!root.innerHTML.trim()) {
+          console.log('❌ React failed to load, showing fallback');
+          root.innerHTML = '<div style="min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif;"><div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px;"><h1 style="color: #1890ff; margin-bottom: 20px;">KhoAugment POS</h1><p style="color: #666; margin-bottom: 20px;">Đang tải ứng dụng...</p><div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #1890ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto;"></div></div></div><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
+        } else {
+          console.log('✅ React loaded successfully');
+        }
+      }, 3000);
+    </script>
     
   </body>
 </html>

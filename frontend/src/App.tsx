@@ -41,14 +41,13 @@ import './styles/global.css';
 import './styles/modern-ui.css'; // Import modern UI styles
 import './styles/responsive-mobile.css';
 
-// Dummy components for pages not yet implemented
-const ProductsPage = () => <div style={{padding: '20px'}}><h2>Quản lý sản phẩm</h2><p>Trang đang được phát triển</p></div>;
-const OrdersPage = () => <div style={{padding: '20px'}}><h2>Quản lý đơn hàng</h2><p>Trang đang được phát triển</p></div>;
-const PaymentsPage = () => <div style={{padding: '20px'}}><h2>Thanh toán</h2><p>Trang đang được phát triển</p></div>;
-const StaffPage = () => <div style={{padding: '20px'}}><h2>Quản lý nhân viên</h2><p>Trang đang được phát triển</p></div>;
-const SettingsPage = () => <div style={{padding: '20px'}}><h2>Cài đặt hệ thống</h2><p>Trang đang được phát triển</p></div>;
-const AnalyticsPage = () => <div style={{padding: '20px'}}><h2>Phân tích dữ liệu</h2><p>Trang đang được phát triển</p></div>;
-const CustomersPage = () => <div style={{padding: '20px'}}><h2>Quản lý khách hàng</h2><p>Trang đang được phát triển</p></div>;
+// Import real working pages instead of dummy components
+import ModernProductPage from './pages/products/ModernProductPage';
+import ModernOrderPage from './pages/orders/ModernOrderPage';
+import VietnameseAnalyticsPage from './pages/analytics/VietnameseAnalyticsPage';
+import StaffPage from './pages/staff/StaffPage';
+import SettingsPage from './pages/settings/SettingsPage';
+import PaymentsPage from './pages/payments';
 
 // Simple auth check function
 const isAuthenticated = () => {
@@ -57,7 +56,7 @@ const isAuthenticated = () => {
 
 // Protected Route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return isAuthenticated() ? <>{children}</> : <Navigate to="/auth/login" replace />;
+  return isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 function App() {
@@ -118,8 +117,11 @@ function App() {
             <Route path="/login" element={<SimpleLoginPage />} />
             <Route path="/auth/login" element={<SimpleLoginPage />} />
             
+            {/* Root redirect */}
+            <Route path="/" element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
+            
             {/* Main Application Routes - Using Modern Layout */}
-            <Route path="/" element={
+            <Route path="/*" element={
               <ProtectedRoute>
                 <ModernLayout themeMode={themeMode} setThemeMode={handleThemeModeChange} />
               </ProtectedRoute>
@@ -130,13 +132,13 @@ function App() {
               <Route path="dashboard/reports" element={<ReportsPage />} />
               <Route path="dashboard/realtime" element={<RealTimePage />} />
               <Route path="pos" element={<ModernPOSPage />} />
-              <Route path="products" element={<ProductsPage />} />
-              <Route path="orders" element={<OrdersPage />} />
+              <Route path="products" element={<ModernProductPage />} />
+              <Route path="orders" element={<ModernOrderPage />} />
               <Route path="customers" element={<ModernCustomerPage />} />
               <Route path="payments" element={<PaymentsPage />} />
               <Route path="staff" element={<StaffPage />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
+              <Route path="analytics" element={<VietnameseAnalyticsPage />} />
               <Route path="inventory" element={<InventoryPage />} />
               <Route path="inventory/import" element={<InventoryImportPage />} />
               <Route path="inventory/export" element={<InventoryExportPage />} />
@@ -145,21 +147,21 @@ function App() {
               <Route path="finance/expenses" element={<ExpensesPage />} />
 
               {/* Product management nested routes */}
-              <Route path="products/categories" element={<ProductsPage />} />
-              <Route path="products/inventory" element={<ProductsPage />} />
-              <Route path="products/barcodes" element={<ProductsPage />} />
-              <Route path="products/add" element={<ProductsPage />} />
-              <Route path="products/:id" element={<ProductsPage />} />
+              <Route path="products/categories" element={<ModernProductPage />} />
+              <Route path="products/inventory" element={<ModernProductPage />} />
+              <Route path="products/barcodes" element={<ModernProductPage />} />
+              <Route path="products/add" element={<ModernProductPage />} />
+              <Route path="products/:id" element={<ModernProductPage />} />
 
               {/* Order management nested routes */}
-              <Route path="orders/new" element={<OrdersPage />} />
-              <Route path="orders/history" element={<OrdersPage />} />
-              <Route path="orders/:id" element={<OrdersPage />} />
+              <Route path="orders/new" element={<ModernOrderPage />} />
+              <Route path="orders/history" element={<ModernOrderPage />} />
+              <Route path="orders/:id" element={<ModernOrderPage />} />
               
               {/* Customer management nested routes */}
-              <Route path="customers/loyalty" element={<CustomersPage />} />
-              <Route path="customers/add" element={<CustomersPage />} />
-              <Route path="customers/:id" element={<CustomersPage />} />
+              <Route path="customers/loyalty" element={<ModernCustomerPage />} />
+              <Route path="customers/add" element={<ModernCustomerPage />} />
+              <Route path="customers/:id" element={<ModernCustomerPage />} />
             </Route>
           </Routes>
         </Router>
